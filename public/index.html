@@ -125,8 +125,8 @@
         <button class="btn-pill btn-arabic" onclick="resetAndLoadCategory('sex_arabic')">
           <i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic
         </button>
-        <button class="btn-pill btn-gifs" onclick="loadGifsView(this)" style="background: rgba(255, 0, 127, 0.2); border-color: var(--accent-pink);">
-          <i class="fa fa-images" style="color: #ff007f;"></i> GIFs (متحركة 🔞)
+        <button class="btn-pill btn-photos" onclick="loadPhotosView(this)" style="background: rgba(255, 0, 127, 0.25); border-color: var(--accent-pink); color: #fff;">
+          <i class="fa fa-camera-retro" style="color: #ff007f;"></i> Photos & GIFs (صور ومتحركة 📸)
         </button>
         <button class="btn-pill btn-foryou" onclick="loadForYouFeed()">
           <i class="fa fa-magic" style="color: #c084fc;"></i> For You
@@ -147,10 +147,11 @@
   <!-- Categories Scrollbar (Touch Optimized) -->
   <nav class="categories-bar" id="categoriesBar">
     <button class="cat-btn cat-arabic" onclick="setCategory(this, 'sex_arabic')"><i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic (عربي)</button>
-    <button class="cat-btn cat-gifs" onclick="loadGifsView(this)" style="background: linear-gradient(135deg, rgba(255, 0, 127, 0.25), rgba(157, 78, 221, 0.25)); border-color: var(--accent-pink); color: #fff; font-weight: 700;"><i class="fa fa-images" style="color: var(--accent-pink);"></i> GIFs (متحركة 🔞)</button>
+    <button class="cat-btn cat-photos" onclick="loadPhotosView(this)" style="background: linear-gradient(135deg, rgba(255, 0, 127, 0.3), rgba(157, 78, 221, 0.3)); border-color: var(--accent-pink); color: #fff; font-weight: 700;"><i class="fa fa-camera-retro" style="color: var(--accent-pink);"></i> Photos & GIFs (صور ومتحركة 📸🔞)</button>
     <button class="cat-btn cat-foryou" onclick="loadForYouFeed(this)"><i class="fa fa-magic"></i> For You (مخصص لك)</button>
     <button class="cat-btn" onclick="openCategoriesModal()"><i class="fa fa-th-large"></i> All Categories (التصنيفات)</button>
     <button class="cat-btn active" onclick="setCategory(this, 'trending')"><i class="fa fa-fire"></i> Trending</button>
+
 
     <button class="cat-btn" onclick="setCategory(this, '4k')"><i class="fa fa-tv"></i> 4K UHD</button>
     <button class="cat-btn" onclick="setCategory(this, 'amateur')"><i class="fa fa-user"></i> Amateur</button>

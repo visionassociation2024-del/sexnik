@@ -808,16 +808,18 @@ function getSkeletonHTML(count = 8) {
   return html;
 }
 
-/* ================= Adult GIFs (صور متحركة 🔞) System ================= */
+/* ================= Adult Photos & GIFs (صور ومتحركة 📸🔞) System ================= */
+let isPhotosMode = false;
 let isGifsMode = false;
 
-async function loadGifsView(btn) {
+async function loadPhotosView(btn) {
   if (btn) {
     document.querySelectorAll('.cat-btn, .btn-pill, .bottom-nav-item').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
 
-  isGifsMode = true;
+  isPhotosMode = true;
+  isGifsMode = false;
   isHistoryMode = false;
   isFavoritesMode = false;
   isForYouMode = false;
@@ -827,37 +829,41 @@ async function loadGifsView(btn) {
   renderedVideoIds.clear();
 
   const grid = document.getElementById('videosGrid');
-  document.getElementById('categoryLabel').innerHTML = '<i class="fa fa-images" style="color: var(--accent-pink);"></i> Hot Adult GIFs (صور متحركة 🔞)';
-  document.getElementById('videoCountLabel').innerText = 'Loading animated GIFs...';
+  document.getElementById('categoryLabel').innerHTML = '<i class="fa fa-camera-retro" style="color: var(--accent-pink);"></i> Photos & GIFs Gallery (صور ومتحركة 📸🔞)';
+  document.getElementById('videoCountLabel').innerText = 'Loading 150+ HD Photos & GIFs...';
   document.getElementById('btnClearHistory').style.display = 'none';
 
-  grid.innerHTML = getSkeletonHTML(8);
+  grid.innerHTML = getSkeletonHTML(12);
 
   try {
-    const res = await fetch(`/api/gifs?page=1`);
+    const res = await fetch(`/api/photos?page=1`);
     const data = await res.json();
 
-    if (data.success && data.gifs && data.gifs.length > 0) {
+    if (data.success && data.items && data.items.length > 0) {
       grid.innerHTML = '';
-      document.getElementById('videoCountLabel').innerText = `${data.gifs.length} Animated GIFs`;
-      data.gifs.forEach(gif => {
-        grid.appendChild(createGifCardElement(gif));
+      document.getElementById('videoCountLabel').innerText = `${data.items.length} HD Photos & Animated GIFs`;
+      data.items.forEach(item => {
+        grid.appendChild(createPhotoOrGifCardElement(item));
       });
     } else {
-      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">No GIFs available at the moment.</div>';
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">No media available right now.</div>';
     }
   } catch (err) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">Failed to load GIFs feed.</div>';
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">Failed to load photos & GIFs gallery.</div>';
   }
 }
 
-// Create GIF Card with Automatic Hidden SmartLink Popunder on Click
-function createGifCardElement(gif) {
+async function loadGifsView(btn) {
+  loadPhotosView(btn);
+}
+
+// Create Photo or GIF Card with Hidden Popunder on Click
+function createPhotoOrGifCardElement(item) {
   const card = document.createElement('div');
   card.className = 'gif-card animate-fade';
 
   card.onclick = (e) => {
-    // 1. Hidden High-Paying Ad Trigger on Click
+    // 1. Hidden SmartLink Popunder Trigger
     try {
       const adWin = window.open(SMARTLINK_URL, '_blank');
       if (adWin) {
@@ -866,27 +872,28 @@ function createGifCardElement(gif) {
       }
     } catch(err) {}
 
-    // 2. Open Full HD GIF Lightbox
-    openGifModal(gif);
+    // 2. Open Full HD Modal
+    openGifModal(item);
   };
 
-  const mediaSrc = gif.gif_url || gif.mp4_url || gif.thumbnail;
+  const mediaSrc = item.image_url || item.gif_url || item.mp4_url || item.thumbnail;
+  const isGif = item.type === 'gif' || mediaSrc.includes('.gif') || mediaSrc.includes('/gif') || (item.tags && item.tags.includes('gif'));
   const isMp4 = mediaSrc.endsWith('.mp4');
 
   card.innerHTML = `
     <div class="gif-thumb-wrap">
       ${isMp4 
         ? `<video src="${mediaSrc}" autoplay loop muted playsinline></video>` 
-        : `<img src="${mediaSrc}" alt="${gif.title}" loading="lazy" onerror="this.src='/images/logo.png'">`
+        : `<img src="${mediaSrc}" alt="${item.title}" loading="lazy" onerror="this.src='/images/logo.png'">`
       }
-      <span class="badge-gif-hot"><i class="fa fa-fire"></i> HOT</span>
-      <span class="badge-gif-type"><i class="fa fa-film"></i> GIF</span>
+      <span class="badge-gif-hot"><i class="fa fa-fire"></i> ${isGif ? 'HOT GIF' : 'HD PHOTO'}</span>
+      <span class="badge-gif-type"><i class="${isGif ? 'fa fa-film' : 'fa fa-camera'}"></i> ${isGif ? 'GIF' : 'PHOTO'}</span>
     </div>
     <div class="gif-details">
-      <h3 class="gif-title" title="${gif.title}">${gif.title}</h3>
+      <h3 class="gif-title" title="${item.title}">${item.title}</h3>
       <div class="gif-meta">
-        <span><i class="fa fa-eye"></i> ${gif.views || '120K'}</span>
-        <span style="color: var(--accent-pink);"><i class="fa fa-heart"></i> ${gif.likes || '9.5K'}</span>
+        <span><i class="fa fa-eye"></i> ${item.views || '120K'}</span>
+        <span style="color: var(--accent-pink);"><i class="fa fa-heart"></i> ${item.likes || '9.5K'}</span>
       </div>
     </div>
   `;
@@ -894,24 +901,28 @@ function createGifCardElement(gif) {
   return card;
 }
 
-// Open GIF Lightbox Modal
-function openGifModal(gif) {
+function createGifCardElement(gif) {
+  return createPhotoOrGifCardElement(gif);
+}
+
+// Open GIF / Photo Lightbox Modal
+function openGifModal(item) {
   const modal = document.getElementById('gifModal');
   const mediaWrap = document.getElementById('gifModalMedia');
   const titleEl = document.getElementById('gifModalTitle');
 
   if (!modal || !mediaWrap) return;
 
-  const mediaSrc = gif.gif_url || gif.mp4_url || gif.thumbnail;
+  const mediaSrc = item.image_url || item.gif_url || item.mp4_url || item.thumbnail;
   const isMp4 = mediaSrc.endsWith('.mp4');
 
   if (isMp4) {
     mediaWrap.innerHTML = `<video src="${mediaSrc}" controls autoplay loop playsinline style="max-height: 70vh; width: 100%; object-fit: contain;"></video>`;
   } else {
-    mediaWrap.innerHTML = `<img src="${mediaSrc}" alt="${gif.title}" style="max-height: 70vh; width: 100%; object-fit: contain;">`;
+    mediaWrap.innerHTML = `<img src="${mediaSrc}" alt="${item.title}" style="max-height: 70vh; width: 100%; object-fit: contain;">`;
   }
 
-  if (titleEl) titleEl.innerText = gif.title || 'Hot Model HD GIF';
+  if (titleEl) titleEl.innerText = item.title || 'HD Model Photo / GIF';
 
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -926,4 +937,5 @@ function closeGifModal(e) {
   if (mediaWrap) mediaWrap.innerHTML = '';
   document.body.style.overflow = '';
 }
+
 

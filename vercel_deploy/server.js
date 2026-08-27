@@ -205,8 +205,56 @@ app.get('/api/videos', async (req, res) => {
     return res.json(responsePayload);
 });
 
-// 1.5 API: Hot Adult GIFs Feed with Hidden Smartlink Monetization Support
+// 1.5 API: Hot Adult GIFs & Photos Feed (NPNS.fr + Curated + Pornhub)
 const { fetchAdultGifs, CURATED_GIFS } = require('./scrapers/gifs');
+const { fetchPhotosAndGifs, CURATED_MEDIA } = require('./scrapers/photos');
+const { scrapeNpnsGifs } = require('./scrapers/npns');
+
+app.get('/api/photos', async (req, res) => {
+    const { q = 'all', page = 1 } = req.query;
+    const pageNum = parseInt(page, 10) || 1;
+    const cacheKey = `photos_${q}_${pageNum}`;
+
+    const cached = getCached(cacheKey);
+    if (cached) return res.json(cached);
+
+    try {
+        const [npnsRes, photoData] = await Promise.allSettled([
+            scrapeNpnsGifs(pageNum),
+            fetchPhotosAndGifs(q, pageNum)
+        ]);
+
+        let items = [];
+        if (npnsRes.status === 'fulfilled' && npnsRes.value.success && npnsRes.value.gifs) {
+            items = items.concat(npnsRes.value.gifs);
+        }
+        if (photoData.status === 'fulfilled' && photoData.value.items) {
+            items = items.concat(photoData.value.items);
+        }
+
+        if (items.length === 0) {
+            items = CURATED_MEDIA;
+        }
+
+        const payload = {
+            success: true,
+            category: 'photos',
+            page: pageNum,
+            count: items.length,
+            items: items
+        };
+        setCache(cacheKey, payload);
+        return res.json(payload);
+    } catch (err) {
+        return res.json({
+            success: true,
+            category: 'photos',
+            page: pageNum,
+            count: CURATED_MEDIA.length,
+            items: CURATED_MEDIA
+        });
+    }
+});
 
 app.get('/api/gifs', async (req, res) => {
     const { q = 'hot', page = 1 } = req.query;
@@ -217,13 +265,29 @@ app.get('/api/gifs', async (req, res) => {
     if (cached) return res.json(cached);
 
     try {
-        const gifData = await fetchAdultGifs(q, pageNum);
+        const [npnsRes, gifData] = await Promise.allSettled([
+            scrapeNpnsGifs(pageNum),
+            fetchAdultGifs(q, pageNum)
+        ]);
+
+        let gifs = [];
+        if (npnsRes.status === 'fulfilled' && npnsRes.value.success && npnsRes.value.gifs) {
+            gifs = gifs.concat(npnsRes.value.gifs);
+        }
+        if (gifData.status === 'fulfilled' && gifData.value.gifs) {
+            gifs = gifs.concat(gifData.value.gifs);
+        }
+
+        if (gifs.length === 0) {
+            gifs = CURATED_GIFS;
+        }
+
         const payload = {
             success: true,
             category: 'gifs',
             page: pageNum,
-            count: gifData.gifs.length,
-            gifs: gifData.gifs
+            count: gifs.length,
+            gifs: gifs
         };
         setCache(cacheKey, payload);
         return res.json(payload);
@@ -237,6 +301,7 @@ app.get('/api/gifs', async (req, res) => {
         });
     }
 });
+
 
 
 // 2. API: Fast Search across sources
