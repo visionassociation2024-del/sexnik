@@ -717,6 +717,8 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
     }
 });
 
+// --- CMS MANAGEMENT ENDPOINTS (FULL INTEGRATED CMS ENGINE) ---
+
 // 4. API: Save Scraped Videos Permanently (Protected - All Saved to Trending by Default)
 app.post('/api/admin/save-videos', requireAdminAuth, (req, res) => {
     const { videos } = req.body;
@@ -726,35 +728,117 @@ app.post('/api/admin/save-videos', requireAdminAuth, (req, res) => {
             .filter(v => !existingIds.has(v.id))
             .map(v => ({
                 ...v,
-                category: 'trending',
+                category: v.category || 'trending',
                 is_trending: true,
-                tags: Array.from(new Set([...(v.tags || []), 'trending', 'trending_now', 'featured', 'niksex'])),
+                tags: Array.from(new Set([...(v.tags || []), 'trending', 'featured', 'niksex'])),
                 imported_at: Date.now()
             }));
 
         persistentVideos = newVids.concat(persistentVideos);
         savePersistentVideos(persistentVideos);
-        cache.clear(); // Clear cache so they appear instantly in Trending
+        cache.clear(); // Clear cache so they appear instantly
 
         return res.json({
             success: true,
-            message: `Successfully saved & published ${newVids.length} video(s) directly to Trending!`,
+            message: `Successfully saved & published ${newVids.length} video(s) to CMS!`,
             total_stored: persistentVideos.length
         });
     }
     return res.status(400).json({ success: false, message: 'Invalid video array.' });
 });
 
-// 5. API: Get All Stored Videos (Protected)
+// 5. API: Get All Stored Videos with Search & Pagination (Protected)
 app.get('/api/admin/imported-videos', requireAdminAuth, (req, res) => {
+    const { q, category } = req.query;
+    let filtered = [...persistentVideos];
+
+    if (q) {
+        const term = q.toLowerCase().trim();
+        filtered = filtered.filter(v => (v.title && v.title.toLowerCase().includes(term)) || (v.id && v.id.toLowerCase().includes(term)));
+    }
+    if (category && category !== 'all') {
+        const cat = category.toLowerCase().trim();
+        filtered = filtered.filter(v => (v.category && v.category.toLowerCase().includes(cat)) || (v.tags && v.tags.some(t => t.toLowerCase().includes(cat))));
+    }
+
     return res.json({
         success: true,
-        count: persistentVideos.length,
-        videos: persistentVideos
+        count: filtered.length,
+        total_stored: persistentVideos.length,
+        videos: filtered
     });
 });
 
-// 6. API: Delete Stored Video (Protected)
+// 6. API: Add Video Manually (Protected CMS Action)
+app.post('/api/admin/add-video', requireAdminAuth, (req, res) => {
+    const { title, embed_url, video_url, thumbnail, duration, views, rating, category, tags, is_trending } = req.body;
+    if (!title || (!embed_url && !video_url)) {
+        return res.status(400).json({ success: false, message: 'Title and Video/Embed URL are required.' });
+    }
+
+    const newVideo = {
+        id: 'manual_' + Date.now().toString(36),
+        source: 'manual_cms',
+        title: title.trim(),
+        embed_url: (embed_url || video_url).trim(),
+        video_url: (embed_url || video_url).trim(),
+        thumbnail: thumbnail ? thumbnail.trim() : '/images/logo.png',
+        duration: duration ? duration.trim() : '12:00',
+        views: views ? views.trim() : '20,000',
+        rating: rating ? rating.trim() : '98%',
+        category: category ? category.trim() : 'trending',
+        is_trending: is_trending !== false,
+        tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map(t => t.trim()) : ['manual', 'featured', 'niksex']),
+        imported_at: Date.now()
+    };
+
+    persistentVideos.unshift(newVideo);
+    savePersistentVideos(persistentVideos);
+    cache.clear();
+
+    return res.json({
+        success: true,
+        message: 'Video added manually to CMS successfully!',
+        video: newVideo,
+        total_stored: persistentVideos.length
+    });
+});
+
+// 7. API: Edit Stored Video Metadata (Protected)
+app.put('/api/admin/edit-video/:id', requireAdminAuth, (req, res) => {
+    const { id } = req.params;
+    const { title, thumbnail, embed_url, duration, views, rating, tags, category, is_trending } = req.body;
+    const videoIndex = persistentVideos.findIndex(v => v.id === id);
+
+    if (videoIndex !== -1) {
+        if (title) persistentVideos[videoIndex].title = title.trim();
+        if (thumbnail) persistentVideos[videoIndex].thumbnail = thumbnail.trim();
+        if (embed_url) {
+            persistentVideos[videoIndex].embed_url = embed_url.trim();
+            persistentVideos[videoIndex].video_url = embed_url.trim();
+        }
+        if (duration) persistentVideos[videoIndex].duration = duration.trim();
+        if (views) persistentVideos[videoIndex].views = views.trim();
+        if (rating) persistentVideos[videoIndex].rating = rating.trim();
+        if (category) persistentVideos[videoIndex].category = category.trim();
+        if (is_trending !== undefined) persistentVideos[videoIndex].is_trending = Boolean(is_trending);
+        if (tags) {
+            persistentVideos[videoIndex].tags = Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim());
+        }
+
+        savePersistentVideos(persistentVideos);
+        cache.clear();
+
+        return res.json({
+            success: true,
+            message: 'Video metadata updated successfully in CMS.',
+            video: persistentVideos[videoIndex]
+        });
+    }
+    return res.status(404).json({ success: false, message: 'Video not found in stored database.' });
+});
+
+// 8. API: Delete Single Video (Protected)
 app.delete('/api/admin/delete-video/:id', requireAdminAuth, (req, res) => {
     const { id } = req.params;
     persistentVideos = persistentVideos.filter(v => v.id !== id);
@@ -767,28 +851,221 @@ app.delete('/api/admin/delete-video/:id', requireAdminAuth, (req, res) => {
     });
 });
 
-// 7. API: Edit Stored Video Metadata (Protected)
-app.put('/api/admin/edit-video/:id', requireAdminAuth, (req, res) => {
-    const { id } = req.params;
-    const { title, thumbnail, tags, category } = req.body;
-    const videoIndex = persistentVideos.findIndex(v => v.id === id);
-
-    if (videoIndex !== -1) {
-        if (title) persistentVideos[videoIndex].title = title.trim();
-        if (thumbnail) persistentVideos[videoIndex].thumbnail = thumbnail.trim();
-        if (category) persistentVideos[videoIndex].category = category.trim();
-        if (tags && Array.isArray(tags)) persistentVideos[videoIndex].tags = tags;
-
+// 9. API: Bulk Delete Videos (Protected)
+app.post('/api/admin/bulk-delete', requireAdminAuth, (req, res) => {
+    const { ids } = req.body;
+    if (Array.isArray(ids) && ids.length > 0) {
+        const idSet = new Set(ids);
+        persistentVideos = persistentVideos.filter(v => !idSet.has(v.id));
         savePersistentVideos(persistentVideos);
         cache.clear();
-
         return res.json({
             success: true,
-            message: 'Video metadata updated successfully.',
-            video: persistentVideos[videoIndex]
+            message: `Successfully deleted ${ids.length} videos from CMS!`,
+            total_stored: persistentVideos.length
         });
     }
-    return res.status(404).json({ success: false, message: 'Video not found in stored database.' });
+    return res.status(400).json({ success: false, message: 'Invalid IDs array.' });
+});
+
+// 10. API: Pin Video to Top of Feed (Protected)
+app.post('/api/admin/pin-top/:id', requireAdminAuth, (req, res) => {
+    const { id } = req.params;
+    const index = persistentVideos.findIndex(v => v.id === id);
+    if (index !== -1) {
+        const [video] = persistentVideos.splice(index, 1);
+        video.is_trending = true;
+        persistentVideos.unshift(video);
+        savePersistentVideos(persistentVideos);
+        cache.clear();
+        return res.json({
+            success: true,
+            message: `"${video.title}" is now pinned to the #1 Top position!`,
+            video
+        });
+    }
+    return res.status(404).json({ success: false, message: 'Video not found.' });
+});
+
+// 11. API: Toggle Trending State (Protected)
+app.post('/api/admin/toggle-trending/:id', requireAdminAuth, (req, res) => {
+    const { id } = req.params;
+    const video = persistentVideos.find(v => v.id === id);
+    if (video) {
+        video.is_trending = !video.is_trending;
+        savePersistentVideos(persistentVideos);
+        cache.clear();
+        return res.json({
+            success: true,
+            message: `Trending state updated to: ${video.is_trending}`,
+            is_trending: video.is_trending
+        });
+    }
+    return res.status(404).json({ success: false, message: 'Video not found.' });
+});
+
+// 12. API: 1-Click Keyword Batch Auto-Scraper (Protected)
+app.post('/api/admin/batch-auto-scrape', requireAdminAuth, async (req, res) => {
+    const { keyword = 'arabic', count = 30 } = req.body;
+    const targetCount = Math.min(parseInt(count, 10) || 30, 60);
+
+    try {
+        const url = `https://www.eporner.com/api/v2/video/search/?query=${encodeURIComponent(keyword)}&per_page=${targetCount}&thumbsize=big`;
+        const apiRes = await axios.get(url, { timeout: 6000 });
+
+        if (apiRes.data && apiRes.data.videos && apiRes.data.videos.length > 0) {
+            const existingIds = new Set(persistentVideos.map(v => v.id));
+            const newVideos = apiRes.data.videos
+                .filter(v => !existingIds.has(v.id))
+                .map(v => ({
+                    id: 'ep_' + v.id,
+                    source: 'batch_scraper',
+                    title: v.title,
+                    thumbnail: v.default_thumb ? v.default_thumb.src : '/images/logo.png',
+                    duration: v.length_min || '12:00',
+                    views: v.views ? parseInt(v.views, 10).toLocaleString() : '25,000',
+                    rating: (v.rate ? v.rate : '98') + '%',
+                    embed_url: v.embed,
+                    video_url: v.embed,
+                    category: keyword.toLowerCase().includes('arabic') ? 'sex_arabic' : 'trending',
+                    is_trending: true,
+                    tags: [keyword, 'trending', 'batch', 'niksex'],
+                    imported_at: Date.now()
+                }));
+
+            persistentVideos = newVideos.concat(persistentVideos);
+            savePersistentVideos(persistentVideos);
+            cache.clear();
+
+            return res.json({
+                success: true,
+                message: `Successfully auto-scraped & imported ${newVideos.length} fresh HD videos for keyword "${keyword}"!`,
+                imported_count: newVideos.length,
+                total_stored: persistentVideos.length
+            });
+        }
+        return res.status(404).json({ success: false, message: 'No videos found for this keyword.' });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: 'Batch Auto-Scrape failed: ' + e.message });
+    }
+});
+
+// 13. API: Dashboard CMS Analytics & System Stats (Protected)
+app.get('/api/admin/stats', requireAdminAuth, (req, res) => {
+    const totalStored = persistentVideos.length;
+    const categoryCounts = {};
+    persistentVideos.forEach(v => {
+        const cat = v.category || 'trending';
+        categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+    });
+
+    const memoryUsage = process.memoryUsage();
+    return res.json({
+        success: true,
+        stats: {
+            total_videos: totalStored,
+            category_breakdown: categoryCounts,
+            cache_entries: cache.size,
+            memory_mb: Math.round(memoryUsage.heapUsed / 1024 / 1024),
+            node_version: process.version,
+            uptime_seconds: Math.round(process.uptime()),
+            platform: 'Vercel Serverless / Express'
+        }
+    });
+});
+
+// 14. API: Site Settings & SEO Config Management (Protected)
+const SETTINGS_FILE = path.join(__dirname, 'data', 'settings.json');
+function loadSettings() {
+    try {
+        if (fs.existsSync(SETTINGS_FILE)) {
+            return JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8'));
+        }
+    } catch (e) {}
+    return {
+        site_name: 'niksex',
+        site_title: 'niksex - WATCH • EXPLORE • ENJOY | Next-Gen Video Streaming',
+        meta_description: 'Watch high-definition videos with ultra-fast streaming, Sex Arabic collection, categories, smart personalization, and infinite scrolling on niksex.',
+        meta_keywords: 'niksex, adult streaming, sex arabic, 4k uhd, hd videos, video search engine',
+        footer_copyright: '© 2026 niksex. All rights reserved.',
+        anti_redirect_enabled: true,
+        default_category: 'trending',
+        cache_ttl_minutes: 15
+    };
+}
+
+function saveSettings(settings) {
+    try {
+        const dir = path.dirname(SETTINGS_FILE);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings, null, 2), 'utf8');
+    } catch (e) {}
+}
+
+app.get('/api/admin/settings', requireAdminAuth, (req, res) => {
+    return res.json({ success: true, settings: loadSettings() });
+});
+
+app.post('/api/admin/settings', requireAdminAuth, (req, res) => {
+    const current = loadSettings();
+    const updated = { ...current, ...(req.body.settings || req.body) };
+    saveSettings(updated);
+    cache.clear();
+    return res.json({ success: true, message: 'Site configuration saved successfully!', settings: updated });
+});
+
+// 15. API: Database Backup Export & Restore Import (Protected)
+app.get('/api/admin/export-database', requireAdminAuth, (req, res) => {
+    const backup = {
+        exported_at: new Date().toISOString(),
+        site_name: 'niksex',
+        total_videos: persistentVideos.length,
+        settings: loadSettings(),
+        videos: persistentVideos
+    };
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename=niksex_backup_${Date.now()}.json`);
+    return res.send(JSON.stringify(backup, null, 2));
+});
+
+app.post('/api/admin/import-database', requireAdminAuth, (req, res) => {
+    const { videos, mode = 'merge' } = req.body;
+    if (!Array.isArray(videos)) {
+        return res.status(400).json({ success: false, message: 'Invalid JSON database file.' });
+    }
+
+    if (mode === 'replace') {
+        persistentVideos = videos;
+    } else {
+        const existingIds = new Set(persistentVideos.map(v => v.id));
+        const newOnes = videos.filter(v => !existingIds.has(v.id));
+        persistentVideos = newOnes.concat(persistentVideos);
+    }
+
+    savePersistentVideos(persistentVideos);
+    cache.clear();
+
+    return res.json({
+        success: true,
+        message: `Database imported successfully! Total videos in CMS: ${persistentVideos.length}`,
+        total_stored: persistentVideos.length
+    });
+});
+
+// 16. API: Instant Cache Flush (Protected)
+app.post('/api/admin/clear-cache', requireAdminAuth, (req, res) => {
+    const count = cache.size;
+    cache.clear();
+    return res.json({ success: true, message: `System In-Memory Cache Flushed! (${count} entries cleared)` });
+});
+
+// 17. API: Reset / Clear All Stored Videos (Protected)
+app.post('/api/admin/clear-all-videos', requireAdminAuth, (req, res) => {
+    const count = persistentVideos.length;
+    persistentVideos = [];
+    savePersistentVideos(persistentVideos);
+    cache.clear();
+    return res.json({ success: true, message: `All ${count} stored videos have been removed from CMS.` });
 });
 
 // 8. Dynamic XML Sitemap for SEO & Search Engine Indexing

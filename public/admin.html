@@ -3,11 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>niksex Admin Panel | Bulk Page Scraper & Control Center</title>
+  <title>niksex CMS Engine | Ultimate Content Management System</title>
   <link rel="icon" type="image/png" href="/images/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=2.8">
+  <link rel="stylesheet" href="/css/style.css?v=3.0">
   <style>
+    :root {
+      --sidebar-width: 260px;
+    }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Password Protection Gate */
     .login-overlay {
       position: fixed;
       inset: 0;
@@ -16,37 +29,19 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      z-index: 5000;
-      background-image: 
-        radial-gradient(circle at 50% 30%, rgba(255, 0, 127, 0.12) 0%, transparent 60%);
+      z-index: 9999;
+      background-image: radial-gradient(circle at 50% 30%, rgba(255, 0, 127, 0.15) 0%, transparent 60%);
     }
     .login-card {
-      background: rgba(22, 22, 34, 0.85);
+      background: rgba(22, 22, 34, 0.95);
       border: 1px solid var(--border-pink);
       border-radius: 20px;
-      padding: 36px 30px;
+      padding: 40px 32px;
       width: 100%;
       max-width: 420px;
       text-align: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 0, 127, 0.25);
-      backdrop-filter: blur(16px);
-      animation: modalFadeIn 0.3s ease;
-    }
-    .login-logo {
-      height: 52px;
-      margin-bottom: 16px;
-      filter: drop-shadow(0 0 15px var(--accent-glow));
-    }
-    .login-title {
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 6px;
-      color: #fff;
-    }
-    .login-subtitle {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 35px rgba(255, 0, 127, 0.25);
+      backdrop-filter: blur(20px);
     }
     .login-input {
       width: 100%;
@@ -55,177 +50,249 @@
       padding: 14px 18px;
       border-radius: 10px;
       color: #fff;
-      font-size: 15px;
-      outline: none;
+      font-size: 16px;
       text-align: center;
-      letter-spacing: 2px;
-      transition: var(--transition);
+      letter-spacing: 3px;
+      outline: none;
       margin-bottom: 16px;
+      transition: var(--transition);
     }
     .login-input:focus {
       border-color: var(--accent-pink);
       box-shadow: 0 0 15px var(--accent-glow);
     }
-    .login-error {
-      color: #ef4444;
-      font-size: 13px;
-      margin-top: 12px;
-      display: none;
-    }
 
-    .admin-container {
-      max-width: 1200px;
-      margin: 30px auto 80px;
-      padding: 0 20px;
+    /* CMS Layout */
+    .cms-layout {
+      display: flex;
+      min-height: 100vh;
     }
-    .admin-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-pink);
-      border-radius: 16px;
-      padding: 28px;
-      margin-bottom: 30px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      backdrop-filter: blur(12px);
+    .cms-sidebar {
+      width: var(--sidebar-width);
+      background: rgba(18, 18, 28, 0.98);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
     }
-    .admin-header {
+    .cms-brand {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 16px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 10px;
     }
-    .admin-title {
-      font-size: 22px;
-      font-weight: 700;
+    .cms-brand img { height: 38px; }
+    .cms-nav {
+      padding: 20px 12px;
       display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .admin-title i {
-      color: var(--accent-pink);
-    }
-    .url-input-group {
-      display: flex;
-      gap: 12px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-    .url-input-group input {
+      flex-direction: column;
+      gap: 6px;
       flex: 1;
-      min-width: 280px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border-color);
-      padding: 14px 18px;
-      border-radius: 10px;
-      color: #fff;
-      font-size: 15px;
-      outline: none;
-      transition: var(--transition);
+      overflow-y: auto;
     }
-    .url-input-group input:focus {
-      border-color: var(--accent-pink);
-      box-shadow: 0 0 15px var(--accent-glow);
-    }
-    .btn-scrape {
-      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
-      color: #fff;
-      border: none;
-      padding: 14px 28px;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
+    .cms-nav-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
+      padding: 12px 16px;
+      color: var(--text-muted);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
       transition: var(--transition);
-      white-space: nowrap;
+      text-decoration: none;
     }
-    .btn-scrape:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 20px var(--accent-pink);
+    .cms-nav-item:hover, .cms-nav-item.active {
+      background: rgba(255, 0, 127, 0.15);
+      color: #fff;
+      border-left: 3px solid var(--accent-pink);
     }
-    .scraped-preview {
-      margin-top: 25px;
-      display: none;
+    .cms-nav-item i { font-size: 16px; width: 20px; text-align: center; color: var(--accent-pink); }
+
+    .cms-main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 30px;
+      max-width: 1300px;
     }
-    .preview-box {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
+    .cms-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
     }
-    .stats-row {
+    .cms-page-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cms-tab-content { display: none; }
+    .cms-tab-content.active { display: block; animation: modalFadeIn 0.3s ease; }
+
+    /* Dashboard Widgets */
+    .widget-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 18px;
       margin-bottom: 30px;
     }
-    .stat-card {
-      background: rgba(255, 255, 255, 0.04);
+    .widget-card {
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 18px 22px;
+      border-radius: 14px;
+      padding: 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
     }
-    .stat-val {
-      font-size: 24px;
+    .widget-val {
+      font-size: 26px;
       font-weight: 800;
-      color: var(--accent-pink);
+      color: #fff;
+      margin-top: 4px;
     }
-    .supported-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .supported-badge {
-      background: rgba(255, 255, 255, 0.06);
+    .widget-card i { font-size: 32px; opacity: 0.3; color: var(--accent-pink); }
+
+    /* CMS Card */
+    .cms-card {
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 12px;
+      border-radius: 16px;
+      padding: 26px;
+      margin-bottom: 26px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    .table-container {
+    .cms-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .cms-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Forms & Inputs */
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      padding: 12px 14px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent-pink);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    /* Table Styles */
+    .cms-table-wrap {
       overflow-x: auto;
       margin-top: 15px;
     }
-    table.data-table {
+    .cms-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
     }
-    table.data-table th {
-      text-align: left;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.05);
+    .cms-table th {
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.04);
       border-bottom: 1px solid var(--border-pink);
       color: var(--accent-pink);
+      text-align: left;
+      font-weight: 700;
     }
-    table.data-table td {
-      padding: 12px;
+    .cms-table td {
+      padding: 12px 14px;
       border-bottom: 1px solid var(--border-color);
       color: var(--text-main);
+      vertical-align: middle;
     }
-    .btn-delete {
-      background: rgba(239, 68, 68, 0.2);
-      border: 1px solid #ef4444;
-      color: #ef4444;
-      padding: 4px 10px;
+    .cms-table tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Action Buttons */
+    .btn-action {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 6px 12px;
       border-radius: 6px;
-      cursor: pointer;
       font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
       transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .btn-delete:hover {
+    .btn-action:hover {
+      background: rgba(255, 0, 127, 0.2);
+      border-color: var(--accent-pink);
+      color: var(--accent-pink);
+    }
+    .btn-action.btn-danger {
+      border-color: #ef4444;
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+    .btn-action.btn-danger:hover {
       background: #ef4444;
       color: #fff;
+    }
+    .btn-action.btn-primary {
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+      border: none;
+      color: #fff;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 900px) {
+      .cms-sidebar { width: 70px; }
+      .cms-brand span, .cms-nav-item span { display: none; }
+      .cms-main { margin-left: 70px; padding: 16px; }
     }
   </style>
 </head>
@@ -234,178 +301,380 @@
   <!-- Password Protection Gate -->
   <div class="login-overlay" id="adminLoginOverlay">
     <div class="login-card">
-      <img src="/images/logo.png" alt="niksex" class="login-logo">
-      <h2 class="login-title">Admin Access Gate</h2>
-      <p class="login-subtitle">Enter your master security password to continue</p>
+      <img src="/images/logo.png" alt="niksex" style="height: 48px; margin-bottom: 14px;">
+      <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 4px; color: #fff;">CMS Master Security Gate</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 22px;">Enter master password to access system management</p>
       
       <form onsubmit="handleLoginSubmit(event)">
         <input type="password" id="adminPasswordInput" class="login-input" placeholder="••••••••••••" autofocus required>
-        <button type="submit" class="btn-primary" id="btnLoginSubmit">
-          <i class="fa fa-lock-open"></i> Unlock Dashboard
+        <button type="submit" class="btn-primary" id="btnLoginSubmit" style="width: 100%; padding: 14px; justify-content: center;">
+          <i class="fa fa-lock-open"></i> Unlock CMS Engine
         </button>
       </form>
 
-      <div class="login-error" id="loginErrorMessage">
-        <i class="fa fa-exclamation-circle"></i> Incorrect password! Please try again.
+      <div id="loginErrorMessage" style="color: #ef4444; font-size: 13px; margin-top: 12px; display: none;">
+        <i class="fa fa-exclamation-circle"></i> Invalid password! Please try again.
       </div>
     </div>
   </div>
 
-  <!-- Authenticated Admin Panel -->
-  <div id="adminPanelContent" style="display: none;">
+  <!-- Integrated CMS Environment -->
+  <div id="adminPanelContent" class="cms-layout" style="display: none;">
 
-    <header class="navbar">
-      <div class="nav-container">
-        <a href="/" class="brand-logo">
-          <img src="/images/logo.png" alt="niksex Logo">
+    <!-- Left Sidebar Navigation -->
+    <aside class="cms-sidebar">
+      <div class="cms-brand">
+        <a href="/"><img src="/images/logo.png" alt="niksex"></a>
+        <span style="font-size: 10px; font-weight: 800; background: var(--accent-pink); padding: 2px 6px; border-radius: 4px; color: #fff;">CMS v3.0</span>
+      </div>
+
+      <nav class="cms-nav">
+        <a class="cms-nav-item active" onclick="switchTab('tabDashboard', this)">
+          <i class="fa fa-tachometer-alt"></i> <span>Dashboard & Stats</span>
         </a>
-        <div class="nav-actions">
-          <a href="/" class="btn-pill"><i class="fa fa-arrow-left"></i> View Live Site</a>
-          <button class="btn-pill" style="border-color: #ef4444; color: #ef4444;" onclick="handleAdminLogout()">
-            <i class="fa fa-sign-out-alt"></i> Logout
-          </button>
+        <a class="cms-nav-item" onclick="switchTab('tabVideos', this)">
+          <i class="fa fa-film"></i> <span>Manage Videos (<span id="sidebarVideoCount">0</span>)</span>
+        </a>
+        <a class="cms-nav-item" onclick="switchTab('tabAddVideo', this)">
+          <i class="fa fa-plus-circle"></i> <span>Add Single Video</span>
+        </a>
+        <a class="cms-nav-item" onclick="switchTab('tabScraper', this)">
+          <i class="fa fa-globe"></i> <span>Bulk Auto-Scraper</span>
+        </a>
+        <a class="cms-nav-item" onclick="switchTab('tabSettings', this)">
+          <i class="fa fa-cog"></i> <span>Site & SEO Config</span>
+        </a>
+        <a class="cms-nav-item" onclick="switchTab('tabBackup', this)">
+          <i class="fa fa-database"></i> <span>Backup & Restore</span>
+        </a>
+        <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color);">
+          <a href="/" target="_blank" class="cms-nav-item" style="color: #10b981;">
+            <i class="fa fa-external-link-alt" style="color: #10b981;"></i> <span>View Live Site</span>
+          </a>
+          <a onclick="handleAdminLogout()" class="cms-nav-item" style="color: #ef4444;">
+            <i class="fa fa-sign-out-alt" style="color: #ef4444;"></i> <span>Logout</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="cms-main">
+
+      <!-- Top Header Bar -->
+      <div class="cms-topbar">
+        <div>
+          <h1 class="cms-page-title" id="cmsHeadingTitle"><i class="fa fa-tachometer-alt" style="color: var(--accent-pink);"></i> CMS Overview & Analytics</h1>
+          <span style="font-size: 13px; color: var(--text-muted);">Platform Engine: niksex High-Speed Embed Intermediary</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-action" onclick="flushCache()"><i class="fa fa-bolt" style="color: #ffd700;"></i> Flush Cache</button>
+          <button class="btn-action btn-primary" onclick="switchTab('tabAddVideo')"><i class="fa fa-plus"></i> Add Video</button>
         </div>
       </div>
-    </header>
 
-    <div class="admin-container">
-
-      <!-- Stats Banner -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div>
-            <div style="font-size: 12px; color: var(--text-muted);">Engine Status</div>
-            <div class="stat-val" style="font-size: 18px; color: #10b981;"><i class="fa fa-bolt"></i> Ultra-Fast (Cached)</div>
+      <!-- TAB 1: Dashboard & Analytics -->
+      <section id="tabDashboard" class="cms-tab-content active">
+        <div class="widget-grid">
+          <div class="widget-card">
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Permanently Stored</div>
+              <div class="widget-val" id="dashTotalVideos">0</div>
+            </div>
+            <i class="fa fa-database"></i>
           </div>
-          <i class="fa fa-tachometer-alt fa-2x" style="color: rgba(16, 185, 129, 0.3);"></i>
-        </div>
-
-        <div class="stat-card">
-          <div>
-            <div style="font-size: 12px; color: var(--text-muted);">Scraper Mode</div>
-            <div class="stat-val" style="font-size: 18px; color: #fff;">Bulk Page / Site Scraper</div>
+          <div class="widget-card">
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Engine Speed</div>
+              <div class="widget-val" style="color: #10b981; font-size: 20px;"><i class="fa fa-bolt"></i> &lt; 150ms Cached</div>
+            </div>
+            <i class="fa fa-tachometer-alt"></i>
           </div>
-          <i class="fa fa-layer-group fa-2x" style="color: var(--accent-glow);"></i>
-        </div>
-
-        <div class="stat-card">
-          <div>
-            <div style="font-size: 12px; color: var(--text-muted);">Permanently Stored</div>
-            <div class="stat-val" id="statImportedCount">0</div>
+          <div class="widget-card">
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Active Categories</div>
+              <div class="widget-val" style="color: #c084fc;">20+ Built-in</div>
+            </div>
+            <i class="fa fa-th-large"></i>
           </div>
-          <i class="fa fa-database fa-2x" style="color: rgba(255, 0, 127, 0.3);"></i>
-        </div>
-      </div>
-
-      <!-- Bulk Page & Site URL Scraper Section -->
-      <div class="admin-card">
-        <div class="admin-header">
-          <h2 class="admin-title">
-            <i class="fa fa-globe"></i> Bulk Page URL Video Scraper (Any Category or Channel Page)
-          </h2>
-          <button class="btn-pill btn-arabic" onclick="autoScrapeArabic()"><i class="fa fa-magic"></i> 1-Click Auto Scrape Arabic Batch</button>
-        </div>
-
-        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 8px;">
-          ضع <strong>رابط أي صفحة أو قسم أو قناة أو تصنيف</strong> (مثال: صفحة بحث، صفحة ممثلة، صفحة قسم عربي). سيقوم المحرك الذكي بسحب جميع الفيديوهات الموجودة في الصفحة دفعة واحدة واستخراج مشغلاتها وتخزينها للموقع مباشرة.
-        </p>
-
-        <div class="supported-badges">
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> Pornhub Category/Search Pages</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> xHamster Channels & Lists</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> XVideos Tags & Search Pages</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> Eporner & SpankBang Categories</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> Any Adult Webpage Link</span>
-        </div>
-
-        <form onsubmit="handleScrapeUrl(event)" style="margin-top: 15px;">
-          <div class="url-input-group">
-            <input type="url" id="targetUrlInput" placeholder="Paste Page / Category URL (e.g. https://www.eporner.com/category/arabic/, https://xhamster.com/categories/arabic)" required>
-            <button type="submit" class="btn-scrape" id="btnScrapeUrl">
-              <i class="fa fa-layer-group"></i> Extract All Videos on Page
-            </button>
+          <div class="widget-card">
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">System Memory</div>
+              <div class="widget-val" id="dashMemory">18 MB</div>
+            </div>
+            <i class="fa fa-microchip"></i>
           </div>
-        </form>
+        </div>
 
-        <div id="scrapeAlert" style="margin-top: 18px; display: none;"></div>
+        <div class="cms-card">
+          <div class="cms-card-header">
+            <h3 class="cms-card-title"><i class="fa fa-magic"></i> Quick Automation & Auto-Ingest</h3>
+          </div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button class="btn-pill btn-arabic" onclick="autoScrapeKeyword('Arabic', 30)"><i class="fa fa-star" style="color: #ffd700;"></i> 1-Click Auto Scrape Arabic Batch (30 Videos)</button>
+            <button class="btn-pill" onclick="autoScrapeKeyword('4K', 30)"><i class="fa fa-tv"></i> 1-Click Auto Scrape 4K Ultra HD (30 Videos)</button>
+            <button class="btn-pill" onclick="autoScrapeKeyword('Milf', 30)"><i class="fa fa-heart"></i> 1-Click Auto Scrape Milf (30 Videos)</button>
+          </div>
+        </div>
+      </section>
 
-        <div class="scraped-preview" id="scrapedPreview">
-          <div class="preview-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
-              <div>
-                <h3 style="font-size: 16px; font-weight: 700; color: #fff;" id="previewHeading">Extracted Video(s)</h3>
-                <span style="font-size: 12px; color: var(--text-muted);" id="pageUrlPreview"></span>
-              </div>
-              <button class="btn-pill" style="background: var(--accent-pink); border: none;" id="btnPublishAll" onclick="publishExtractedVideos()">
-                <i class="fa fa-save"></i> Save All to Permanent Storage
-              </button>
+      <!-- TAB 2: Manage Videos (Full CMS CRUD Table) -->
+      <section id="tabVideos" class="cms-tab-content">
+        <div class="cms-card">
+          <div class="cms-card-header">
+            <h3 class="cms-card-title"><i class="fa fa-film"></i> Stored Video Library</h3>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <input type="text" id="filterSearchInput" placeholder="Search stored videos..." class="form-input" style="width: 200px; padding: 6px 12px; font-size: 12px;" oninput="applyVideoFilters()">
+              <select id="filterCategorySelect" class="form-select" style="width: 140px; padding: 6px; font-size: 12px;" onchange="applyVideoFilters()">
+                <option value="all">All Categories</option>
+                <option value="sex_arabic">Sex Arabic</option>
+                <option value="trending">Trending</option>
+                <option value="4k">4K UHD</option>
+                <option value="milf">MILF</option>
+                <option value="amateur">Amateur</option>
+              </select>
+              <button class="btn-action btn-danger" onclick="deleteSelectedVideos()"><i class="fa fa-trash"></i> Delete Selected</button>
+            </div>
+          </div>
+
+          <div class="cms-table-wrap">
+            <table class="cms-table">
+              <thead>
+                <tr>
+                  <th style="width: 30px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)"></th>
+                  <th style="width: 70px;">Thumb</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Duration</th>
+                  <th>Views</th>
+                  <th>Trending</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="cmsVideosTableBody">
+                <tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--text-muted);">Loading stored videos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: Add Single Video Manually -->
+      <section id="tabAddVideo" class="cms-tab-content">
+        <div class="cms-card" style="max-width: 800px;">
+          <div class="cms-card-header">
+            <h3 class="cms-card-title"><i class="fa fa-plus-circle"></i> Add Single Video Manually</h3>
+          </div>
+
+          <form onsubmit="handleManualAddSubmit(event)">
+            <div class="form-group">
+              <label class="form-label">Video Title *</label>
+              <input type="text" id="addVideoTitle" class="form-input" placeholder="e.g. Gorgeous Arabic Babe Live Stream HD" required>
             </div>
 
-            <div id="extractedGrid" class="videos-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;"></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Embed URL or Video Stream URL *</label>
+                <input type="url" id="addVideoEmbed" class="form-input" placeholder="https://www.eporner.com/embed/... or iframe src" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Thumbnail Image URL</label>
+                <input type="url" id="addVideoThumb" class="form-input" placeholder="https://.../thumb.jpg">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select id="addVideoCategory" class="form-select">
+                  <option value="trending">Trending (شائع)</option>
+                  <option value="sex_arabic">Sex Arabic (عربي)</option>
+                  <option value="4k">4K Ultra HD</option>
+                  <option value="amateur">Amateur</option>
+                  <option value="milf">MILF</option>
+                  <option value="lesbian">Lesbian</option>
+                  <option value="teen">18+ Teen</option>
+                  <option value="anal">Anal</option>
+                  <option value="blowjob">Blowjob</option>
+                  <option value="hardcore">Hardcore</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Duration</label>
+                <input type="text" id="addVideoDuration" class="form-input" placeholder="12:30">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Views Count</label>
+                <input type="text" id="addVideoViews" class="form-input" placeholder="25,400">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tags (comma separated)</label>
+              <input type="text" id="addVideoTags" class="form-input" placeholder="arabic, lebanese, hot, hd, niksex">
+            </div>
+
+            <div class="form-group">
+              <label style="display: flex; align-items: center; gap: 8px; color: #fff; font-size: 13px; cursor: pointer;">
+                <input type="checkbox" id="addVideoTrending" checked> Feature in Trending Feed
+              </label>
+            </div>
+
+            <button type="submit" class="btn-action btn-primary" style="padding: 12px 24px;">
+              <i class="fa fa-save"></i> Publish Video to CMS
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- TAB 4: Bulk Auto-Scraper -->
+      <section id="tabScraper" class="cms-tab-content">
+        <div class="cms-card">
+          <div class="cms-card-header">
+            <h3 class="cms-card-title"><i class="fa fa-globe"></i> Universal Page & Site Video Scraper</h3>
+          </div>
+          <p style="color: var(--text-muted); font-size: 13px;">Extract all videos from any Category, Model, Channel, or Search Page link.</p>
+          
+          <form onsubmit="handleBulkScrapeUrl(event)" style="margin-top: 15px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <input type="url" id="targetScrapeUrl" class="form-input" style="flex: 1; min-width: 300px;" placeholder="Paste Category / Channel Page URL (e.g. https://www.eporner.com/category/arabic/)" required>
+              <button type="submit" class="btn-action btn-primary" id="btnScrapePageSubmit"><i class="fa fa-layer-group"></i> Extract All Videos</button>
+            </div>
+          </form>
+
+          <div id="scrapeResultBox" style="margin-top: 20px; display: none;">
+            <div class="cms-card-header">
+              <h4 id="scrapeCountHeading" style="color: #fff; font-size: 15px;">Extracted Videos</h4>
+              <button class="btn-action btn-primary" id="btnSaveScrapedBatch" onclick="saveScrapedBatch()"><i class="fa fa-save"></i> Save All to Permanent CMS Storage</button>
+            </div>
+            <div id="scrapedVideosPreviewGrid" class="videos-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;"></div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Permanently Stored Videos Management Table -->
-      <div class="admin-card">
-        <div class="admin-header">
-          <h2 class="admin-title">
-            <i class="fa fa-database" style="color: var(--accent-purple);"></i> Permanently Stored Videos Manager
-          </h2>
-          <button class="btn-pill" onclick="loadStoredVideos()"><i class="fa fa-sync"></i> Refresh List</button>
+      <!-- TAB 5: Site Settings & SEO Config -->
+      <section id="tabSettings" class="cms-tab-content">
+        <div class="cms-card" style="max-width: 800px;">
+          <div class="cms-card-header">
+            <h3 class="cms-card-title"><i class="fa fa-cog"></i> Global Platform & SEO Settings</h3>
+          </div>
+
+          <form onsubmit="handleSettingsSave(event)">
+            <div class="form-group">
+              <label class="form-label">Platform Name</label>
+              <input type="text" id="settingSiteName" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Browser Title Tag</label>
+              <input type="text" id="settingSiteTitle" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Meta Description (SEO)</label>
+              <textarea id="settingMetaDesc" class="form-textarea" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Meta Keywords</label>
+              <input type="text" id="settingMetaKeywords" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Footer Copyright Text</label>
+              <input type="text" id="settingCopyright" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+              <label style="display: flex; align-items: center; gap: 8px; color: #fff; font-size: 13px; cursor: pointer;">
+                <input type="checkbox" id="settingAntiRedirect" checked> Enable Anti-Redirect & Anti-Popup Security Shield
+              </label>
+            </div>
+
+            <button type="submit" class="btn-action btn-primary" style="padding: 12px 24px;">
+              <i class="fa fa-save"></i> Save Site Configuration
+            </button>
+          </form>
         </div>
+      </section>
 
-        <p style="color: var(--text-muted); font-size: 13px;">
-          All videos listed here are permanently saved in <code>data/custom_videos.json</code> and prioritized in Trending.
-        </p>
+      <!-- TAB 6: Backup & Database Management -->
+      <section id="tabBackup" class="cms-tab-content">
+        <div class="cms-card" style="max-width: 800px;">
+          <div class="cms-card-header">
+            <h3 class="cms-card-title"><i class="fa fa-database"></i> Database Backup & Disaster Recovery</h3>
+          </div>
 
-        <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Preview</th>
-                <th>Title</th>
-                <th>Source</th>
-                <th>Duration</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="storedTableBody">
-              <tr>
-                <td colspan="5" style="text-align: center; color: var(--text-muted);">Loading stored videos...</td>
-              </tr>
-            </tbody>
-          </table>
+          <div style="margin-bottom: 25px;">
+            <h4 style="color: #fff; font-size: 14px; margin-bottom: 6px;">1. Export Database Backup (JSON)</h4>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Download a complete offline copy of all stored videos and configurations.</p>
+            <button class="btn-action btn-primary" onclick="exportDatabase()"><i class="fa fa-download"></i> Download Complete JSON Backup</button>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-bottom: 25px;">
+            <h4 style="color: #fff; font-size: 14px; margin-bottom: 6px;">2. Restore / Import Database (JSON)</h4>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Upload a previously exported backup file to restore or merge your library.</p>
+            <input type="file" id="importDatabaseFile" accept=".json" class="form-input" style="margin-bottom: 12px;">
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-action" onclick="importDatabase('merge')"><i class="fa fa-layer-group"></i> Merge into Existing</button>
+              <button class="btn-action btn-danger" onclick="importDatabase('replace')"><i class="fa fa-sync"></i> Replace Everything</button>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <h4 style="color: #ef4444; font-size: 14px; margin-bottom: 6px;">3. Danger Zone: Reset Stored Database</h4>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Permanently delete all custom stored videos from CMS.</p>
+            <button class="btn-action btn-danger" onclick="resetAllVideos()"><i class="fa fa-trash-alt"></i> Clear All Stored Videos</button>
+          </div>
         </div>
-      </div>
+      </section>
 
-    </div>
+    </main>
   </div>
 
   <!-- Edit Video Modal -->
-  <div class="modal-overlay" id="editVideoModal" onclick="closeEditModal(event)">
-    <div class="modal-card" style="max-width: 500px;" onclick="event.stopPropagation()">
+  <div class="modal-overlay" id="editModal" onclick="closeEditModal(event)">
+    <div class="modal-card" style="max-width: 600px;" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h3 class="modal-title"><i class="fa fa-edit"></i> Edit Stored Video</h3>
         <button class="btn-close-modal" onclick="closeEditModal()">×</button>
       </div>
       <div class="modal-body">
-        <form onsubmit="handleEditSubmit(event)">
-          <input type="hidden" id="editVideoId">
-          <div style="margin-bottom: 14px;">
-            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Video Title</label>
-            <input type="text" id="editVideoTitle" class="form-control" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;" required>
+        <form onsubmit="handleEditFormSubmit(event)">
+          <input type="hidden" id="editId">
+          <div class="form-group">
+            <label class="form-label">Video Title</label>
+            <input type="text" id="editTitle" class="form-input" required>
           </div>
-          <div style="margin-bottom: 14px;">
-            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Thumbnail Image URL</label>
-            <input type="url" id="editVideoThumb" class="form-control" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;" required>
+          <div class="form-group">
+            <label class="form-label">Embed URL</label>
+            <input type="url" id="editEmbed" class="form-input" required>
           </div>
-          <div style="margin-bottom: 20px;">
-            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Category</label>
-            <input type="text" id="editVideoCategory" class="form-control" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;" placeholder="trending, sex_arabic, 4k...">
+          <div class="form-group">
+            <label class="form-label">Thumbnail URL</label>
+            <input type="url" id="editThumb" class="form-input" required>
           </div>
-          <button type="submit" class="btn-pill" style="width: 100%; justify-content: center; background: var(--accent-pink); border: none; padding: 12px;">
-            <i class="fa fa-save"></i> Save Changes
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <input type="text" id="editCategory" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Duration</label>
+              <input type="text" id="editDuration" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Views</label>
+              <input type="text" id="editViews" class="form-input">
+            </div>
+          </div>
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 8px; color: #fff; font-size: 13px; cursor: pointer;">
+              <input type="checkbox" id="editTrending"> Is Trending
+            </label>
+          </div>
+          <button type="submit" class="btn-action btn-primary" style="width: 100%; padding: 12px; justify-content: center;">
+            <i class="fa fa-save"></i> Save Changes to CMS
           </button>
         </form>
       </div>
@@ -413,22 +682,22 @@
   </div>
 
   <script>
-    let extractedVideosCache = [];
-    let storedVideosCache = [];
-    const ADMIN_KEY_STORAGE = 'niksex_admin_token';
+    let storedVideos = [];
+    let extractedScrapeBatch = [];
+    const ADMIN_STORAGE_KEY = 'niksex_admin_token';
 
     document.addEventListener('DOMContentLoaded', () => {
-      checkAuthSession();
+      checkAuth();
     });
 
     function getAdminToken() {
-      return sessionStorage.getItem(ADMIN_KEY_STORAGE) || localStorage.getItem(ADMIN_KEY_STORAGE);
+      return sessionStorage.getItem(ADMIN_STORAGE_KEY) || localStorage.getItem(ADMIN_STORAGE_KEY);
     }
 
-    function checkAuthSession() {
+    function checkAuth() {
       const token = getAdminToken();
       if (token === '202620272028') {
-        showDashboard();
+        showCMS();
       } else {
         showLogin();
       }
@@ -440,10 +709,12 @@
       document.getElementById('adminPasswordInput').focus();
     }
 
-    function showDashboard() {
+    function showCMS() {
       document.getElementById('adminLoginOverlay').style.display = 'none';
-      document.getElementById('adminPanelContent').style.display = 'block';
-      loadStoredVideos();
+      document.getElementById('adminPanelContent').style.display = 'flex';
+      loadStats();
+      loadVideosTable();
+      loadSettings();
     }
 
     async function handleLoginSubmit(e) {
@@ -463,106 +734,265 @@
           body: JSON.stringify({ password: pwd })
         });
         const data = await res.json();
-
-        btn.innerHTML = '<i class="fa fa-lock-open"></i> Unlock Dashboard';
+        btn.innerHTML = '<i class="fa fa-lock-open"></i> Unlock CMS Engine';
         btn.disabled = false;
 
-        if (data.success && data.token) {
-          sessionStorage.setItem(ADMIN_KEY_STORAGE, data.token);
-          localStorage.setItem(ADMIN_KEY_STORAGE, data.token);
-          showDashboard();
+        if (data.success) {
+          sessionStorage.setItem(ADMIN_STORAGE_KEY, data.token);
+          localStorage.setItem(ADMIN_STORAGE_KEY, data.token);
+          showCMS();
         } else {
           errBox.style.display = 'block';
-          errBox.innerHTML = '<i class="fa fa-exclamation-circle"></i> ' + (data.message || 'Incorrect password!');
         }
       } catch (err) {
-        btn.innerHTML = '<i class="fa fa-lock-open"></i> Unlock Dashboard';
+        btn.innerHTML = '<i class="fa fa-lock-open"></i> Unlock CMS Engine';
         btn.disabled = false;
         errBox.style.display = 'block';
-        errBox.innerText = 'Connection error: ' + err.message;
+        errBox.innerText = 'Error: ' + err.message;
       }
     }
 
     function handleAdminLogout() {
-      sessionStorage.removeItem(ADMIN_KEY_STORAGE);
-      localStorage.removeItem(ADMIN_KEY_STORAGE);
-      document.getElementById('adminPasswordInput').value = '';
-      showLogin();
+      sessionStorage.removeItem(ADMIN_STORAGE_KEY);
+      localStorage.removeItem(ADMIN_STORAGE_KEY);
+      location.reload();
     }
 
-    async function loadStoredVideos() {
-      const tbody = document.getElementById('storedTableBody');
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.cms-tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.cms-nav-item').forEach(item => item.classList.remove('active'));
+
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+      if (el) el.classList.add('active');
+
+      const titleMap = {
+        'tabDashboard': '<i class="fa fa-tachometer-alt" style="color: var(--accent-pink);"></i> CMS Overview & Analytics',
+        'tabVideos': '<i class="fa fa-film" style="color: var(--accent-pink);"></i> Manage Stored Videos',
+        'tabAddVideo': '<i class="fa fa-plus-circle" style="color: var(--accent-pink);"></i> Add Single Video Manually',
+        'tabScraper': '<i class="fa fa-globe" style="color: var(--accent-pink);"></i> Universal Bulk Auto-Scraper',
+        'tabSettings': '<i class="fa fa-cog" style="color: var(--accent-pink);"></i> Site & SEO Configuration',
+        'tabBackup': '<i class="fa fa-database" style="color: var(--accent-pink);"></i> Database Backup & Restore'
+      };
+      document.getElementById('cmsHeadingTitle').innerHTML = titleMap[tabId] || 'CMS Management';
+    }
+
+    // Load Stats & Analytics
+    async function loadStats() {
       try {
-        const res = await fetch('/api/admin/imported-videos', {
+        const res = await fetch('/api/admin/stats', { headers: { 'x-admin-key': getAdminToken() } });
+        const data = await res.json();
+        if (data.success && data.stats) {
+          document.getElementById('dashTotalVideos').innerText = data.stats.total_videos;
+          document.getElementById('sidebarVideoCount').innerText = data.stats.total_videos;
+          document.getElementById('dashMemory').innerText = data.stats.memory_mb + ' MB';
+        }
+      } catch (e) {}
+    }
+
+    // Load Videos Table
+    async function loadVideosTable() {
+      const tbody = document.getElementById('cmsVideosTableBody');
+      try {
+        const res = await fetch('/api/admin/imported-videos', { headers: { 'x-admin-key': getAdminToken() } });
+        const data = await res.json();
+        if (data.success && data.videos) {
+          storedVideos = data.videos;
+          renderVideosTable(storedVideos);
+        }
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="8" style="color: #ef4444; text-align: center;">Failed to load videos.</td></tr>';
+      }
+    }
+
+    function renderVideosTable(videos) {
+      const tbody = document.getElementById('cmsVideosTableBody');
+      if (videos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--text-muted);">No videos stored yet.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      videos.forEach(v => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="checkbox" class="video-select-cb" value="${v.id}"></td>
+          <td><img src="${v.thumbnail || '/images/logo.png'}" style="width: 60px; height: 35px; object-fit: cover; border-radius: 4px;" onerror="this.src='/images/logo.png'"></td>
+          <td><strong style="color: #fff; font-size: 13px;" title="${v.title}">${v.title.length > 45 ? v.title.substring(0, 45) + '...' : v.title}</strong></td>
+          <td><span class="supported-badge">${v.category || 'trending'}</span></td>
+          <td>${v.duration || '10:00'}</td>
+          <td>${v.views || '15K'}</td>
+          <td>
+            <button class="btn-action ${v.is_trending ? 'btn-primary' : ''}" style="padding: 2px 8px; font-size: 11px;" onclick="toggleTrending('${v.id}')">
+              ${v.is_trending ? '<i class="fa fa-fire"></i> Yes' : 'No'}
+            </button>
+          </td>
+          <td style="text-align: right; white-space: nowrap;">
+            <button class="btn-action" style="padding: 4px 8px;" onclick="pinToTop('${v.id}')" title="Pin to #1 Spot"><i class="fa fa-arrow-up"></i></button>
+            <button class="btn-action" style="padding: 4px 8px;" onclick="openEditModal('${v.id}')" title="Edit Video"><i class="fa fa-edit"></i></button>
+            <button class="btn-action btn-danger" style="padding: 4px 8px;" onclick="deleteSingleVideo('${v.id}')" title="Delete"><i class="fa fa-trash"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function applyVideoFilters() {
+      const q = document.getElementById('filterSearchInput').value.trim().toLowerCase();
+      const cat = document.getElementById('filterCategorySelect').value;
+
+      let filtered = storedVideos.filter(v => {
+        const matchQ = !q || (v.title && v.title.toLowerCase().includes(q));
+        const matchCat = cat === 'all' || (v.category && v.category.toLowerCase().includes(cat));
+        return matchQ && matchCat;
+      });
+      renderVideosTable(filtered);
+    }
+
+    function toggleSelectAll(masterCb) {
+      document.querySelectorAll('.video-select-cb').forEach(cb => cb.checked = masterCb.checked);
+    }
+
+    async function deleteSelectedVideos() {
+      const selected = Array.from(document.querySelectorAll('.video-select-cb:checked')).map(cb => cb.value);
+      if (selected.length === 0) return alert('Please select at least one video to delete.');
+      if (!confirm(`Are you sure you want to delete ${selected.length} selected video(s)?`)) return;
+
+      try {
+        const res = await fetch('/api/admin/bulk-delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminToken() },
+          body: JSON.stringify({ ids: selected })
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadStats();
+          loadVideosTable();
+          alert(data.message);
+        }
+      } catch (e) {
+        alert('Bulk delete failed: ' + e.message);
+      }
+    }
+
+    async function deleteSingleVideo(id) {
+      if (!confirm('Are you sure you want to delete this video?')) return;
+      try {
+        const res = await fetch(`/api/admin/delete-video/${id}`, {
+          method: 'DELETE',
           headers: { 'x-admin-key': getAdminToken() }
         });
         const data = await res.json();
-
-        if (data.success && data.videos) {
-          storedVideosCache = data.videos;
-          document.getElementById('statImportedCount').innerText = data.videos.length;
-          if (data.videos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 25px;">No custom videos stored yet. Scrape any page link above to add!</td></tr>';
-            return;
-          }
-
-          tbody.innerHTML = '';
-          data.videos.forEach(v => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td><img src="${v.thumbnail || '/images/logo.png'}" style="width: 60px; height: 35px; object-fit: cover; border-radius: 4px;" onerror="this.src='/images/logo.png'"></td>
-              <td><strong>${v.title}</strong></td>
-              <td><span class="supported-badge">${v.source || 'Scraped'}</span></td>
-              <td>${v.duration || '10:00'}</td>
-              <td>
-                <button class="btn-pill" style="padding: 4px 8px; font-size: 11px; margin-right: 6px;" onclick="openEditModal('${v.id}')"><i class="fa fa-edit"></i> Edit</button>
-                <button class="btn-delete" onclick="deleteStoredVideo('${v.id}')"><i class="fa fa-trash"></i> Delete</button>
-              </td>
-            `;
-            tbody.appendChild(tr);
-          });
+        if (data.success) {
+          loadStats();
+          loadVideosTable();
         }
       } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="5" style="color: #ef4444; text-align: center;">Failed to load stored videos list.</td></tr>';
+        alert('Delete failed: ' + e.message);
       }
     }
 
+    async function pinToTop(id) {
+      try {
+        const res = await fetch(`/api/admin/pin-top/${id}`, {
+          method: 'POST',
+          headers: { 'x-admin-key': getAdminToken() }
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadVideosTable();
+          alert('⭐ Video pinned to top of homepage feed!');
+        }
+      } catch (e) {}
+    }
+
+    async function toggleTrending(id) {
+      try {
+        await fetch(`/api/admin/toggle-trending/${id}`, {
+          method: 'POST',
+          headers: { 'x-admin-key': getAdminToken() }
+        });
+        loadVideosTable();
+      } catch (e) {}
+    }
+
+    // Manual Video Add
+    async function handleManualAddSubmit(e) {
+      e.preventDefault();
+      const payload = {
+        title: document.getElementById('addVideoTitle').value.trim(),
+        embed_url: document.getElementById('addVideoEmbed').value.trim(),
+        thumbnail: document.getElementById('addVideoThumb').value.trim(),
+        category: document.getElementById('addVideoCategory').value,
+        duration: document.getElementById('addVideoDuration').value.trim() || '12:00',
+        views: document.getElementById('addVideoViews').value.trim() || '25,000',
+        tags: document.getElementById('addVideoTags').value.trim(),
+        is_trending: document.getElementById('addVideoTrending').checked
+      };
+
+      try {
+        const res = await fetch('/api/admin/add-video', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminToken() },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('🎉 Video successfully published to CMS!');
+          e.target.reset();
+          loadStats();
+          loadVideosTable();
+          switchTab('tabVideos');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    // Edit Video Modal
     function openEditModal(id) {
-      const video = storedVideosCache.find(v => v.id === id);
-      if (!video) return;
-      document.getElementById('editVideoId').value = video.id;
-      document.getElementById('editVideoTitle').value = video.title || '';
-      document.getElementById('editVideoThumb').value = video.thumbnail || '';
-      document.getElementById('editVideoCategory').value = video.category || 'trending';
-      document.getElementById('editVideoModal').style.display = 'flex';
+      const v = storedVideos.find(item => item.id === id);
+      if (!v) return;
+      document.getElementById('editId').value = v.id;
+      document.getElementById('editTitle').value = v.title || '';
+      document.getElementById('editEmbed').value = v.embed_url || v.video_url || '';
+      document.getElementById('editThumb').value = v.thumbnail || '';
+      document.getElementById('editCategory').value = v.category || 'trending';
+      document.getElementById('editDuration').value = v.duration || '10:00';
+      document.getElementById('editViews').value = v.views || '15K';
+      document.getElementById('editTrending').checked = Boolean(v.is_trending);
+      document.getElementById('editModal').style.display = 'flex';
     }
 
     function closeEditModal(e) {
-      if (!e || e.target.id === 'editVideoModal' || e.target.closest('.btn-close-modal')) {
-        document.getElementById('editVideoModal').style.display = 'none';
+      if (!e || e.target.id === 'editModal' || e.target.closest('.btn-close-modal')) {
+        document.getElementById('editModal').style.display = 'none';
       }
     }
 
-    async function handleEditSubmit(e) {
+    async function handleEditFormSubmit(e) {
       e.preventDefault();
-      const id = document.getElementById('editVideoId').value;
-      const title = document.getElementById('editVideoTitle').value.trim();
-      const thumbnail = document.getElementById('editVideoThumb').value.trim();
-      const category = document.getElementById('editVideoCategory').value.trim();
+      const id = document.getElementById('editId').value;
+      const payload = {
+        title: document.getElementById('editTitle').value.trim(),
+        embed_url: document.getElementById('editEmbed').value.trim(),
+        thumbnail: document.getElementById('editThumb').value.trim(),
+        category: document.getElementById('editCategory').value.trim(),
+        duration: document.getElementById('editDuration').value.trim(),
+        views: document.getElementById('editViews').value.trim(),
+        is_trending: document.getElementById('editTrending').checked
+      };
 
       try {
         const res = await fetch(`/api/admin/edit-video/${id}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-key': getAdminToken()
-          },
-          body: JSON.stringify({ title, thumbnail, category })
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminToken() },
+          body: JSON.stringify(payload)
         });
         const data = await res.json();
         if (data.success) {
           closeEditModal();
-          loadStoredVideos();
+          loadVideosTable();
           alert('Video metadata updated!');
         }
       } catch (err) {
@@ -570,133 +1000,203 @@
       }
     }
 
-    async function deleteStoredVideo(id) {
-      if (!confirm('Are you sure you want to delete this video from storage?')) return;
+    // Bulk Scraper Functions
+    async function autoScrapeKeyword(kw, count) {
+      if (!confirm(`Auto scrape & import ${count} fresh videos for "${kw}"?`)) return;
       try {
-        const res = await fetch(`/api/admin/delete-video/${id}`, { 
-          method: 'DELETE',
-          headers: { 'x-admin-key': getAdminToken() }
+        const res = await fetch('/api/admin/batch-auto-scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminToken() },
+          body: JSON.stringify({ keyword: kw, count: count })
         });
         const data = await res.json();
         if (data.success) {
-          loadStoredVideos();
+          loadStats();
+          loadVideosTable();
+          alert(`🎉 ${data.message}`);
         }
       } catch (e) {
-        alert('Delete failed: ' + e.message);
+        alert('Auto Scrape failed: ' + e.message);
       }
     }
 
-    function autoScrapeArabic() {
-      document.getElementById('targetUrlInput').value = 'https://www.eporner.com/category/arabic/';
-      document.getElementById('btnScrapeUrl').click();
-    }
-
-    async function handleScrapeUrl(e) {
+    async function handleBulkScrapeUrl(e) {
       e.preventDefault();
-      const url = document.getElementById('targetUrlInput').value.trim();
-      const btn = document.getElementById('btnScrapeUrl');
-      const alertBox = document.getElementById('scrapeAlert');
-      const previewBox = document.getElementById('scrapedPreview');
-      const grid = document.getElementById('extractedGrid');
-
-      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Extracting all videos from page...';
+      const url = document.getElementById('targetScrapeUrl').value.trim();
+      const btn = document.getElementById('btnScrapePageSubmit');
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Extracting videos...';
       btn.disabled = true;
-      alertBox.style.display = 'none';
-      previewBox.style.display = 'none';
-      grid.innerHTML = '';
 
       try {
         const res = await fetch('/api/admin/scrape-url', {
           method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'x-admin-key': getAdminToken()
-          },
-          body: JSON.stringify({ url: url })
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminToken() },
+          body: JSON.stringify({ url })
         });
         const data = await res.json();
-
-        btn.innerHTML = '<i class="fa fa-layer-group"></i> Extract All Videos on Page';
+        btn.innerHTML = '<i class="fa fa-layer-group"></i> Extract All Videos';
         btn.disabled = false;
 
-        if (data.success) {
-          let vids = [];
-          if (data.videos && Array.isArray(data.videos)) {
-            vids = data.videos;
-          } else if (data.video) {
-            vids = [data.video];
-          }
-
-          extractedVideosCache = vids;
-          renderExtractedVideos(vids);
-          previewBox.style.display = 'block';
-          document.getElementById('previewHeading').innerText = `Extracted ${vids.length} Video(s) from Page`;
-          document.getElementById('pageUrlPreview').innerText = `Source: ${url}`;
-        } else {
-          alertBox.style.display = 'block';
-          alertBox.className = 'btn-pill';
-          alertBox.style.background = 'rgba(239, 68, 68, 0.2)';
-          alertBox.style.borderColor = '#ef4444';
-          alertBox.innerHTML = `<i class="fa fa-exclamation-triangle"></i> ${data.message || 'Scraping failed'}`;
+        if (data.success && data.videos && data.videos.length > 0) {
+          extractedScrapeBatch = data.videos;
+          document.getElementById('scrapeResultBox').style.display = 'block';
+          document.getElementById('scrapeCountHeading').innerText = `Extracted ${data.videos.length} Video(s) from Page`;
+          
+          const grid = document.getElementById('scrapedVideosPreviewGrid');
+          grid.innerHTML = '';
+          data.videos.forEach(v => {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.innerHTML = `
+              <div class="thumb-wrap">
+                <img src="${v.thumbnail || '/images/logo.png'}" onerror="this.src='/images/logo.png'">
+                <span class="badge-duration">${v.duration || '10:00'}</span>
+              </div>
+              <div class="card-details">
+                <h4 class="video-title" style="font-size: 12px; height: 32px;" title="${v.title}">${v.title}</h4>
+              </div>
+            `;
+            grid.appendChild(card);
+          });
         }
       } catch (err) {
-        btn.innerHTML = '<i class="fa fa-layer-group"></i> Extract All Videos on Page';
+        btn.innerHTML = '<i class="fa fa-layer-group"></i> Extract All Videos';
         btn.disabled = false;
-        alertBox.style.display = 'block';
-        alertBox.innerHTML = 'Error: ' + err.message;
+        alert('Scraping failed: ' + err.message);
       }
     }
 
-    function renderExtractedVideos(videos) {
-      const grid = document.getElementById('extractedGrid');
-      grid.innerHTML = '';
-
-      videos.forEach((v) => {
-        const div = document.createElement('div');
-        div.className = 'video-card';
-        div.innerHTML = `
-          <div class="thumb-wrap">
-            <img src="${v.thumbnail || '/images/logo.png'}" onerror="this.src='/images/logo.png'">
-            <span class="badge-hd">1080p HD</span>
-            <span class="badge-duration">${v.duration || '10:00'}</span>
-          </div>
-          <div class="card-details">
-            <h4 class="video-title" style="font-size: 12px; height: 32px;" title="${v.title}">${v.title}</h4>
-            <span style="font-size: 11px; color: #10b981;"><i class="fa fa-check-circle"></i> Ready to save (${v.source})</span>
-          </div>
-        `;
-        grid.appendChild(div);
-      });
-    }
-
-    async function publishExtractedVideos() {
-      if (extractedVideosCache.length === 0) return;
-      const btn = document.getElementById('btnPublishAll');
-      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving All to Permanent Storage...';
+    async function saveScrapedBatch() {
+      if (extractedScrapeBatch.length === 0) return;
+      const btn = document.getElementById('btnSaveScrapedBatch');
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
       btn.disabled = true;
 
       try {
         const res = await fetch('/api/admin/save-videos', {
           method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'x-admin-key': getAdminToken()
-          },
-          body: JSON.stringify({ videos: extractedVideosCache })
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminToken() },
+          body: JSON.stringify({ videos: extractedScrapeBatch })
         });
         const data = await res.json();
-
         if (data.success) {
-          btn.innerHTML = '<i class="fa fa-check"></i> Saved All Permanently!';
-          btn.style.background = '#10b981';
-          loadStoredVideos();
+          btn.innerHTML = '<i class="fa fa-check"></i> Saved All!';
+          loadStats();
+          loadVideosTable();
           alert('🎉 ' + data.message);
         }
       } catch (e) {
-        btn.innerHTML = '<i class="fa fa-save"></i> Save All to Permanent Storage';
         btn.disabled = false;
-        alert('Failed to save: ' + e.message);
+        alert('Save failed: ' + e.message);
       }
+    }
+
+    // Site Settings
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/admin/settings', { headers: { 'x-admin-key': getAdminToken() } });
+        const data = await res.json();
+        if (data.success && data.settings) {
+          const s = data.settings;
+          document.getElementById('settingSiteName').value = s.site_name || 'niksex';
+          document.getElementById('settingSiteTitle').value = s.site_title || '';
+          document.getElementById('settingMetaDesc').value = s.meta_description || '';
+          document.getElementById('settingMetaKeywords').value = s.meta_keywords || '';
+          document.getElementById('settingCopyright').value = s.footer_copyright || '';
+          document.getElementById('settingAntiRedirect').checked = s.anti_redirect_enabled !== false;
+        }
+      } catch (e) {}
+    }
+
+    async function handleSettingsSave(e) {
+      e.preventDefault();
+      const settings = {
+        site_name: document.getElementById('settingSiteName').value.trim(),
+        site_title: document.getElementById('settingSiteTitle').value.trim(),
+        meta_description: document.getElementById('settingMetaDesc').value.trim(),
+        meta_keywords: document.getElementById('settingMetaKeywords').value.trim(),
+        footer_copyright: document.getElementById('settingCopyright').value.trim(),
+        anti_redirect_enabled: document.getElementById('settingAntiRedirect').checked
+      };
+
+      try {
+        const res = await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminToken() },
+          body: JSON.stringify(settings)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('✅ Site settings saved!');
+        }
+      } catch (e) {
+        alert('Failed to save settings: ' + e.message);
+      }
+    }
+
+    // Database Backup & Restore
+    function exportDatabase() {
+      window.location.href = `/api/admin/export-database?key=${getAdminToken()}`;
+    }
+
+    async function importDatabase(mode) {
+      const fileInput = document.getElementById('importDatabaseFile');
+      if (!fileInput.files || fileInput.files.length === 0) return alert('Please select a JSON backup file first.');
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          const videos = parsed.videos || (Array.isArray(parsed) ? parsed : []);
+          
+          const res = await fetch('/api/admin/import-database', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminToken() },
+            body: JSON.stringify({ videos, mode })
+          });
+          const data = await res.json();
+          if (data.success) {
+            loadStats();
+            loadVideosTable();
+            alert('🎉 ' + data.message);
+          }
+        } catch (err) {
+          alert('Invalid JSON file format: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    async function resetAllVideos() {
+      if (!confirm('⚠️ DANGER: Are you absolutely sure you want to delete ALL stored videos? This cannot be undone!')) return;
+      try {
+        const res = await fetch('/api/admin/clear-all-videos', {
+          method: 'POST',
+          headers: { 'x-admin-key': getAdminToken() }
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadStats();
+          loadVideosTable();
+          alert(data.message);
+        }
+      } catch (e) {
+        alert('Reset failed: ' + e.message);
+      }
+    }
+
+    async function flushCache() {
+      try {
+        const res = await fetch('/api/admin/clear-cache', {
+          method: 'POST',
+          headers: { 'x-admin-key': getAdminToken() }
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('⚡ ' + data.message);
+        }
+      } catch (e) {}
     }
   </script>
 </body>
