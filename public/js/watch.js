@@ -202,54 +202,140 @@ function injectVideoSchema(v) {
   document.head.appendChild(script);
 }
 
-// Load Recommended Sidebar Videos
+// Load Recommended Sidebar Videos & Similar Videos Grid
 async function loadRelatedVideos() {
-  const list = document.getElementById('relatedList');
-  list.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Loading recommendations...</div>';
+  const sidebarList = document.getElementById('relatedList');
+  const similarGrid = document.getElementById('similarVideosGrid');
+  
+  if (sidebarList) sidebarList.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Loading recommendations...</div>';
+  if (similarGrid) {
+    similarGrid.innerHTML = `
+      <div class="video-card" style="opacity: 0.5;"><div class="thumb-wrap" style="background: #1e1e2d;"></div></div>
+      <div class="video-card" style="opacity: 0.5;"><div class="thumb-wrap" style="background: #1e1e2d;"></div></div>
+      <div class="video-card" style="opacity: 0.5;"><div class="thumb-wrap" style="background: #1e1e2d;"></div></div>
+      <div class="video-card" style="opacity: 0.5;"><div class="thumb-wrap" style="background: #1e1e2d;"></div></div>
+    `;
+  }
+
+  // Determine most relevant query based on current video tags or title
+  let relevantQuery = 'trending';
+  if (currentVideoObj && currentVideoObj.tags && currentVideoObj.tags.length > 0) {
+    const validTags = currentVideoObj.tags.filter(t => t && t.trim() && !['niksex', 'hd', 'popular'].includes(t.toLowerCase().trim()));
+    if (validTags.length > 0) {
+      relevantQuery = validTags[0].trim();
+    }
+  }
+
+  if (relevantQuery === 'trending' && currentVideoObj && currentVideoObj.title) {
+    const words = currentVideoObj.title.split(' ').filter(w => w.length > 3 && !['this', 'make', 'with', 'video'].includes(w.toLowerCase()));
+    if (words.length > 0) relevantQuery = words[0];
+  }
+
+  const tagLabel = document.getElementById('similarTagLabel');
+  if (tagLabel) tagLabel.innerHTML = `Based on: <strong style="color: var(--accent-pink);">#${relevantQuery}</strong>`;
 
   try {
-    const res = await fetch('/api/videos?category=trending&page=1');
+    const res = await fetch(`/api/search?q=${encodeURIComponent(relevantQuery)}&page=1`);
     const data = await res.json();
+    let videos = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
 
-    if (data.success && data.videos && data.videos.length > 0) {
-      list.innerHTML = '';
-      data.videos.slice(0, 12).forEach(v => {
-        const item = document.createElement('div');
-        item.className = 'related-item';
-        item.onclick = () => {
-          const params = new URLSearchParams({
-            id: v.id || '',
-            title: v.title || 'niksex Video Stream',
-            embed: v.embed_url || v.video_url || '',
-            thumb: v.thumbnail || '',
-            duration: v.duration || '10:00',
-            views: v.views || '15K',
-            rating: v.rating || '98%',
-            tags: (v.tags || ['niksex', 'HD']).join(',')
-          });
-          window.location.href = `/watch.html?${params.toString()}`;
-        };
+    // If search didn't return enough videos, fallback to trending
+    if (videos.length < 8) {
+      const fallbackRes = await fetch('/api/videos?category=trending&page=1');
+      const fallbackData = await fallbackRes.json();
+      if (fallbackData.success && fallbackData.videos) {
+        videos = videos.concat(fallbackData.videos);
+      }
+    }
 
-        item.innerHTML = `
-          <div class="related-thumb">
-            <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" onerror="this.src='/images/logo.png'">
-            <span class="badge-duration" style="bottom: 4px; right: 4px; font-size: 9px;">${v.duration || '10:00'}</span>
-          </div>
-          <div class="related-info">
-            <h4 class="related-title" title="${v.title}">${v.title}</h4>
-            <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
-              <span><i class="fa fa-eye"></i> ${v.views || '12K'}</span>
-              <span style="color: #10b981;"><i class="fa fa-thumbs-up"></i> ${v.rating || '97%'}</span>
+    // Filter out the currently playing video
+    const filteredVideos = videos.filter(v => v.id !== (currentVideoObj ? currentVideoObj.id : ''));
+
+    // 1. Populate Similar Videos Grid Below the Player
+    if (similarGrid) {
+      if (filteredVideos.length === 0) {
+        similarGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">No similar videos found.</div>';
+      } else {
+        similarGrid.innerHTML = '';
+        filteredVideos.slice(0, 16).forEach(v => {
+          const card = document.createElement('div');
+          card.className = 'video-card animate-fade';
+          card.onclick = () => {
+            const params = new URLSearchParams({
+              id: v.id || '',
+              title: v.title || 'niksex Video Stream',
+              embed: v.embed_url || v.video_url || '',
+              thumb: v.thumbnail || '',
+              duration: v.duration || '10:00',
+              views: v.views || '15K',
+              rating: v.rating || '98%',
+              tags: (v.tags || ['niksex', 'HD']).join(',')
+            });
+            window.location.href = `/watch.html?${params.toString()}`;
+          };
+
+          card.innerHTML = `
+            <div class="thumb-wrap">
+              <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" loading="lazy" onerror="this.src='/images/logo.png'">
+              <span class="badge-hd">1080p HD</span>
+              <span class="badge-duration">${v.duration || '10:00'}</span>
             </div>
-          </div>
-        `;
-        list.appendChild(item);
-      });
-    } else {
-      list.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">No recommended videos found.</div>';
+            <div class="card-details">
+              <h3 class="video-title" style="font-size: 12px; height: 32px;" title="${v.title}">${v.title}</h3>
+              <div class="video-meta" style="font-size: 11px;">
+                <span><i class="fa fa-eye"></i> ${v.views || '15K'}</span>
+                <span class="meta-rating"><i class="fa fa-thumbs-up"></i> ${v.rating || '98%'}</span>
+              </div>
+            </div>
+          `;
+          similarGrid.appendChild(card);
+        });
+      }
+    }
+
+    // 2. Populate Right Column Sidebar List
+    if (sidebarList) {
+      if (filteredVideos.length === 0) {
+        sidebarList.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">No recommendations.</div>';
+      } else {
+        sidebarList.innerHTML = '';
+        filteredVideos.slice(0, 10).forEach(v => {
+          const item = document.createElement('div');
+          item.className = 'related-item';
+          item.onclick = () => {
+            const params = new URLSearchParams({
+              id: v.id || '',
+              title: v.title || 'niksex Video Stream',
+              embed: v.embed_url || v.video_url || '',
+              thumb: v.thumbnail || '',
+              duration: v.duration || '10:00',
+              views: v.views || '15K',
+              rating: v.rating || '98%',
+              tags: (v.tags || ['niksex', 'HD']).join(',')
+            });
+            window.location.href = `/watch.html?${params.toString()}`;
+          };
+
+          item.innerHTML = `
+            <div class="related-thumb">
+              <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" onerror="this.src='/images/logo.png'">
+              <span class="badge-duration" style="bottom: 4px; right: 4px; font-size: 9px;">${v.duration || '10:00'}</span>
+            </div>
+            <div class="related-info">
+              <h4 class="related-title" title="${v.title}">${v.title}</h4>
+              <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                <span><i class="fa fa-eye"></i> ${v.views || '12K'}</span>
+                <span style="color: #10b981;"><i class="fa fa-thumbs-up"></i> ${v.rating || '97%'}</span>
+              </div>
+            </div>
+          `;
+          sidebarList.appendChild(item);
+        });
+      }
     }
   } catch (err) {
-    list.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Failed to load recommendations.</div>';
+    if (sidebarList) sidebarList.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Failed to load recommendations.</div>';
+    if (similarGrid) similarGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Failed to load similar videos.</div>';
   }
 }
 
