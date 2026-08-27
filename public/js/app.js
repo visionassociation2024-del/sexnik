@@ -15,10 +15,10 @@ function isAllowedAdUrl(urlStr) {
   }
 }
 
-// Smart Popunder Handler for High-Revenue Smartlink
+// Intensive Smart Popunder Handler for Maximum Monetization
 (function initSmartlinkMonetization() {
-  const STORAGE_KEY = 'nx_smartlink_fired_session';
-  let firedInSession = sessionStorage.getItem(STORAGE_KEY) === 'true';
+  let clickCount = 0;
+  const COOLDOWN_MS = 30 * 1000; // 30 seconds cooldown between pops
 
   document.addEventListener('click', function(e) {
     const link = e.target.closest('a');
@@ -26,9 +26,12 @@ function isAllowedAdUrl(urlStr) {
       return; // Allow direct click without intercepting
     }
 
-    if (!firedInSession) {
-      firedInSession = true;
-      sessionStorage.setItem(STORAGE_KEY, 'true');
+    clickCount++;
+    const lastFired = parseInt(sessionStorage.getItem('nx_smartlink_last_click_pop') || '0', 10);
+    const now = Date.now();
+
+    if ((clickCount % 2 === 1) && (now - lastFired > COOLDOWN_MS)) {
+      sessionStorage.setItem('nx_smartlink_last_click_pop', now.toString());
       try {
         const adWin = window.open(SMARTLINK_URL, '_blank');
         if (adWin) {
@@ -39,6 +42,7 @@ function isAllowedAdUrl(urlStr) {
     }
   }, { capture: true });
 })();
+
 
 
 // Global App State
@@ -540,13 +544,52 @@ function createVideoCardElement(v, isHistory = false) {
   return card;
 }
 
-// Append video cards to grid
+let totalRenderedInFeedCards = 0;
+
+function createInFeedAdCard() {
+  const adCard = document.createElement('div');
+  adCard.className = 'in-grid-ad-card animate-fade';
+  
+  if (totalRenderedInFeedCards % 2 === 0) {
+    adCard.innerHTML = `
+      <div class="ad-badge">SPONSORED / إعلان</div>
+      <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="promo-smartlink-card" style="width: 100%;">
+        <span class="promo-badge-hot"><i class="fa fa-fire"></i> LIVE 18+ STREAM</span>
+        <h4 class="promo-title">🔥 Live Sex Cam & HD Private Shows</h4>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">100% Free Live Stream • 4K Quality</p>
+        <span class="promo-btn-action"><i class="fa fa-play-circle"></i> Watch Live Now</span>
+      </a>
+    `;
+  } else {
+    adCard.innerHTML = `
+      <div class="ad-badge">ADVERTISEMENT</div>
+      <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="promo-smartlink-card" style="width: 100%; background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 0, 127, 0.2)); border-color: #ffd700;">
+        <span class="promo-badge-hot" style="background: linear-gradient(135deg, #ffd700, #ff8800); color: #000;"><i class="fa fa-bolt"></i> VIP SERVER</span>
+        <h4 class="promo-title">⚡ Ultra Fast 4K Download Server</h4>
+        <p style="font-size: 11px; color: #ffd700; margin-bottom: 8px;">Direct High Speed Unlimited</p>
+        <span class="promo-btn-action" style="background: linear-gradient(135deg, #ff007f, #9d4edd); color: #fff;"><i class="fa fa-download"></i> Direct Download</span>
+      </a>
+    `;
+  }
+  return adCard;
+}
+
+// Append video cards to grid with In-Feed Ad Insertion every 5 cards
 function appendVideoCards(videos, isInitial) {
   const grid = document.getElementById('videosGrid');
-  if (isInitial) grid.innerHTML = '';
+  if (isInitial) {
+    grid.innerHTML = '';
+    totalRenderedInFeedCards = 0;
+  }
 
-  videos.forEach(v => {
+  videos.forEach((v, index) => {
     grid.appendChild(createVideoCardElement(v, false));
+    totalRenderedInFeedCards++;
+
+    // In-Feed Ad inserted every 5 video cards!
+    if (totalRenderedInFeedCards % 5 === 0) {
+      grid.appendChild(createInFeedAdCard());
+    }
   });
 }
 
@@ -577,11 +620,20 @@ function initInfiniteScrollObserver() {
   }, { passive: true });
 }
 
-// Direct Navigation to Watch Page
+// Direct Navigation to Watch Page with Smart Under-Click Monetization
 function navigateToWatchPage(v) {
   if (currentCategory) recordInterest(currentCategory);
   if (v.tags && Array.isArray(v.tags)) {
     v.tags.forEach(t => recordInterest(t));
+  }
+
+  // Intensive click popunder
+  const lastPopTime = parseInt(sessionStorage.getItem('nx_nav_pop_time') || '0', 10);
+  if (Date.now() - lastPopTime > 45 * 1000) { // Every 45 seconds
+    sessionStorage.setItem('nx_nav_pop_time', Date.now().toString());
+    try {
+      window.open(SMARTLINK_URL, '_blank');
+    } catch(e) {}
   }
 
   const params = new URLSearchParams({
@@ -597,6 +649,7 @@ function navigateToWatchPage(v) {
 
   window.location.href = `/watch.html?${params.toString()}`;
 }
+
 
 // Handle Search input
 function handleSearch(e) {

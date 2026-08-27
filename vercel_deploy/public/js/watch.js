@@ -15,10 +15,10 @@ function isAllowedAdUrl(urlStr) {
   }
 }
 
-// Smart Popunder Handler for High-Revenue Smartlink
+// Intensive Smart Popunder Handler for Maximum Monetization
 (function initSmartlinkMonetization() {
-  const STORAGE_KEY = 'nx_smartlink_watch_session';
-  let firedInSession = sessionStorage.getItem(STORAGE_KEY) === 'true';
+  let clickCount = 0;
+  const COOLDOWN_MS = 30 * 1000; // 30 seconds cooldown
 
   document.addEventListener('click', function(e) {
     const link = e.target.closest('a');
@@ -26,9 +26,12 @@ function isAllowedAdUrl(urlStr) {
       return; // Allow direct click without intercepting
     }
 
-    if (!firedInSession) {
-      firedInSession = true;
-      sessionStorage.setItem(STORAGE_KEY, 'true');
+    clickCount++;
+    const lastFired = parseInt(sessionStorage.getItem('nx_smartlink_watch_click_pop') || '0', 10);
+    const now = Date.now();
+
+    if ((clickCount % 2 === 1) && (now - lastFired > COOLDOWN_MS)) {
+      sessionStorage.setItem('nx_smartlink_watch_click_pop', now.toString());
       try {
         const adWin = window.open(SMARTLINK_URL, '_blank');
         if (adWin) {
@@ -39,6 +42,7 @@ function isAllowedAdUrl(urlStr) {
     }
   }, { capture: true });
 })();
+
 
 
 let currentVideoObj = null;
@@ -269,16 +273,23 @@ async function loadRelatedVideos() {
     // Filter out the currently playing video
     const filteredVideos = videos.filter(v => v.id !== (currentVideoObj ? currentVideoObj.id : ''));
 
-    // 1. Populate Similar Videos Grid Below the Player
+    // 1. Populate Similar Videos Grid Below the Player with In-Feed Ad Insertion
     if (similarGrid) {
       if (filteredVideos.length === 0) {
         similarGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">No similar videos found.</div>';
       } else {
         similarGrid.innerHTML = '';
-        filteredVideos.slice(0, 16).forEach(v => {
+        filteredVideos.slice(0, 16).forEach((v, idx) => {
           const card = document.createElement('div');
           card.className = 'video-card animate-fade';
           card.onclick = () => {
+            // Intensive under-click popunder
+            const lastPop = parseInt(sessionStorage.getItem('nx_watch_pop_time') || '0', 10);
+            if (Date.now() - lastPop > 45 * 1000) {
+              sessionStorage.setItem('nx_watch_pop_time', Date.now().toString());
+              try { window.open(SMARTLINK_URL, '_blank'); } catch(e) {}
+            }
+
             const params = new URLSearchParams({
               id: v.id || '',
               title: v.title || 'niksex Video Stream',
@@ -307,20 +318,42 @@ async function loadRelatedVideos() {
             </div>
           `;
           similarGrid.appendChild(card);
+
+          // In-Feed Ad in Similar Videos every 4 videos!
+          if ((idx + 1) % 4 === 0) {
+            const adCard = document.createElement('div');
+            adCard.className = 'in-grid-ad-card animate-fade';
+            adCard.innerHTML = `
+              <div class="ad-badge">SPONSORED / إعلان</div>
+              <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="promo-smartlink-card" style="width: 100%;">
+                <span class="promo-badge-hot"><i class="fa fa-fire"></i> PRIVATE HD SHOW</span>
+                <h4 class="promo-title">🔥 Direct Live HD Video Stream</h4>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Uncensored 4K Instant Access</p>
+                <span class="promo-btn-action"><i class="fa fa-play-circle"></i> Watch Live</span>
+              </a>
+            `;
+            similarGrid.appendChild(adCard);
+          }
         });
       }
     }
 
-    // 2. Populate Right Column Sidebar List
+    // 2. Populate Right Column Sidebar List with In-Feed Ad Injection
     if (sidebarList) {
       if (filteredVideos.length === 0) {
         sidebarList.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">No recommendations.</div>';
       } else {
         sidebarList.innerHTML = '';
-        filteredVideos.slice(0, 10).forEach(v => {
+        filteredVideos.slice(0, 10).forEach((v, idx) => {
           const item = document.createElement('div');
           item.className = 'related-item';
           item.onclick = () => {
+            const lastPop = parseInt(sessionStorage.getItem('nx_watch_pop_time') || '0', 10);
+            if (Date.now() - lastPop > 45 * 1000) {
+              sessionStorage.setItem('nx_watch_pop_time', Date.now().toString());
+              try { window.open(SMARTLINK_URL, '_blank'); } catch(e) {}
+            }
+
             const params = new URLSearchParams({
               id: v.id || '',
               title: v.title || 'niksex Video Stream',
@@ -348,9 +381,24 @@ async function loadRelatedVideos() {
             </div>
           `;
           sidebarList.appendChild(item);
+
+          // In-feed Sidebar Promo every 3 items
+          if ((idx + 1) % 3 === 0) {
+            const promoDiv = document.createElement('div');
+            promoDiv.style.margin = '8px 0';
+            promoDiv.innerHTML = `
+              <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="promo-smartlink-card" style="padding: 10px; min-height: 110px;">
+                <span class="promo-badge-hot" style="font-size: 9px; padding: 2px 6px; margin-bottom: 4px;"><i class="fa fa-star"></i> RECOMMENDED</span>
+                <span style="font-size: 12px; font-weight: 700; color: #fff;">⚡ Download Full Video in 4K</span>
+                <span class="promo-btn-action" style="font-size: 10px; padding: 4px 10px; margin-top: 6px;"><i class="fa fa-download"></i> Fast Download</span>
+              </a>
+            `;
+            sidebarList.appendChild(promoDiv);
+          }
         });
       }
     }
+
   } catch (err) {
     if (sidebarList) sidebarList.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Failed to load recommendations.</div>';
     if (similarGrid) similarGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Failed to load similar videos.</div>';
