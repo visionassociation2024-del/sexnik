@@ -27,8 +27,11 @@
 let currentVideos = [];
 let currentCategory = 'trending';
 let currentSearchQuery = '';
+let currentDurationFilter = 'all';
+let currentSortFilter = 'trending';
 let isSearchMode = false;
 let isHistoryMode = false;
+let isFavoritesMode = false;
 let isForYouMode = false;
 let currentPage = 1;
 let isLoading = false;
@@ -61,6 +64,12 @@ const CATEGORIES_LIST = [
   { id: 'big_ass', title: 'Big Ass', icon: 'fa-ring', count: '24,000+' }
 ];
 
+const SEARCH_SUGGESTIONS = [
+  'arabic', 'egyptian', 'moroccan', 'lebanese', 'syrian', 'iraqi', 'tunisian',
+  '4k uhd', 'amateur couple', 'milf stepmom', 'lesbian massage', 'big ass latina',
+  'creampie hardcore', 'anal deepthroat', 'japanese uncensored', 'vr 360 virtual reality'
+];
+
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
   renderCategoriesGridModal();
@@ -68,23 +77,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const q = urlParams.get('q');
   const cat = urlParams.get('cat');
+  const hist = urlParams.get('history');
+  const fav = urlParams.get('fav');
 
   if (q) {
     document.getElementById('searchInput').value = q;
     executeSearch();
   } else if (cat) {
     resetAndLoadCategory(cat);
+  } else if (hist) {
+    loadWatchHistory();
+  } else if (fav) {
+    loadFavoritesView();
   } else {
-    // If user has a favorite category saved in preferences, prioritize it or default to trending
-    const topPref = getUserTopPreference();
-    if (topPref && topPref.category && topPref.count >= 3) {
-      resetAndLoadCategory(topPref.category);
-    } else {
-      resetAndLoadCategory('trending');
-    }
+    resetAndLoadCategory('trending');
   }
 
   initInfiniteScrollObserver();
+
+  // Close autocomplete on click outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-box')) {
+      const box = document.getElementById('searchAutocomplete');
+      if (box) box.style.display = 'none';
+    }
+  });
 });
 
 // Render Categories in Modal
@@ -134,6 +151,7 @@ function setCategory(btn, category) {
 function resetAndLoadCategory(category) {
   isSearchMode = false;
   isHistoryMode = false;
+  isFavoritesMode = false;
   isForYouMode = false;
   currentSearchQuery = '';
   currentCategory = category;
@@ -155,13 +173,14 @@ function resetAndLoadCategory(category) {
   loadVideosBatch(true);
 }
 
-// Smart Browser Recommendation Engine ("For You / مخصص لك")
+// Smart Recommendations ("For You / مخصص لك")
 function loadForYouFeed(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
   isSearchMode = false;
   isHistoryMode = false;
+  isFavoritesMode = false;
   isForYouMode = true;
   currentPage = 1;
   hasMore = true;
@@ -169,14 +188,12 @@ function loadForYouFeed(btn) {
   currentVideos = [];
 
   document.getElementById('btnClearHistory').style.display = 'none';
-  document.getElementById('categoryLabel').innerText = 'FOR YOU (مخصص لك حسب اهتماماتك)';
+  document.getElementById('categoryLabel').innerText = 'FOR YOU (مخصص لك)';
   document.getElementById('videoCountLabel').innerText = 'Personalized live stream...';
 
-  // Get user favorite search tags from browser localStorage
   const topPref = getUserTopPreference();
-  const smartQuery = topPref ? topPref.category : 'arabic';
+  currentCategory = topPref ? topPref.category : 'arabic';
 
-  currentCategory = smartQuery;
   const grid = document.getElementById('videosGrid');
   grid.innerHTML = getSkeletonHTML(8);
 
@@ -190,15 +207,70 @@ function loadForYouFeedMobile(el) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Watch History Browser Storage Engine (سجل المشاهدة المحفوظ في المتصفح)
+// Favorites View (المفضلة)
+function loadFavoritesView(btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  isFavoritesMode = true;
+  isHistoryMode = false;
+  isSearchMode = false;
+  isForYouMode = false;
+  hasMore = false;
+
+  document.getElementById('categoryLabel').innerText = 'MY FAVORITES (المفضلة)';
+  document.getElementById('btnClearHistory').style.display = 'none';
+
+  const favorites = getLocalFavorites();
+  const grid = document.getElementById('videosGrid');
+
+  if (favorites.length === 0) {
+    document.getElementById('videoCountLabel').innerText = '0 Favorites';
+    grid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+        <i class="fa fa-heart fa-3x" style="color: #ff007f; margin-bottom: 14px; opacity: 0.7;"></i>
+        <h3 style="color: #fff; margin-bottom: 6px;">No Favorite Videos Yet</h3>
+        <p style="font-size: 13px;">Click the "Favorite" button on any video watch page to save it here!</p>
+        <button class="btn-pill" style="margin-top: 15px;" onclick="resetAndLoadCategory('trending')">Explore Trending Videos</button>
+      </div>
+    `;
+    return;
+  }
+
+  document.getElementById('videoCountLabel').innerText = `${favorites.length} Saved in Favorites`;
+  grid.innerHTML = '';
+
+  favorites.forEach(v => {
+    grid.appendChild(createVideoCardElement(v, false));
+  });
+}
+
+function loadFavoritesMobile(el) {
+  document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
+  if (el) el.classList.add('active');
+  loadFavoritesView();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getLocalFavorites() {
+  try {
+    const raw = localStorage.getItem('niksex_favorites');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+// Watch History Browser Storage Engine (سجل المشاهدة)
 function loadWatchHistory(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
   isHistoryMode = true;
+  isFavoritesMode = false;
   isSearchMode = false;
   isForYouMode = false;
-  hasMore = false; // No infinite scroll for local history
+  hasMore = false;
 
   document.getElementById('categoryLabel').innerText = 'MY WATCH HISTORY (سجل المشاهدة)';
   document.getElementById('btnClearHistory').style.display = 'inline-flex';
@@ -223,16 +295,8 @@ function loadWatchHistory(btn) {
   grid.innerHTML = '';
 
   history.forEach(v => {
-    const card = createVideoCardElement(v, true);
-    grid.appendChild(card);
+    grid.appendChild(createVideoCardElement(v, true));
   });
-}
-
-function loadWatchHistoryMobile(el) {
-  document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
-  if (el) el.classList.add('active');
-  loadWatchHistory();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function getLocalWatchHistory() {
@@ -283,26 +347,104 @@ function getUserTopPreference() {
   }
 }
 
+// Filters & Sorting Handlers
+function setDurationFilter(btn, filter) {
+  document.querySelectorAll('.filter-group:first-child .filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  currentDurationFilter = filter;
+  reRenderFilteredVideos();
+}
+
+function setSortFilter(btn, sort) {
+  document.querySelectorAll('.filter-group:last-child .filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  currentSortFilter = sort;
+  reRenderFilteredVideos();
+}
+
+function reRenderFilteredVideos() {
+  if (currentVideos.length === 0) return;
+  let filtered = [...currentVideos];
+
+  // Duration Filter
+  if (currentDurationFilter !== 'all') {
+    filtered = filtered.filter(v => {
+      const minutes = parseDurationToMinutes(v.duration);
+      if (currentDurationFilter === 'short') return minutes < 10;
+      if (currentDurationFilter === 'medium') return minutes >= 10 && minutes <= 20;
+      if (currentDurationFilter === 'long') return minutes > 20;
+      return true;
+    });
+  }
+
+  // Sort Filter
+  if (currentSortFilter === 'views') {
+    filtered.sort((a, b) => parseViewsToNumber(b.views) - parseViewsToNumber(a.views));
+  } else if (currentSortFilter === 'rating') {
+    filtered.sort((a, b) => parseFloat(b.rating || '0') - parseFloat(a.rating || '0'));
+  }
+
+  const grid = document.getElementById('videosGrid');
+  grid.innerHTML = '';
+  filtered.forEach(v => grid.appendChild(createVideoCardElement(v, false)));
+  document.getElementById('videoCountLabel').innerText = `${filtered.length} Filtered HD Videos`;
+}
+
+function parseDurationToMinutes(durStr = '10:00') {
+  const parts = durStr.split(':').map(p => parseInt(p, 10) || 0);
+  if (parts.length === 2) return parts[0] + (parts[1] / 60);
+  if (parts.length === 3) return (parts[0] * 60) + parts[1] + (parts[2] / 60);
+  return 10;
+}
+
+function parseViewsToNumber(viewsStr = '15K') {
+  let clean = String(viewsStr).replace(/,/g, '').trim().toUpperCase();
+  if (clean.includes('M')) return parseFloat(clean) * 1000000;
+  if (clean.includes('K')) return parseFloat(clean) * 1000;
+  return parseFloat(clean) || 1000;
+}
+
+// Live Search Autocomplete Input Handler
+function handleSearchInput(e) {
+  const q = e.target.value.trim().toLowerCase();
+  const dropdown = document.getElementById('searchAutocomplete');
+
+  if (q.length < 2) {
+    dropdown.style.display = 'none';
+    return;
+  }
+
+  const matches = SEARCH_SUGGESTIONS.filter(s => s.includes(q)).slice(0, 6);
+  if (matches.length > 0) {
+    dropdown.innerHTML = '';
+    matches.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'autocomplete-item';
+      div.innerHTML = `<i class="fa fa-search" style="color: var(--accent-pink);"></i> <span>${m}</span>`;
+      div.onclick = () => {
+        document.getElementById('searchInput').value = m;
+        dropdown.style.display = 'none';
+        executeSearch();
+      };
+      dropdown.appendChild(div);
+    });
+    dropdown.style.display = 'block';
+  } else {
+    dropdown.style.display = 'none';
+  }
+}
+
 // Mobile bottom navigation handler
 function mobileNav(category, el) {
   document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
   if (el) el.classList.add('active');
-  
-  document.querySelectorAll('.cat-btn').forEach(b => {
-    if (b.innerText.toLowerCase().includes(category)) {
-      b.classList.add('active');
-    } else {
-      b.classList.remove('active');
-    }
-  });
-
   resetAndLoadCategory(category);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Fetch and append a batch of videos (Infinite Pagination)
 async function loadVideosBatch(isInitial = false) {
-  if (isLoading || (!hasMore && !isInitial) || isHistoryMode) return;
+  if (isLoading || (!hasMore && !isInitial) || isHistoryMode || isFavoritesMode) return;
   isLoading = true;
 
   const loader = document.getElementById('infiniteLoader');
@@ -398,7 +540,7 @@ function initInfiniteScrollObserver() {
   if (scrollObserver) scrollObserver.disconnect();
 
   scrollObserver = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isLoading && hasMore && !isHistoryMode) {
+    if (entries[0].isIntersecting && !isLoading && hasMore && !isHistoryMode && !isFavoritesMode) {
       loadVideosBatch(false);
     }
   }, { rootMargin: '400px' });
@@ -406,7 +548,7 @@ function initInfiniteScrollObserver() {
   scrollObserver.observe(sentinel);
 
   window.addEventListener('scroll', () => {
-    if (isLoading || !hasMore || isHistoryMode) return;
+    if (isLoading || !hasMore || isHistoryMode || isFavoritesMode) return;
     const scrollY = window.scrollY || window.pageYOffset;
     const totalHeight = document.documentElement.scrollHeight;
     const windowHeight = window.innerHeight;
@@ -417,33 +559,12 @@ function initInfiniteScrollObserver() {
   }, { passive: true });
 }
 
-// Direct Navigation to Watch Page and Record History & Interest
+// Direct Navigation to Watch Page
 function navigateToWatchPage(v) {
-  // Record user preference and watch history in localStorage
   if (currentCategory) recordInterest(currentCategory);
   if (v.tags && Array.isArray(v.tags)) {
     v.tags.forEach(t => recordInterest(t));
   }
-
-  // Save to Watch History
-  try {
-    let history = getLocalWatchHistory();
-    history = history.filter(h => h.id !== v.id); // Deduplicate
-    history.unshift({
-      id: v.id,
-      title: v.title,
-      thumbnail: v.thumbnail,
-      embed_url: v.embed_url || v.video_url,
-      video_url: v.embed_url || v.video_url,
-      duration: v.duration,
-      views: v.views,
-      rating: v.rating,
-      tags: v.tags,
-      watchedAt: Date.now()
-    });
-    if (history.length > 50) history.pop();
-    localStorage.setItem('niksex_watch_history', JSON.stringify(history));
-  } catch (e) {}
 
   const params = new URLSearchParams({
     id: v.id || '',
@@ -470,10 +591,14 @@ async function executeSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if (!query) return;
 
+  const dropdown = document.getElementById('searchAutocomplete');
+  if (dropdown) dropdown.style.display = 'none';
+
   recordInterest(query);
 
   isSearchMode = true;
   isHistoryMode = false;
+  isFavoritesMode = false;
   isForYouMode = false;
   currentSearchQuery = query;
   currentPage = 1;

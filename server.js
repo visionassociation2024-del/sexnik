@@ -575,6 +575,61 @@ app.delete('/api/admin/delete-video/:id', requireAdminAuth, (req, res) => {
     });
 });
 
+// 7. API: Edit Stored Video Metadata (Protected)
+app.put('/api/admin/edit-video/:id', requireAdminAuth, (req, res) => {
+    const { id } = req.params;
+    const { title, thumbnail, tags, category } = req.body;
+    const videoIndex = persistentVideos.findIndex(v => v.id === id);
+
+    if (videoIndex !== -1) {
+        if (title) persistentVideos[videoIndex].title = title.trim();
+        if (thumbnail) persistentVideos[videoIndex].thumbnail = thumbnail.trim();
+        if (category) persistentVideos[videoIndex].category = category.trim();
+        if (tags && Array.isArray(tags)) persistentVideos[videoIndex].tags = tags;
+
+        savePersistentVideos(persistentVideos);
+        cache.clear();
+
+        return res.json({
+            success: true,
+            message: 'Video metadata updated successfully.',
+            video: persistentVideos[videoIndex]
+        });
+    }
+    return res.status(404).json({ success: false, message: 'Video not found in stored database.' });
+});
+
+// 8. Dynamic XML Sitemap for SEO & Search Engine Indexing
+app.get('/sitemap.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml');
+    const baseUrl = 'https://niksex.vercel.app';
+    const categories = ['trending', 'sex_arabic', '4k', 'amateur', 'milf', 'lesbian', 'teen', 'anal', 'blowjob', 'hardcore', 'asian', 'ebony', 'latina', 'vr'];
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    
+    // Homepage & Static Pages
+    xml += `  <url><loc>${baseUrl}/</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/dmca.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/terms.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/privacy.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/2257.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/contact.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>\n`;
+
+    // Category Pages
+    categories.forEach(cat => {
+        xml += `  <url><loc>${baseUrl}/?cat=${cat}</loc><changefreq>daily</changefreq><priority>0.8</priority></url>\n`;
+    });
+
+    // Stored Videos
+    persistentVideos.forEach(v => {
+        xml += `  <url><loc>${baseUrl}/watch.html?id=${encodeURIComponent(v.id)}&amp;title=${encodeURIComponent(v.title || 'HD+Video')}</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>\n`;
+    });
+
+    xml += `</urlset>`;
+    return res.send(xml);
+});
+
 // Admin Routes
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));

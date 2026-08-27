@@ -6,7 +6,7 @@
   <title>niksex Admin Panel | Bulk Page Scraper & Control Center</title>
   <link rel="icon" type="image/png" href="/images/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=2.6">
+  <link rel="stylesheet" href="/css/style.css?v=2.8">
   <style>
     .login-overlay {
       position: fixed;
@@ -303,9 +303,7 @@
           <h2 class="admin-title">
             <i class="fa fa-globe"></i> Bulk Page URL Video Scraper (Any Category or Channel Page)
           </h2>
-          <span class="btn-pill" style="font-size: 11px; border-color: var(--accent-pink);">
-            Extracts All Videos on the Webpage at Once
-          </span>
+          <button class="btn-pill btn-arabic" onclick="autoScrapeArabic()"><i class="fa fa-magic"></i> 1-Click Auto Scrape Arabic Batch</button>
         </div>
 
         <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 8px;">
@@ -316,13 +314,13 @@
           <span class="supported-badge"><i class="fa fa-check text-success"></i> Pornhub Category/Search Pages</span>
           <span class="supported-badge"><i class="fa fa-check text-success"></i> xHamster Channels & Lists</span>
           <span class="supported-badge"><i class="fa fa-check text-success"></i> XVideos Tags & Search Pages</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> SpankBang & RedTube Pages</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> Eporner & SpankBang Categories</span>
           <span class="supported-badge"><i class="fa fa-check text-success"></i> Any Adult Webpage Link</span>
         </div>
 
         <form onsubmit="handleScrapeUrl(event)" style="margin-top: 15px;">
           <div class="url-input-group">
-            <input type="url" id="targetUrlInput" placeholder="Paste Page / Category URL (e.g. https://www.pornhub.com/video?c=105, https://xhamster.com/categories/arabic, https://www.xvideos.com/tags/arabic)" required>
+            <input type="url" id="targetUrlInput" placeholder="Paste Page / Category URL (e.g. https://www.eporner.com/category/arabic/, https://xhamster.com/categories/arabic)" required>
             <button type="submit" class="btn-scrape" id="btnScrapeUrl">
               <i class="fa fa-layer-group"></i> Extract All Videos on Page
             </button>
@@ -358,7 +356,7 @@
         </div>
 
         <p style="color: var(--text-muted); font-size: 13px;">
-          All videos listed here are permanently saved in <code>data/custom_videos.json</code> and persist across server restarts.
+          All videos listed here are permanently saved in <code>data/custom_videos.json</code> and prioritized in Trending.
         </p>
 
         <div class="table-container">
@@ -369,7 +367,7 @@
                 <th>Title</th>
                 <th>Source</th>
                 <th>Duration</th>
-                <th>Action</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="storedTableBody">
@@ -384,8 +382,39 @@
     </div>
   </div>
 
+  <!-- Edit Video Modal -->
+  <div class="modal-overlay" id="editVideoModal" onclick="closeEditModal(event)">
+    <div class="modal-card" style="max-width: 500px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa fa-edit"></i> Edit Stored Video</h3>
+        <button class="btn-close-modal" onclick="closeEditModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleEditSubmit(event)">
+          <input type="hidden" id="editVideoId">
+          <div style="margin-bottom: 14px;">
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Video Title</label>
+            <input type="text" id="editVideoTitle" class="form-control" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;" required>
+          </div>
+          <div style="margin-bottom: 14px;">
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Thumbnail Image URL</label>
+            <input type="url" id="editVideoThumb" class="form-control" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;" required>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Category</label>
+            <input type="text" id="editVideoCategory" class="form-control" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;" placeholder="trending, sex_arabic, 4k...">
+          </div>
+          <button type="submit" class="btn-pill" style="width: 100%; justify-content: center; background: var(--accent-pink); border: none; padding: 12px;">
+            <i class="fa fa-save"></i> Save Changes
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script>
     let extractedVideosCache = [];
+    let storedVideosCache = [];
     const ADMIN_KEY_STORAGE = 'niksex_admin_token';
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -470,6 +499,7 @@
         const data = await res.json();
 
         if (data.success && data.videos) {
+          storedVideosCache = data.videos;
           document.getElementById('statImportedCount').innerText = data.videos.length;
           if (data.videos.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 25px;">No custom videos stored yet. Scrape any page link above to add!</td></tr>';
@@ -484,13 +514,59 @@
               <td><strong>${v.title}</strong></td>
               <td><span class="supported-badge">${v.source || 'Scraped'}</span></td>
               <td>${v.duration || '10:00'}</td>
-              <td><button class="btn-delete" onclick="deleteStoredVideo('${v.id}')"><i class="fa fa-trash"></i> Delete</button></td>
+              <td>
+                <button class="btn-pill" style="padding: 4px 8px; font-size: 11px; margin-right: 6px;" onclick="openEditModal('${v.id}')"><i class="fa fa-edit"></i> Edit</button>
+                <button class="btn-delete" onclick="deleteStoredVideo('${v.id}')"><i class="fa fa-trash"></i> Delete</button>
+              </td>
             `;
             tbody.appendChild(tr);
           });
         }
       } catch (e) {
         tbody.innerHTML = '<tr><td colspan="5" style="color: #ef4444; text-align: center;">Failed to load stored videos list.</td></tr>';
+      }
+    }
+
+    function openEditModal(id) {
+      const video = storedVideosCache.find(v => v.id === id);
+      if (!video) return;
+      document.getElementById('editVideoId').value = video.id;
+      document.getElementById('editVideoTitle').value = video.title || '';
+      document.getElementById('editVideoThumb').value = video.thumbnail || '';
+      document.getElementById('editVideoCategory').value = video.category || 'trending';
+      document.getElementById('editVideoModal').style.display = 'flex';
+    }
+
+    function closeEditModal(e) {
+      if (!e || e.target.id === 'editVideoModal' || e.target.closest('.btn-close-modal')) {
+        document.getElementById('editVideoModal').style.display = 'none';
+      }
+    }
+
+    async function handleEditSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('editVideoId').value;
+      const title = document.getElementById('editVideoTitle').value.trim();
+      const thumbnail = document.getElementById('editVideoThumb').value.trim();
+      const category = document.getElementById('editVideoCategory').value.trim();
+
+      try {
+        const res = await fetch(`/api/admin/edit-video/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-key': getAdminToken()
+          },
+          body: JSON.stringify({ title, thumbnail, category })
+        });
+        const data = await res.json();
+        if (data.success) {
+          closeEditModal();
+          loadStoredVideos();
+          alert('Video metadata updated!');
+        }
+      } catch (err) {
+        alert('Update failed: ' + err.message);
       }
     }
 
@@ -508,6 +584,11 @@
       } catch (e) {
         alert('Delete failed: ' + e.message);
       }
+    }
+
+    function autoScrapeArabic() {
+      document.getElementById('targetUrlInput').value = 'https://www.eporner.com/category/arabic/';
+      document.getElementById('btnScrapeUrl').click();
     }
 
     async function handleScrapeUrl(e) {

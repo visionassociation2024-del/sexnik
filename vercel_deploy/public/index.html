@@ -7,7 +7,95 @@
   <meta name="description" content="Watch high-definition videos with ultra-fast streaming, Sex Arabic collection, categories, smart personalization, and infinite scrolling on niksex.">
   <link rel="icon" type="image/png" href="/images/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=2.7">
+  <link rel="stylesheet" href="/css/style.css?v=2.8">
+  <style>
+    /* Filter Bar Styles */
+    .filter-bar {
+      max-width: 1400px;
+      margin: 0 auto 16px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filter-group::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 14px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: rgba(255, 0, 127, 0.2);
+      border-color: var(--accent-pink);
+      color: #fff;
+    }
+
+    /* Live Search Autocomplete Popup */
+    .autocomplete-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(22, 22, 34, 0.98);
+      border: 1px solid var(--border-pink);
+      border-radius: 12px;
+      margin-top: 6px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      display: none;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+    }
+    .autocomplete-item {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-color);
+      transition: var(--transition);
+    }
+    .autocomplete-item:hover {
+      background: rgba(255, 0, 127, 0.15);
+      color: var(--accent-pink);
+    }
+
+    /* Footer Static Page Links */
+    .footer-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 16px 0 10px;
+      font-size: 13px;
+    }
+    .footer-links a {
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .footer-links a:hover {
+      color: var(--accent-pink);
+    }
+  </style>
 </head>
 <body>
 
@@ -19,10 +107,13 @@
       </div>
 
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search Arabic, 4K, models, categories..." onkeypress="handleSearch(event)">
+        <input type="text" id="searchInput" placeholder="Search Arabic, 4K, models, categories..." oninput="handleSearchInput(event)" onkeypress="handleSearch(event)" autocomplete="off">
         <button class="search-btn" onclick="executeSearch()" aria-label="Search">
           <i class="fa fa-search"></i>
         </button>
+
+        <!-- Live Autocomplete Box -->
+        <div class="autocomplete-dropdown" id="searchAutocomplete"></div>
       </div>
 
       <div class="nav-actions desktop-only">
@@ -34,6 +125,9 @@
         </button>
         <button class="btn-pill" onclick="openCategoriesModal()">
           <i class="fa fa-th-large"></i> Categories
+        </button>
+        <button class="btn-pill" onclick="loadFavoritesView()">
+          <i class="fa fa-heart" style="color: #ff007f;"></i> Favorites
         </button>
         <button class="btn-pill" onclick="loadWatchHistory()">
           <i class="fa fa-history"></i> History
@@ -56,9 +150,27 @@
     <button class="cat-btn" onclick="setCategory(this, 'anal')"><i class="fa fa-circle-notch"></i> Anal</button>
     <button class="cat-btn" onclick="setCategory(this, 'blowjob')"><i class="fa fa-kiss"></i> Blowjob</button>
     <button class="cat-btn" onclick="setCategory(this, 'hardcore')"><i class="fa fa-bolt"></i> Hardcore</button>
-    <button class="cat-btn" onclick="setCategory(this, 'vr')"><i class="fa fa-vr-cardboard"></i> VR 360°</button>
+    <button class="cat-btn" onclick="loadFavoritesView(this)"><i class="fa fa-heart" style="color: #ff007f;"></i> Favorites (المفضلة)</button>
     <button class="cat-btn" onclick="loadWatchHistory(this)"><i class="fa fa-history"></i> My History (السجل)</button>
   </nav>
+
+  <!-- Duration & Sorting Filters Bar -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span style="font-size: 11px; color: var(--text-muted); margin-right: 4px;"><i class="fa fa-clock"></i> Duration:</span>
+      <button class="filter-btn active" onclick="setDurationFilter(this, 'all')">All</button>
+      <button class="filter-btn" onclick="setDurationFilter(this, 'short')">&lt; 10 min</button>
+      <button class="filter-btn" onclick="setDurationFilter(this, 'medium')">10 - 20 min</button>
+      <button class="filter-btn" onclick="setDurationFilter(this, 'long')">20+ min</button>
+    </div>
+
+    <div class="filter-group">
+      <span style="font-size: 11px; color: var(--text-muted); margin-right: 4px;"><i class="fa fa-sort"></i> Sort:</span>
+      <button class="filter-btn active" onclick="setSortFilter(this, 'trending')">Trending</button>
+      <button class="filter-btn" onclick="setSortFilter(this, 'views')">Most Viewed</button>
+      <button class="filter-btn" onclick="setSortFilter(this, 'rating')">Top Rated</button>
+    </div>
+  </div>
 
   <!-- Main Content Grid -->
   <main class="main-container">
@@ -127,28 +239,37 @@
       <i class="fa fa-magic"></i>
       <span>For You</span>
     </a>
-    <a class="bottom-nav-item" onclick="loadWatchHistoryMobile(this)">
-      <i class="fa fa-history"></i>
-      <span>History</span>
+    <a class="bottom-nav-item" onclick="loadFavoritesMobile(this)" style="color: #ff007f;">
+      <i class="fa fa-heart"></i>
+      <span>Favorites</span>
     </a>
   </nav>
 
-  <!-- Footer with Legal Intermediary Disclaimer -->
+  <!-- Footer with Legal Disclaimer & Static Links -->
   <footer>
     <img src="/images/logo.png" alt="niksex" class="footer-logo">
     
+    <div class="footer-links">
+      <a href="/dmca.html">DMCA & Copyright</a>
+      <span>•</span>
+      <a href="/terms.html">Terms of Service</a>
+      <span>•</span>
+      <a href="/privacy.html">Privacy Policy</a>
+      <span>•</span>
+      <a href="/2257.html">18 U.S.C. 2257</a>
+      <span>•</span>
+      <a href="/contact.html">Contact Us / Removal</a>
+    </div>
+
     <div class="disclaimer-container">
-      <div class="disclaimer-badge">
-        <i class="fa fa-shield-alt"></i> <strong>Legal Intermediary & DMCA Compliance Disclaimer</strong>
-      </div>
       <p class="disclaimer-text">
-        <strong>إخلاء مسؤولية قانوني:</strong> موقع <strong>niksex</strong> هو محرك بحث رقمي، واجهة تشغيل، ووسيط تقني لعرض وتضمين مقاطع الفيديو (Embed Intermediary Interface). موقعنا لا يملك، لا يرفع، لا يستضيف، ولا يخزن أي ملفات فيديو على خوادمه الخاصة. جميع مقاطع الفيديو يتم تشغيلها وتضمينها مباشرة من منصات ومواقع الطرف الثالث الأصلية.
+        <strong>إخلاء مسؤولية قانوني:</strong> موقع <strong>niksex</strong> هو محرك بحث رقمي، واجهة تشغيل، ووسيط تقني لعرض وتضمين مقاطع الفيديو (Embed Intermediary Interface). موقعنا لا يستضيف ولا يخزن أي ملفات فيديو على خوادمه الخاصة.
       </p>
     </div>
 
     <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 niksex. All rights reserved.</p>
   </footer>
 
-  <script src="/js/app.js?v=2.7"></script>
+  <script src="/js/app.js?v=2.8"></script>
 </body>
 </html>
