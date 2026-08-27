@@ -292,11 +292,11 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
     // 1. Pornhub Single Video Link
     if (trimmedUrl.includes('pornhub.com') && (trimmedUrl.includes('viewkey=') || trimmedUrl.includes('/view_video.php') || trimmedUrl.includes('/embed/'))) {
         const match = trimmedUrl.match(/viewkey=([a-zA-Z0-9]+)/) || trimmedUrl.match(/embed\/([a-zA-Z0-9]+)/);
-        const vkey = match ? match[1] : trimmedUrl.split('/').pop();
+        const vkey = match ? match[1] : trimmedUrl.split('/').pop().replace(/[^a-zA-Z0-9]/g, '');
         if (vkey) {
             try {
                 const details = await getPornhubDetails(vkey);
-                if (details.success) {
+                if (details.success && details.title && !details.title.toLowerCase().includes('age verification')) {
                     return res.json({ success: true, type: 'single', count: 1, videos: [details] });
                 }
             } catch (e) {}
@@ -307,7 +307,7 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                 videos: [{
                     id: 'ph_' + vkey,
                     source: 'pornhub',
-                    title: 'Pornhub HD ' + vkey,
+                    title: 'Pornhub HD Stream ' + vkey,
                     thumbnail: `https://ci.phncdn.com/videos/${vkey}/original/1.jpg`,
                     duration: '12:00',
                     views: '25,000',
@@ -320,14 +320,65 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
         }
     }
 
-    // 2. xHamster Single Video Link
+    // 2. Eporner Single Video Link (Direct API Metadata Fetcher - Zero Age Verification Blocks)
+    if (trimmedUrl.includes('eporner.com') && (trimmedUrl.includes('video-') || trimmedUrl.includes('hd-porn') || trimmedUrl.includes('embed') || trimmedUrl.includes('/video/'))) {
+        const match = trimmedUrl.match(/(?:video-|hd-porn\/|embed\/|video\/)([a-zA-Z0-9]{4,20})/i);
+        const vidId = match ? match[1] : '';
+        if (vidId) {
+            try {
+                const epRes = await axios.get(`https://www.eporner.com/api/v2/video/id/?id=${vidId}&thumbsize=big`, { timeout: 5000 });
+                if (epRes.data && epRes.data.id) {
+                    const d = epRes.data;
+                    return res.json({
+                        success: true,
+                        type: 'single',
+                        count: 1,
+                        videos: [{
+                            id: 'ep_' + d.id,
+                            source: 'eporner',
+                            title: d.title,
+                            thumbnail: (d.default_thumb && d.default_thumb.src) ? d.default_thumb.src : (d.thumbs && d.thumbs[0] ? d.thumbs[0].src : '/images/logo.png'),
+                            duration: d.length_min || '12:00',
+                            views: d.views ? parseInt(d.views, 10).toLocaleString() : '22,000',
+                            rating: (d.rate || '98') + '%',
+                            embed_url: d.embed || `https://www.eporner.com/embed/${d.id}/`,
+                            video_url: d.embed || `https://www.eporner.com/embed/${d.id}/`,
+                            category: (d.keywords && d.keywords.includes('arab')) ? 'sex_arabic' : 'trending',
+                            is_trending: true,
+                            tags: d.keywords ? d.keywords.split(',').map(t => t.trim()) : ['eporner', 'trending', 'niksex']
+                        }]
+                    });
+                }
+            } catch (e) {}
+
+            return res.json({
+                success: true,
+                type: 'single',
+                count: 1,
+                videos: [{
+                    id: 'ep_' + vidId,
+                    source: 'eporner',
+                    title: 'Eporner Ultra HD Stream ' + vidId,
+                    thumbnail: `https://static-ca-cdn.eporner.com/thumbs/static4/1/${vidId}/15_360.jpg`,
+                    duration: '15:00',
+                    views: '25,000',
+                    rating: '99%',
+                    embed_url: `https://www.eporner.com/embed/${vidId}/`,
+                    video_url: `https://www.eporner.com/embed/${vidId}/`,
+                    tags: ['eporner', 'trending', 'niksex']
+                }]
+            });
+        }
+    }
+
+    // 3. xHamster Single Video Link
     if (trimmedUrl.includes('xhamster.com') && (trimmedUrl.includes('/videos/') || trimmedUrl.includes('/xembed.php'))) {
         const match = trimmedUrl.match(/videos\/([^\/]+)-([0-9]+)/) || trimmedUrl.match(/-([a-zA-Z0-9]+)$/) || trimmedUrl.match(/video=([a-zA-Z0-9]+)/);
         const vidId = match ? (match[2] || match[1]) : '';
         if (vidId) {
             try {
                 const details = await getXhamsterDetails(trimmedUrl);
-                if (details.success) {
+                if (details.success && details.title && !details.title.toLowerCase().includes('age verification')) {
                     return res.json({ success: true, type: 'single', count: 1, videos: [details] });
                 }
             } catch (e) {}
@@ -351,7 +402,7 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
         }
     }
 
-    // 3. XVideos Single Video Link
+    // 4. XVideos Single Video Link
     if (trimmedUrl.includes('xvideos.com') && (trimmedUrl.includes('/video') || trimmedUrl.includes('embedframe'))) {
         const match = trimmedUrl.match(/video([0-9]+)/) || trimmedUrl.match(/embedframe\/([0-9]+)/);
         const vidId = match ? match[1] : '';
@@ -376,7 +427,7 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
         }
     }
 
-    // 4. SpankBang Single Video Link
+    // 5. SpankBang Single Video Link
     if (trimmedUrl.includes('spankbang.com') && (trimmedUrl.includes('/video/') || trimmedUrl.includes('/embed/'))) {
         const match = trimmedUrl.match(/spankbang\.com\/([a-zA-Z0-9]+)\/video/) || trimmedUrl.match(/spankbang\.com\/([a-zA-Z0-9]+)\/embed/);
         const vidId = match ? match[1] : '';
@@ -396,31 +447,6 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                     embed_url: `https://spankbang.com/${vidId}/embed/`,
                     video_url: `https://spankbang.com/${vidId}/embed/`,
                     tags: ['spankbang', 'trending', 'niksex']
-                }]
-            });
-        }
-    }
-
-    // 5. Eporner Single Video Link
-    if (trimmedUrl.includes('eporner.com') && (trimmedUrl.includes('/video-') || trimmedUrl.includes('/hd-porn/'))) {
-        const match = trimmedUrl.match(/\/video-([a-zA-Z0-9]+)\//) || trimmedUrl.match(/\/hd-porn\/([a-zA-Z0-9]+)\//) || trimmedUrl.match(/\/embed\/([a-zA-Z0-9]+)/);
-        const vidId = match ? match[1] : '';
-        if (vidId) {
-            return res.json({
-                success: true,
-                type: 'single',
-                count: 1,
-                videos: [{
-                    id: 'ep_' + vidId,
-                    source: 'eporner',
-                    title: 'Eporner Ultra HD ' + vidId,
-                    thumbnail: `https://static-ca-cdn.eporner.com/thumbs/static4/1/${vidId}/15_360.jpg`,
-                    duration: '18:00',
-                    views: '22,000',
-                    rating: '99%',
-                    embed_url: `https://www.eporner.com/embed/${vidId}/`,
-                    video_url: `https://www.eporner.com/embed/${vidId}/`,
-                    tags: ['eporner', 'trending', 'niksex']
                 }]
             });
         }
