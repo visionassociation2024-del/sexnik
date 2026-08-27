@@ -525,20 +525,28 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
     }
 });
 
-// 4. API: Save Scraped Videos Permanently (Protected)
+// 4. API: Save Scraped Videos Permanently (Protected - All Saved to Trending by Default)
 app.post('/api/admin/save-videos', requireAdminAuth, (req, res) => {
     const { videos } = req.body;
     if (Array.isArray(videos) && videos.length > 0) {
         const existingIds = new Set(persistentVideos.map(v => v.id));
-        const newVids = videos.filter(v => !existingIds.has(v.id));
+        const newVids = videos
+            .filter(v => !existingIds.has(v.id))
+            .map(v => ({
+                ...v,
+                category: 'trending',
+                is_trending: true,
+                tags: Array.from(new Set([...(v.tags || []), 'trending', 'trending_now', 'featured', 'niksex'])),
+                imported_at: Date.now()
+            }));
 
         persistentVideos = newVids.concat(persistentVideos);
         savePersistentVideos(persistentVideos);
-        cache.clear(); // Clear cache to reflect new videos instantly
+        cache.clear(); // Clear cache so they appear instantly in Trending
 
         return res.json({
             success: true,
-            message: `Successfully saved & published ${newVids.length} video(s) permanently to niksex!`,
+            message: `Successfully saved & published ${newVids.length} video(s) directly to Trending!`,
             total_stored: persistentVideos.length
         });
     }
