@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>niksex - WATCH • EXPLORE • ENJOY | Next-Gen Video Streaming</title>
-  <meta name="description" content="Watch high-definition videos with ultra-fast streaming, Sex Arabic collection, infinite scrolling, and modern experience on niksex.">
+  <meta name="description" content="Watch high-definition videos with ultra-fast streaming, Sex Arabic collection, categories, smart personalization, and infinite scrolling on niksex.">
+  <link rel="icon" type="image/png" href="/images/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=2.5">
+  <link rel="stylesheet" href="/css/style.css?v=2.7">
 </head>
 <body>
 
-  <!-- Navigation Bar (Desktop & Mobile) -->
+  <!-- Navigation Bar -->
   <header class="navbar">
     <div class="nav-container">
       <div class="brand-logo" onclick="resetAndLoadCategory('trending')">
@@ -28,11 +29,14 @@
         <button class="btn-pill btn-arabic" onclick="resetAndLoadCategory('sex_arabic')">
           <i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic
         </button>
-        <button class="btn-pill active" onclick="resetAndLoadCategory('trending')">
-          <i class="fa fa-fire"></i> Trending
+        <button class="btn-pill btn-foryou" onclick="loadForYouFeed()">
+          <i class="fa fa-magic" style="color: #c084fc;"></i> For You
         </button>
-        <button class="btn-pill" onclick="resetAndLoadCategory('4k')">
-          <i class="fa fa-tv"></i> 4K UHD
+        <button class="btn-pill" onclick="openCategoriesModal()">
+          <i class="fa fa-th-large"></i> Categories
+        </button>
+        <button class="btn-pill" onclick="loadWatchHistory()">
+          <i class="fa fa-history"></i> History
         </button>
       </div>
     </div>
@@ -41,16 +45,19 @@
   <!-- Categories Scrollbar (Touch Optimized) -->
   <nav class="categories-bar" id="categoriesBar">
     <button class="cat-btn cat-arabic" onclick="setCategory(this, 'sex_arabic')"><i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic (عربي)</button>
+    <button class="cat-btn cat-foryou" onclick="loadForYouFeed(this)"><i class="fa fa-magic"></i> For You (مخصص لك)</button>
+    <button class="cat-btn" onclick="openCategoriesModal()"><i class="fa fa-th-large"></i> All Categories (التصنيفات)</button>
     <button class="cat-btn active" onclick="setCategory(this, 'trending')"><i class="fa fa-fire"></i> Trending</button>
-    <button class="cat-btn" onclick="setCategory(this, '4k')"><i class="fa fa-tv"></i> 4K Ultra HD</button>
-    <button class="cat-btn" onclick="setCategory(this, 'pornhub')"><i class="fa fa-play-circle"></i> Pornhub</button>
-    <button class="cat-btn" onclick="setCategory(this, 'xhamster')"><i class="fa fa-film"></i> xHamster</button>
+    <button class="cat-btn" onclick="setCategory(this, '4k')"><i class="fa fa-tv"></i> 4K UHD</button>
     <button class="cat-btn" onclick="setCategory(this, 'amateur')"><i class="fa fa-user"></i> Amateur</button>
-    <button class="cat-btn" onclick="setCategory(this, 'vr')"><i class="fa fa-vr-cardboard"></i> VR 360°</button>
     <button class="cat-btn" onclick="setCategory(this, 'milf')"><i class="fa fa-heart"></i> Milf</button>
     <button class="cat-btn" onclick="setCategory(this, 'lesbian')"><i class="fa fa-venus-double"></i> Lesbian</button>
-    <button class="cat-btn" onclick="setCategory(this, 'teen')"><i class="fa fa-star"></i> Teen</button>
-    <button class="cat-btn" onclick="setCategory(this, 'popular')"><i class="fa fa-chart-line"></i> Most Viewed</button>
+    <button class="cat-btn" onclick="setCategory(this, 'teen')"><i class="fa fa-star"></i> 18+ Teen</button>
+    <button class="cat-btn" onclick="setCategory(this, 'anal')"><i class="fa fa-circle-notch"></i> Anal</button>
+    <button class="cat-btn" onclick="setCategory(this, 'blowjob')"><i class="fa fa-kiss"></i> Blowjob</button>
+    <button class="cat-btn" onclick="setCategory(this, 'hardcore')"><i class="fa fa-bolt"></i> Hardcore</button>
+    <button class="cat-btn" onclick="setCategory(this, 'vr')"><i class="fa fa-vr-cardboard"></i> VR 360°</button>
+    <button class="cat-btn" onclick="loadWatchHistory(this)"><i class="fa fa-history"></i> My History (السجل)</button>
   </nav>
 
   <!-- Main Content Grid -->
@@ -60,7 +67,12 @@
         <i class="fa fa-play" style="color: var(--accent-pink); font-size: 16px;"></i>
         <span id="categoryLabel">Trending</span> Videos
       </h2>
-      <span class="text-muted" id="videoCountLabel" style="font-size: 13px;">Streaming live videos...</span>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="text-muted" id="videoCountLabel" style="font-size: 13px;">Streaming live videos...</span>
+        <button id="btnClearHistory" class="btn-pill" style="display: none; padding: 4px 10px; font-size: 11px; border-color: #ef4444; color: #ef4444;" onclick="clearHistory()">
+          <i class="fa fa-trash"></i> Clear History
+        </button>
+      </div>
     </div>
 
     <!-- Grid of Videos -->
@@ -74,35 +86,54 @@
       <span id="loaderText">Loading more HD videos...</span>
     </div>
 
-    <!-- Sentinel element for IntersectionObserver -->
+    <!-- Sentinel element for Infinite Scroll -->
     <div id="scrollSentinel" style="height: 40px; width: 100%;"></div>
   </main>
 
+  <!-- Categories Explorer Modal -->
+  <div class="modal-overlay" id="categoriesModal" onclick="closeCategoriesModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fa fa-th-large" style="color: var(--accent-pink);"></i> Browse All Categories (التصنيفات)
+        </h3>
+        <button class="btn-close-modal" onclick="closeCategoriesModal()" aria-label="Close">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="categories-grid-cards" id="categoriesGridCards">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-nav">
-    <a href="#" class="bottom-nav-item" onclick="mobileNav('sex_arabic', this)" style="color: #ffd700;">
+    <a class="bottom-nav-item" onclick="mobileNav('sex_arabic', this)" style="color: #ffd700;">
       <i class="fa fa-star"></i>
       <span>Arabic</span>
     </a>
-    <a href="#" class="bottom-nav-item active" onclick="mobileNav('trending', this)">
+    <a class="bottom-nav-item active" onclick="mobileNav('trending', this)">
       <i class="fa fa-fire"></i>
       <span>Trending</span>
     </a>
-    <a href="#" class="bottom-nav-item" onclick="mobileNav('4k', this)">
-      <i class="fa fa-tv"></i>
-      <span>4K HD</span>
+    <a class="bottom-nav-item" onclick="openCategoriesModal()">
+      <i class="fa fa-th-large"></i>
+      <span>Categories</span>
     </a>
-    <a href="#" class="bottom-nav-item" onclick="focusMobileSearch(this)">
-      <i class="fa fa-search"></i>
-      <span>Search</span>
+    <a class="bottom-nav-item" onclick="loadForYouFeedMobile(this)" style="color: #c084fc;">
+      <i class="fa fa-magic"></i>
+      <span>For You</span>
     </a>
-    <a href="#" class="bottom-nav-item" onclick="mobileNav('pornhub', this)">
-      <i class="fa fa-play-circle"></i>
-      <span>Pornhub</span>
+    <a class="bottom-nav-item" onclick="loadWatchHistoryMobile(this)">
+      <i class="fa fa-history"></i>
+      <span>History</span>
     </a>
   </nav>
 
-  <!-- Footer with Full Legal Intermediary Disclaimer -->
+  <!-- Footer with Legal Intermediary Disclaimer -->
   <footer>
     <img src="/images/logo.png" alt="niksex" class="footer-logo">
     
@@ -118,6 +149,6 @@
     <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 niksex. All rights reserved.</p>
   </footer>
 
-  <script src="/js/app.js?v=2.5"></script>
+  <script src="/js/app.js?v=2.7"></script>
 </body>
 </html>
