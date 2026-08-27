@@ -218,11 +218,11 @@ function loadTikTokView(btn) {
   const sentinel = document.getElementById('scrollSentinel');
 
   if (isTikTokReelsView) {
-    if (reelsContainer) reelsContainer.style.display = 'block';
-    if (grid) grid.style.display = 'none';
-    if (sentinel) sentinel.style.display = 'none';
+    document.body.classList.add('reels-fullscreen-active');
+    if (reelsContainer) reelsContainer.style.display = 'flex';
     fetchAndRenderTikTokReels(true);
   } else {
+    document.body.classList.remove('reels-fullscreen-active');
     if (reelsContainer) reelsContainer.style.display = 'none';
     if (grid) {
       grid.style.display = 'grid';
@@ -524,10 +524,20 @@ function toggleTikTokDisplayMode() {
   const btnToggle = document.getElementById('btnTikTokViewToggle');
 
   if (btnToggle) {
-    btnToggle.innerHTML = isTikTokReelsView ? '<i class="fa fa-th-large"></i> Grid View' : '<i class="fa fa-mobile-alt"></i> Reels View';
+    btnToggle.innerHTML = isTikTokReelsView ? '<i class="fa fa-th-large"></i> <span class="desktop-only-inline">Grid</span>' : '<i class="fa fa-mobile-alt"></i> <span class="desktop-only-inline">Reels</span>';
   }
 
   loadTikTokView();
+}
+
+// Exit Fullscreen Reels Mode back to standard browsing
+function exitTikTokReels() {
+  document.body.classList.remove('reels-fullscreen-active');
+  pauseAllTikTokReels();
+  const reelsContainer = document.getElementById('tiktokReelsContainer');
+  if (reelsContainer) reelsContainer.style.display = 'none';
+
+  resetAndLoadCategory('trending');
 }
 
 // Like action with heart bounce animation
@@ -577,7 +587,7 @@ function shareTikTokReel(index, e) {
   }
 }
 
-// Keyboard shortcuts listener for TikTok Reels (ArrowUp, ArrowDown, Space, M)
+// Keyboard shortcuts listener for TikTok Reels (ArrowUp, ArrowDown, Space, M, Esc)
 document.addEventListener('keydown', (e) => {
   if (!isTikTokMode || !isTikTokReelsView) return;
 
@@ -593,10 +603,14 @@ document.addEventListener('keydown', (e) => {
   } else if (e.key.toLowerCase() === 'm') {
     e.preventDefault();
     toggleTikTokGlobalSound();
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    exitTikTokReels();
   }
 });
 
 function hideTikTokReelsFeed() {
+  document.body.classList.remove('reels-fullscreen-active');
   pauseAllTikTokReels();
   const reelsContainer = document.getElementById('tiktokReelsContainer');
   const grid = document.getElementById('videosGrid');
