@@ -622,3 +622,20 @@ table .enter p {
 .jw-media video {
 	outline: 0px !important;
 }
+
+/* niksex Brand Logo Styling */
+.logo a {
+	display: inline-block;
+}
+.logo img {
+	max-height: 60px;
+	width: auto;
+	object-fit: contain;
+	border-radius: 6px;
+	filter: drop-shadow(0px 2px 8px rgba(236, 86, 123, 0.45));
+	transition: transform 0.25s ease, filter 0.25s ease;
+}
+.logo img:hover {
+	transform: scale(1.04);
+	filter: drop-shadow(0px 4px 14px rgba(236, 86, 123, 0.7));
+}

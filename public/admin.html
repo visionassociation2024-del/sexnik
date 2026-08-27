@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>niksex Admin Panel | Secure Control Center</title>
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Login Screen Styles */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 5000;
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(255, 0, 127, 0.12) 0%, transparent 60%);
+    }
+    .login-card {
+      background: rgba(22, 22, 34, 0.85);
+      border: 1px solid var(--border-pink);
+      border-radius: 20px;
+      padding: 36px 30px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 0, 127, 0.25);
+      backdrop-filter: blur(16px);
+      animation: modalFadeIn 0.3s ease;
+    }
+    .login-logo {
+      height: 52px;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 0 15px var(--accent-glow));
+    }
+    .login-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+    .login-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .login-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      padding: 14px 18px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+      text-align: center;
+      letter-spacing: 2px;
+      transition: var(--transition);
+      margin-bottom: 16px;
+    }
+    .login-input:focus {
+      border-color: var(--accent-pink);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .login-error {
+      color: #ef4444;
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* Admin Container Styles */
+    .admin-container {
+      max-width: 1200px;
+      margin: 30px auto 80px;
+      padding: 0 20px;
+    }
+    .admin-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-pink);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(12px);
+    }
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .admin-title {
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .admin-title i {
+      color: var(--accent-pink);
+    }
+    .url-input-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .url-input-group input {
+      flex: 1;
+      min-width: 280px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      padding: 14px 18px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+      transition: var(--transition);
+    }
+    .url-input-group input:focus {
+      border-color: var(--accent-pink);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .btn-scrape {
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .btn-scrape:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px var(--accent-pink);
+    }
+    .scraped-preview {
+      margin-top: 25px;
+      display: none;
+    }
+    .preview-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .stat-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent-pink);
+    }
+    .supported-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .supported-badge {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+    .table-container {
+      overflow-x: auto;
+      margin-top: 15px;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    table.data-table th {
+      text-align: left;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid var(--border-pink);
+      color: var(--accent-pink);
+    }
+    table.data-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: var(--transition);
+    }
+    .btn-delete:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Password Protection Gate -->
+  <div class="login-overlay" id="adminLoginOverlay">
+    <div class="login-card">
+      <img src="/images/logo.png" alt="niksex" class="login-logo">
+      <h2 class="login-title">Admin Access Gate</h2>
+      <p class="login-subtitle">Enter your master security password to continue</p>
+      
+      <form onsubmit="handleLoginSubmit(event)">
+        <input type="password" id="adminPasswordInput" class="login-input" placeholder="••••••••••••" autofocus required>
+        <button type="submit" class="btn-primary" id="btnLoginSubmit">
+          <i class="fa fa-lock-open"></i> Unlock Dashboard
+        </button>
+      </form>
+
+      <div class="login-error" id="loginErrorMessage">
+        <i class="fa fa-exclamation-circle"></i> Incorrect password! Please try again.
+      </div>
+    </div>
+  </div>
+
+  <!-- Authenticated Admin Panel -->
+  <div id="adminPanelContent" style="display: none;">
+
+    <!-- Admin Navbar -->
+    <header class="navbar">
+      <div class="nav-container">
+        <a href="/" class="brand-logo">
+          <img src="/images/logo.png" alt="niksex Logo">
+        </a>
+        <div class="nav-actions">
+          <a href="/" class="btn-pill"><i class="fa fa-arrow-left"></i> View Live Site</a>
+          <button class="btn-pill" style="border-color: #ef4444; color: #ef4444;" onclick="handleAdminLogout()">
+            <i class="fa fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="admin-container">
+
+      <!-- Stats Banner -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted);">Security Status</div>
+            <div class="stat-val" style="font-size: 18px; color: #10b981;"><i class="fa fa-lock"></i> Protected</div>
+          </div>
+          <i class="fa fa-shield-alt fa-2x" style="color: rgba(16, 185, 129, 0.3);"></i>
+        </div>
+
+        <div class="stat-card">
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted);">Scraper Engine</div>
+            <div class="stat-val" style="font-size: 18px; color: #fff;">Native Direct Scraper</div>
+          </div>
+          <i class="fa fa-bolt fa-2x" style="color: var(--accent-glow);"></i>
+        </div>
+
+        <div class="stat-card">
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted);">Permanently Stored</div>
+            <div class="stat-val" id="statImportedCount">0</div>
+          </div>
+          <i class="fa fa-database fa-2x" style="color: rgba(255, 0, 127, 0.3);"></i>
+        </div>
+      </div>
+
+      <!-- Universal URL Scraper Section -->
+      <div class="admin-card">
+        <div class="admin-header">
+          <h2 class="admin-title">
+            <i class="fa fa-globe"></i> Universal URL Video Scraper (Any Website)
+          </h2>
+          <span class="btn-pill" style="font-size: 11px; border-color: var(--accent-pink);">
+            Single Video OR Full Category/Channel Page
+          </span>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 8px;">
+          Paste <strong>any video link or any webpage URL</strong> from any adult platform. The engine will automatically extract the video player, metadata, and import it into your permanent storage.
+        </p>
+
+        <div class="supported-badges">
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> Pornhub</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> xHamster</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> XVideos</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> SpankBang</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> RedTube</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> YouPorn</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> Eporner</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> Any Embed URL</span>
+        </div>
+
+        <form onsubmit="handleScrapeUrl(event)" style="margin-top: 15px;">
+          <div class="url-input-group">
+            <input type="url" id="targetUrlInput" placeholder="Paste ANY video or page link (e.g. https://www.pornhub.com/..., https://xhamster.com/..., https://www.xvideos.com/...)" required>
+            <button type="submit" class="btn-scrape" id="btnScrapeUrl">
+              <i class="fa fa-cloud-download-alt"></i> Scrape & Extract
+            </button>
+          </div>
+        </form>
+
+        <div id="scrapeAlert" style="margin-top: 18px; display: none;"></div>
+
+        <div class="scraped-preview" id="scrapedPreview">
+          <div class="preview-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <h3 style="font-size: 16px; font-weight: 700; color: #fff;" id="previewHeading">Extracted Video(s)</h3>
+              <button class="btn-pill" style="background: var(--accent-pink); border: none;" id="btnPublishAll" onclick="publishExtractedVideos()">
+                <i class="fa fa-save"></i> Save Permanently to Live Stream
+              </button>
+            </div>
+
+            <div id="extractedGrid" class="videos-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Permanently Stored Videos Management Table -->
+      <div class="admin-card">
+        <div class="admin-header">
+          <h2 class="admin-title">
+            <i class="fa fa-database" style="color: var(--accent-purple);"></i> Permanently Stored Videos Manager
+          </h2>
+          <button class="btn-pill" onclick="loadStoredVideos()"><i class="fa fa-sync"></i> Refresh List</button>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 13px;">
+          All videos listed here are permanently saved in <code>data/custom_videos.json</code> and persist across server restarts.
+        </p>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Preview</th>
+                <th>Title</th>
+                <th>Source</th>
+                <th>Duration</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="storedTableBody">
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted);">Loading stored videos...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let extractedVideosCache = [];
+    const ADMIN_KEY_STORAGE = 'niksex_admin_token';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuthSession();
+    });
+
+    function getAdminToken() {
+      return sessionStorage.getItem(ADMIN_KEY_STORAGE) || localStorage.getItem(ADMIN_KEY_STORAGE);
+    }
+
+    function checkAuthSession() {
+      const token = getAdminToken();
+      if (token === '202620272028') {
+        showDashboard();
+      } else {
+        showLogin();
+      }
+    }
+
+    function showLogin() {
+      document.getElementById('adminLoginOverlay').style.display = 'flex';
+      document.getElementById('adminPanelContent').style.display = 'none';
+      document.getElementById('adminPasswordInput').focus();
+    }
+
+    function showDashboard() {
+      document.getElementById('adminLoginOverlay').style.display = 'none';
+      document.getElementById('adminPanelContent').style.display = 'block';
+      loadStoredVideos();
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const pwd = document.getElementById('adminPasswordInput').value.trim();
+      const btn = document.getElementById('btnLoginSubmit');
+      const errBox = document.getElementById('loginErrorMessage');
+
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Verifying...';
+      btn.disabled = true;
+      errBox.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pwd })
+        });
+        const data = await res.json();
+
+        btn.innerHTML = '<i class="fa fa-lock-open"></i> Unlock Dashboard';
+        btn.disabled = false;
+
+        if (data.success && data.token) {
+          sessionStorage.setItem(ADMIN_KEY_STORAGE, data.token);
+          localStorage.setItem(ADMIN_KEY_STORAGE, data.token);
+          showDashboard();
+        } else {
+          errBox.style.display = 'block';
+          errBox.innerHTML = '<i class="fa fa-exclamation-circle"></i> ' + (data.message || 'Incorrect password!');
+        }
+      } catch (err) {
+        btn.innerHTML = '<i class="fa fa-lock-open"></i> Unlock Dashboard';
+        btn.disabled = false;
+        errBox.style.display = 'block';
+        errBox.innerText = 'Connection error: ' + err.message;
+      }
+    }
+
+    function handleAdminLogout() {
+      sessionStorage.removeItem(ADMIN_KEY_STORAGE);
+      localStorage.removeItem(ADMIN_KEY_STORAGE);
+      document.getElementById('adminPasswordInput').value = '';
+      showLogin();
+    }
+
+    async function loadStoredVideos() {
+      const tbody = document.getElementById('storedTableBody');
+      try {
+        const res = await fetch('/api/admin/imported-videos', {
+          headers: { 'x-admin-key': getAdminToken() }
+        });
+        const data = await res.json();
+
+        if (data.success && data.videos) {
+          document.getElementById('statImportedCount').innerText = data.videos.length;
+          if (data.videos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 25px;">No custom videos stored yet. Scrape any link above to add!</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = '';
+          data.videos.forEach(v => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td><img src="${v.thumbnail || '/images/logo.png'}" style="width: 60px; height: 35px; object-fit: cover; border-radius: 4px;" onerror="this.src='/images/logo.png'"></td>
+              <td><strong>${v.title}</strong></td>
+              <td><span class="supported-badge">${v.source || 'Scraped'}</span></td>
+              <td>${v.duration || '10:00'}</td>
+              <td><button class="btn-delete" onclick="deleteStoredVideo('${v.id}')"><i class="fa fa-trash"></i> Delete</button></td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color: #ef4444; text-align: center;">Failed to load stored videos list.</td></tr>';
+      }
+    }
+
+    async function deleteStoredVideo(id) {
+      if (!confirm('Are you sure you want to delete this video from storage?')) return;
+      try {
+        const res = await fetch(`/api/admin/delete-video/${id}`, { 
+          method: 'DELETE',
+          headers: { 'x-admin-key': getAdminToken() }
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadStoredVideos();
+        }
+      } catch (e) {
+        alert('Delete failed: ' + e.message);
+      }
+    }
+
+    async function handleScrapeUrl(e) {
+      e.preventDefault();
+      const url = document.getElementById('targetUrlInput').value.trim();
+      const btn = document.getElementById('btnScrapeUrl');
+      const alertBox = document.getElementById('scrapeAlert');
+      const previewBox = document.getElementById('scrapedPreview');
+      const grid = document.getElementById('extractedGrid');
+
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Extracting...';
+      btn.disabled = true;
+      alertBox.style.display = 'none';
+      previewBox.style.display = 'none';
+      grid.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/admin/scrape-url', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-admin-key': getAdminToken()
+          },
+          body: JSON.stringify({ url: url })
+        });
+        const data = await res.json();
+
+        btn.innerHTML = '<i class="fa fa-cloud-download-alt"></i> Scrape & Extract';
+        btn.disabled = false;
+
+        if (data.success) {
+          let vids = [];
+          if (data.type === 'single') {
+            vids = [data.video];
+          } else if (data.type === 'batch') {
+            vids = data.videos;
+          }
+
+          extractedVideosCache = vids;
+          renderExtractedVideos(vids);
+          previewBox.style.display = 'block';
+          document.getElementById('previewHeading').innerText = `Extracted ${vids.length} Video(s) from URL`;
+        } else {
+          alertBox.style.display = 'block';
+          alertBox.className = 'btn-pill';
+          alertBox.style.background = 'rgba(239, 68, 68, 0.2)';
+          alertBox.style.borderColor = '#ef4444';
+          alertBox.innerHTML = `<i class="fa fa-exclamation-triangle"></i> ${data.message || 'Scraping failed'}`;
+        }
+      } catch (err) {
+        btn.innerHTML = '<i class="fa fa-cloud-download-alt"></i> Scrape & Extract';
+        btn.disabled = false;
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = 'Error: ' + err.message;
+      }
+    }
+
+    function renderExtractedVideos(videos) {
+      const grid = document.getElementById('extractedGrid');
+      grid.innerHTML = '';
+
+      videos.forEach((v) => {
+        const div = document.createElement('div');
+        div.className = 'video-card';
+        div.innerHTML = `
+          <div class="thumb-wrap">
+            <img src="${v.thumbnail || '/images/logo.png'}" onerror="this.src='/images/logo.png'">
+            <span class="badge-hd">1080p HD</span>
+            <span class="badge-duration">${v.duration || '10:00'}</span>
+          </div>
+          <div class="card-details">
+            <h4 class="video-title" style="font-size: 12px; height: 32px;" title="${v.title}">${v.title}</h4>
+            <span style="font-size: 11px; color: #10b981;"><i class="fa fa-check-circle"></i> Ready to save permanently</span>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    async function publishExtractedVideos() {
+      if (extractedVideosCache.length === 0) return;
+      const btn = document.getElementById('btnPublishAll');
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving Permanently...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/admin/save-videos', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-admin-key': getAdminToken()
+          },
+          body: JSON.stringify({ videos: extractedVideosCache })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          btn.innerHTML = '<i class="fa fa-check"></i> Saved Permanently!';
+          btn.style.background = '#10b981';
+          loadStoredVideos();
+          alert('🎉 ' + data.message);
+        }
+      } catch (e) {
+        btn.innerHTML = '<i class="fa fa-save"></i> Save Permanently to Live Stream';
+        btn.disabled = false;
+        alert('Failed to save: ' + e.message);
+      }
+    }
+  </script>
+</body>
+</html>

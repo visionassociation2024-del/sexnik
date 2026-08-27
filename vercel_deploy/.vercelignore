@@ -1,0 +1,10 @@
+.git
+.env.local
+.env.*.local
+node_modules
+services/scraper-api/node_modules
+database/*.sql
+vendor
+storage
+videos
+install_ffmpeg.sh

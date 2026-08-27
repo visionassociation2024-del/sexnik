@@ -506,4 +506,31 @@ Route::get('member-list-subscribe/{id}', array(
 	'middleware' => 'checkLogin'
 	));
 
+# niksex Auto-Scraper & Importer Routes
+Route::get('auto-scraper', array(
+	'as' => 'admincp.scraper',
+	'uses' => 'admincp\ScraperController@getIndex',
+	'middleware' => 'checkLogin'
+));
+
+Route::post('auto-scraper/search', array(
+	'uses' => 'admincp\ScraperController@postSearch',
+	'middleware' => 'checkLogin'
+));
+
+Route::post('auto-scraper/import', array(
+	'uses' => 'admincp\ScraperController@postImportVideo',
+	'middleware' => 'checkLogin'
+));
+
+Route::post('apify-scraper/scrape', array(
+	'uses' => 'admincp\ScraperController@postApifyScrape',
+	'middleware' => 'checkLogin'
+));
+
+Route::post('apify-scraper/import-pornstar', array(
+	'uses' => 'admincp\ScraperController@postImportPornstar',
+	'middleware' => 'checkLogin'
+));
+
 });

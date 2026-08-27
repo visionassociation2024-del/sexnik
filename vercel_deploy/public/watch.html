@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>niksex - Watch Video | HD Streaming</title>
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .watch-page-container {
+      max-width: 1440px;
+      margin: 20px auto 60px;
+      padding: 0 20px;
+    }
+    .watch-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 26px;
+    }
+    .watch-main-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .cinema-player-wrap {
+      width: 100%;
+      position: relative;
+      padding-top: 56.25%; /* 16:9 */
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 25px rgba(255, 0, 127, 0.2);
+      border: 1px solid var(--border-pink);
+    }
+    .cinema-player-wrap iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .watch-details-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 20px;
+    }
+    .watch-video-title {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin-bottom: 14px;
+      color: #fff;
+    }
+    .watch-action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+    .watch-stats-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+    .watch-sidebar-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-header {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-header i {
+      color: var(--accent-pink);
+    }
+    .related-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .related-item {
+      display: flex;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 8px;
+    }
+    .related-item:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-pink);
+      transform: translateX(4px);
+    }
+    .related-thumb {
+      width: 120px;
+      height: 70px;
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #000;
+    }
+    .related-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .related-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+      overflow: hidden;
+    }
+    .related-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.3;
+      height: 32px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .related-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 992px) {
+      .watch-layout { grid-template-columns: 1fr; }
+      .watch-page-container { padding: 0 12px; margin-top: 10px; }
+      .watch-video-title { font-size: 17px; }
+      .watch-details-card { padding: 16px; border-radius: 12px; }
+      .cinema-player-wrap { border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="brand-logo">
+        <img src="/images/logo.png" alt="niksex Logo">
+      </a>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search 4K, Arabic, categories..." onkeypress="handleSearch(event)">
+        <button class="search-btn" onclick="executeSearch()" aria-label="Search">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+
+      <div class="nav-actions">
+        <a href="/" class="btn-pill"><i class="fa fa-arrow-left"></i> Browse Videos</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Watch Page Main Layout -->
+  <div class="watch-page-container">
+    <div class="watch-layout">
+
+      <!-- Main Video Column -->
+      <div class="watch-main-col">
+        <!-- 16:9 Cinema Video Player with Auto Sound -->
+        <div class="cinema-player-wrap">
+          <iframe id="cinemaIframe" src="" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <!-- Video Metadata & Interaction Bar -->
+        <div class="watch-details-card">
+          <h1 class="watch-video-title" id="watchTitle">Loading video stream...</h1>
+
+          <div class="watch-action-bar">
+            <div class="watch-stats-group">
+              <span><i class="fa fa-eye" style="color: var(--accent-pink);"></i> <strong id="watchViews">15.4K</strong> views</span>
+              <span><i class="fa fa-clock"></i> <span id="watchDuration">10:00</span></span>
+              <span class="meta-rating"><i class="fa fa-thumbs-up"></i> <span id="watchRating">98%</span></span>
+              <span class="badge-sound"><i class="fa fa-volume-up"></i> Auto Sound Active</span>
+            </div>
+
+            <div class="vote-actions">
+              <button class="btn-vote" onclick="handleVote('like')"><i class="fa fa-thumbs-up"></i> Like</button>
+              <button class="btn-vote" onclick="handleVote('dislike')"><i class="fa fa-thumbs-down"></i></button>
+              <button class="btn-vote" onclick="copyEmbedCode()"><i class="fa fa-code"></i> Embed</button>
+              <button class="btn-vote" onclick="shareVideo()"><i class="fa fa-share-alt"></i> Share</button>
+            </div>
+          </div>
+
+          <!-- Tags Cloud -->
+          <div style="margin-top: 15px;">
+            <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Categories & Tags:</h4>
+            <div id="watchTags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+          </div>
+
+          <!-- Legal Intermediary Notice -->
+          <div class="intermediary-badge" style="margin-top: 20px;">
+            <i class="fa fa-shield-alt" style="color: var(--accent-pink);"></i>
+            <span>
+              <strong>Intermediary Embed Notice:</strong> This video stream is indexed and embedded directly from third-party hosting servers. niksex does not host, upload, or store video media files.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Related Videos Sidebar -->
+      <aside class="watch-sidebar-col">
+        <h3 class="sidebar-header">
+          <i class="fa fa-fire"></i> Recommended Videos
+        </h3>
+        <div class="related-list" id="relatedList">
+          <!-- Dynamically populated via watch.js -->
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav">
+    <a href="/?cat=sex_arabic" class="bottom-nav-item" style="color: #ffd700;">
+      <i class="fa fa-star"></i>
+      <span>Arabic</span>
+    </a>
+    <a href="/" class="bottom-nav-item active">
+      <i class="fa fa-home"></i>
+      <span>Home</span>
+    </a>
+    <a href="/?cat=4k" class="bottom-nav-item">
+      <i class="fa fa-tv"></i>
+      <span>4K HD</span>
+    </a>
+    <a href="/?cat=trending" class="bottom-nav-item">
+      <i class="fa fa-fire"></i>
+      <span>Trending</span>
+    </a>
+    <a href="/?cat=pornhub" class="bottom-nav-item">
+      <i class="fa fa-play-circle"></i>
+      <span>Pornhub</span>
+    </a>
+  </nav>
+
+  <!-- Footer with Legal Disclaimer -->
+  <footer>
+    <img src="/images/logo.png" alt="niksex" class="footer-logo">
+    
+    <div class="disclaimer-container">
+      <div class="disclaimer-badge">
+        <i class="fa fa-shield-alt"></i> <strong>Legal Intermediary & DMCA Compliance Disclaimer</strong>
+      </div>
+      <p class="disclaimer-text">
+        <strong>إخلاء مسؤولية قانوني:</strong> موقع <strong>niksex</strong> هو محرك بحث رقمي، واجهة تشغيل، ووسيط تقني لعرض وتضمين مقاطع الفيديو (Embed Intermediary Interface). موقعنا لا يملك، لا يرفع، لا يستضيف، ولا يخزن أي ملفات فيديو على خوادمه الخاصة. جميع مقاطع الفيديو يتم تشغيلها وتضمينها مباشرة من منصات ومواقع الطرف الثالث الأصلية.
+      </p>
+    </div>
+
+    <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 niksex Platform. All rights reserved. Powered by Vercel Serverless.</p>
+  </footer>
+
+  <script src="/js/watch.js"></script>
+</body>
+</html>

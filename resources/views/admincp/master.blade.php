@@ -126,6 +126,7 @@
 		<ul class="toggle">
 			<li><a <?php if(Request::segment(2)=="video") echo "class='current'" ?> href="{{URL('admincp/video')}}">Manage Existing Videos </a></li>
 			<li><a <?php if(Request::segment(2)=="add-video") echo "class='current'" ?> href="{{URL('admincp/add-video')}}">Add A New Video</a></li>
+			<li><a <?php if(Request::segment(2)=="auto-scraper") echo "class='current'" ?> href="{{URL('admincp/auto-scraper')}}" style="color: #27ae60; font-weight: bold;"><i class="fa fa-cloud-download"></i> Auto Scraper & Importer</a></li>
 		</ul>
 		<h3 class="fa fa-external-link"> Advertisement Management</h3>
 		<ul class="toggle">

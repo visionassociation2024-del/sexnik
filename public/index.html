@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>niksex - WATCH • EXPLORE • ENJOY | Next-Gen Video Streaming</title>
+  <meta name="description" content="Watch high-definition videos with ultra-fast streaming, Sex Arabic collection, infinite scrolling, and modern experience on niksex.">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar (Desktop & Mobile) -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand-logo" onclick="resetAndLoadCategory('trending')">
+        <img src="/images/logo.png" alt="niksex Logo">
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search Arabic, 4K, models, categories..." onkeypress="handleSearch(event)">
+        <button class="search-btn" onclick="executeSearch()" aria-label="Search">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+
+      <div class="nav-actions desktop-only">
+        <button class="btn-pill btn-arabic" onclick="resetAndLoadCategory('sex_arabic')">
+          <i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic
+        </button>
+        <button class="btn-pill active" onclick="resetAndLoadCategory('trending')">
+          <i class="fa fa-fire"></i> Trending
+        </button>
+        <button class="btn-pill" onclick="resetAndLoadCategory('4k')">
+          <i class="fa fa-tv"></i> 4K UHD
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner (Responsive) -->
+  <section class="hero-banner">
+    <div class="banner-content">
+      <div>
+        <h1 class="banner-title">WATCH • EXPLORE • ENJOY</h1>
+        <p class="banner-subtitle">Infinite High-Definition Video Stream powered by niksex Engine</p>
+      </div>
+      <div class="banner-stats desktop-only">
+        <span class="btn-pill" style="border-color: var(--accent-pink);">
+          <i class="fa fa-infinity" style="color: var(--accent-pink);"></i> Infinite Scroll Active
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Scrollbar (Touch Optimized) -->
+  <nav class="categories-bar" id="categoriesBar">
+    <button class="cat-btn cat-arabic" onclick="setCategory(this, 'sex_arabic')"><i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic (عربي)</button>
+    <button class="cat-btn active" onclick="setCategory(this, 'trending')"><i class="fa fa-fire"></i> Trending</button>
+    <button class="cat-btn" onclick="setCategory(this, '4k')"><i class="fa fa-tv"></i> 4K Ultra HD</button>
+    <button class="cat-btn" onclick="setCategory(this, 'pornhub')"><i class="fa fa-play-circle"></i> Pornhub</button>
+    <button class="cat-btn" onclick="setCategory(this, 'xhamster')"><i class="fa fa-film"></i> xHamster</button>
+    <button class="cat-btn" onclick="setCategory(this, 'amateur')"><i class="fa fa-user"></i> Amateur</button>
+    <button class="cat-btn" onclick="setCategory(this, 'vr')"><i class="fa fa-vr-cardboard"></i> VR 360°</button>
+    <button class="cat-btn" onclick="setCategory(this, 'milf')"><i class="fa fa-heart"></i> Milf</button>
+    <button class="cat-btn" onclick="setCategory(this, 'lesbian')"><i class="fa fa-venus-double"></i> Lesbian</button>
+    <button class="cat-btn" onclick="setCategory(this, 'teen')"><i class="fa fa-star"></i> Teen</button>
+    <button class="cat-btn" onclick="setCategory(this, 'popular')"><i class="fa fa-chart-line"></i> Most Viewed</button>
+  </nav>
+
+  <!-- Main Content Grid -->
+  <main class="main-container">
+    <div class="section-header">
+      <h2 class="section-title" id="sectionHeading">
+        <i class="fa fa-play" style="color: var(--accent-pink); font-size: 16px;"></i>
+        <span id="categoryLabel">Trending</span> Videos
+      </h2>
+      <span class="text-muted" id="videoCountLabel" style="font-size: 13px;">Streaming live videos...</span>
+    </div>
+
+    <!-- Grid of Videos -->
+    <div class="videos-grid" id="videosGrid">
+      <!-- Loaded dynamically via app.js -->
+    </div>
+
+    <!-- Infinite Scroll Loader Spinner -->
+    <div id="infiniteLoader" class="infinite-loader" style="display: none;">
+      <div class="spinner-neon"></div>
+      <span id="loaderText">Loading more HD videos...</span>
+    </div>
+
+    <!-- Sentinel element for IntersectionObserver -->
+    <div id="scrollSentinel" style="height: 40px; width: 100%;"></div>
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav">
+    <a href="#" class="bottom-nav-item" onclick="mobileNav('sex_arabic', this)" style="color: #ffd700;">
+      <i class="fa fa-star"></i>
+      <span>Arabic</span>
+    </a>
+    <a href="#" class="bottom-nav-item active" onclick="mobileNav('trending', this)">
+      <i class="fa fa-fire"></i>
+      <span>Trending</span>
+    </a>
+    <a href="#" class="bottom-nav-item" onclick="mobileNav('4k', this)">
+      <i class="fa fa-tv"></i>
+      <span>4K HD</span>
+    </a>
+    <a href="#" class="bottom-nav-item" onclick="focusMobileSearch(this)">
+      <i class="fa fa-search"></i>
+      <span>Search</span>
+    </a>
+    <a href="#" class="bottom-nav-item" onclick="mobileNav('pornhub', this)">
+      <i class="fa fa-play-circle"></i>
+      <span>Pornhub</span>
+    </a>
+  </nav>
+
+  <!-- Footer with Full Legal Intermediary Disclaimer -->
+  <footer>
+    <img src="/images/logo.png" alt="niksex" class="footer-logo">
+    
+    <div class="disclaimer-container">
+      <div class="disclaimer-badge">
+        <i class="fa fa-shield-alt"></i> <strong>Legal Intermediary & DMCA Compliance Disclaimer</strong>
+      </div>
+      <p class="disclaimer-text">
+        <strong>إخلاء مسؤولية قانوني:</strong> موقع <strong>niksex</strong> هو محرك بحث رقمي، واجهة تشغيل، ووسيط تقني لعرض وتضمين مقاطع الفيديو (Embed Intermediary Interface). موقعنا لا يملك، لا يرفع، لا يستضيف، ولا يخزن أي ملفات فيديو على خوادمه الخاصة. جميع مقاطع الفيديو يتم تشغيلها وتضمينها مباشرة من منصات ومواقع الطرف الثالث الأصلية.
+      </p>
+    </div>
+
+    <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 niksex Platform. All rights reserved. Powered by Vercel Serverless.</p>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

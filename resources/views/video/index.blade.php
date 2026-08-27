@@ -2,19 +2,27 @@
 @section('title', $viewvideo->title_name)
 @section('content')
 <?php
-require $_SERVER['DOCUMENT_ROOT'].'/adult/src/Cloudinary.php';
-require $_SERVER['DOCUMENT_ROOT'].'/adult/src/Uploader.php';
-require $_SERVER['DOCUMENT_ROOT'].'/adult/src/Api.php';
-\Cloudinary::config(array(
-    "cloud_name" => "longtest",
-    "api_key" => "855937926747893",
-    "api_secret" => "fcX2vAHf1sxr2PNhuQZrYiEZvrw"
-));
+if (file_exists(base_path('src/Cloudinary.php'))) {
+    require_once base_path('src/Cloudinary.php');
+    require_once base_path('src/Uploader.php');
+    require_once base_path('src/Api.php');
+    \Cloudinary::config(array(
+        "cloud_name" => "longtest",
+        "api_key" => "855937926747893",
+        "api_secret" => "fcX2vAHf1sxr2PNhuQZrYiEZvrw"
+    ));
+}
 $v_setting = GetVideoConfig();
 $get_ads_video = GetPlayerAds();
-if($viewvideo->website=="www.pornhub.com"  or $viewvideo->website=="www.xvideos.com" or $viewvideo->website=="www.youporn.com" or $viewvideo->website=="www.4tube.com" or $viewvideo->website=="lubetube.com" or $viewvideo->website=="xhamster.com"){
-    $reset_data=ResetURLVideo($viewvideo->video_url,$viewvideo->website);
-    $video_url=$reset_data['link'];
+
+$isEmbed = false;
+$embedSrc = '';
+if (!empty($viewvideo->video_url) && (strpos($viewvideo->video_url, 'embed') !== false || strpos($viewvideo->video_url, 'http') === 0)) {
+    $isEmbed = true;
+    $embedSrc = $viewvideo->video_url;
+} elseif (!empty($viewvideo->video_src) && (strpos($viewvideo->video_src, 'embed') !== false)) {
+    $isEmbed = true;
+    $embedSrc = $viewvideo->video_src;
 }
 ?>
 <script src="{{URL::asset('public/assets/js/jquery.timeago.js')}}" type="text/javascript" charset="utf-8"></script>
@@ -29,41 +37,34 @@ $(document).ready(function (){
         <h2>You're watching : {{ $viewvideo->title_name}}</h2>
         <div class="row">
             <div class="col-sm-9 box-video">
-                <script type="text/javascript" src="{{URL('public/assets/js/jwplayer.js')}}"></script>
-                <script type="text/javascript">jwplayer.key="6rm7LKq8lGG9cLQNtZGQgXG29NtTNwSPgusQMA==";</script>
-                <div id="video-player"></div>
-                <script type='text/javascript'>
-                    var player= jwplayer('video-player');
-                    player.setup({
-                        width:'100%',
-                        height:'350px',
-                        aspectratio: '16:9',
-                        image: '<?php  echo $viewvideo->poster?>',
-                        <?php if($viewvideo->website=="www.pornhub.com" or $viewvideo->website=="www.xvideos.com" or $viewvideo->website=="www.youporn.com" or $viewvideo->website=="www.4tube.com" or $viewvideo->website=="lubetube.com" or $viewvideo->website=="xhamster.com"){?>
-                        sources: [{
-                            file: "<?=$video_url?>",
-                            label: "SD",
-                            "default": "true",
-                            type:'mp4'
-                        },{
-                            file: "<?=$video_url?>",
-                            label: "HD",
-                            type:'mp4'
-                          }]
-                        <?php }else{?>
-                        sources: [{
-                            file: "<?= ($viewvideo->video_sd!=NULL)? $viewvideo->video_sd : $viewvideo->video_src ?>",
-                            label: "SD",
-                            "default": "true",
-                            type:'mp4'
-                          },{
-                            file: "<?=$viewvideo->video_src ?>",
-                            label: "HD",
-                            type:'mp4'
-                          }]
-                        <?php }?>
-                    });
-                </script>
+                @if($isEmbed)
+                    <div class="embed-responsive embed-responsive-16by9" style="background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); min-height: 420px;">
+                        <iframe class="embed-responsive-item" src="{{ $embedSrc }}" frameborder="0" width="100%" height="450" scrolling="no" allowfullscreen style="border:0;"></iframe>
+                    </div>
+                @else
+                    <script type="text/javascript" src="{{URL('public/assets/js/jwplayer.js')}}"></script>
+                    <script type="text/javascript">jwplayer.key="6rm7LKq8lGG9cLQNtZGQgXG29NtTNwSPgusQMA==";</script>
+                    <div id="video-player"></div>
+                    <script type='text/javascript'>
+                        var player= jwplayer('video-player');
+                        player.setup({
+                            width:'100%',
+                            height:'450px',
+                            aspectratio: '16:9',
+                            image: '<?php echo $viewvideo->poster?>',
+                            sources: [{
+                                file: "<?= ($viewvideo->video_sd!=NULL)? $viewvideo->video_sd : $viewvideo->video_src ?>",
+                                label: "SD",
+                                "default": "true",
+                                type:'mp4'
+                              },{
+                                file: "<?=$viewvideo->video_src ?>",
+                                label: "HD",
+                                type:'mp4'
+                              }]
+                        });
+                    </script>
+                @endif
                 <style type="text/css">
                     #video-player { outline: 0px }
                 </style>
