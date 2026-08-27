@@ -351,7 +351,7 @@ function createTikTokReelSlideElement(v, index) {
 
   slide.innerHTML = `
     <img class="tiktok-reel-bg" src="${poster}" alt="" onerror="this.style.display='none'">
-    <video class="tiktok-reel-video" src="${videoSrc}" poster="${poster}" loop playsinline preload="metadata" data-index="${index}" onclick="toggleTikTokPlay(${index})"></video>
+    <video class="tiktok-reel-video" src="${videoSrc}" poster="${poster}" loop playsinline webkit-playsinline x5-playsinline preload="${index < 3 ? 'auto' : 'metadata'}" data-index="${index}" onclick="toggleTikTokPlay(${index})"></video>
     <div class="tiktok-reel-play-btn" id="playIndicator_${index}"><i class="fa fa-play"></i></div>
 
     <!-- Right Sidebar Floating Actions -->
@@ -407,6 +407,27 @@ function createTikTokReelSlideElement(v, index) {
   return slide;
 }
 
+// Prebuffer upcoming reels for 0-second lag
+function prebufferUpcomingReels(currentIndex) {
+  const nextSlide1 = document.querySelector(`.tiktok-reel-slide[data-index="${currentIndex + 1}"]`);
+  if (nextSlide1) {
+    const v1 = nextSlide1.querySelector('.tiktok-reel-video');
+    if (v1 && v1.preload !== 'auto') {
+      v1.preload = 'auto';
+      v1.load();
+    }
+  }
+
+  const nextSlide2 = document.querySelector(`.tiktok-reel-slide[data-index="${currentIndex + 2}"]`);
+  if (nextSlide2) {
+    const v2 = nextSlide2.querySelector('.tiktok-reel-video');
+    if (v2 && v2.preload !== 'auto') {
+      v2.preload = 'auto';
+      v2.load();
+    }
+  }
+}
+
 // Observer for Swiping and Auto-Playing active slide
 function setupReelsIntersectionObserver() {
   const slides = document.querySelectorAll('.tiktok-reel-slide');
@@ -423,9 +444,18 @@ function setupReelsIntersectionObserver() {
       if (entry.isIntersecting && entry.intersectionRatio >= 0.65) {
         activeReelSlideIndex = index;
         if (vid) {
+          vid.preload = 'auto';
           vid.muted = isGlobalTikTokMuted;
-          vid.play().catch(() => {});
+          const playPromise = vid.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              vid.muted = true;
+              vid.play().catch(() => {});
+            });
+          }
         }
+
+        prebufferUpcomingReels(index);
 
         // Check if near the end, prefetch next batch
         if (index >= tiktokReelsList.length - 3 && !isReelsLoading) {

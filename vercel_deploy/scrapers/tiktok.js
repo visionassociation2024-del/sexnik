@@ -122,6 +122,7 @@ async function scrapeTikPornFeed(query = '', page = 1) {
     });
 
     // 2. Extract from HTML video card thumbnails
+    const htmlCards = [];
     $('a[href*="/video/"]').each((i, el) => {
       const href = $(el).attr('href') || '';
       const match = href.match(/\/video\/(\d+)/);
@@ -149,7 +150,7 @@ async function scrapeTikPornFeed(query = '', page = 1) {
       const likes = parent.find('.RelatedSlide-module-scss-module__JlqO6q__likeIcon').text().trim() 
         || `${Math.floor(Math.random() * 500 + 50)}`;
 
-      videos.push({
+      htmlCards.push({
         id: `tik_${vidId}`,
         original_id: vidId,
         source: 'tiktok',
@@ -162,6 +163,7 @@ async function scrapeTikPornFeed(query = '', page = 1) {
         rating: '98%',
         video_url: '',
         embed_url: '',
+        direct_video_url: '',
         category: 'tiktok',
         is_vertical: true,
         is_tiktok: true,
@@ -169,13 +171,40 @@ async function scrapeTikPornFeed(query = '', page = 1) {
       });
     });
 
+    // 3. Resolve direct MP4 URLs in parallel for all HTML cards
+    if (htmlCards.length > 0) {
+      const resolvedList = await Promise.all(
+        htmlCards.map(async (card) => {
+          try {
+            const details = await scrapeTikPornSingle(card.original_id);
+            if (details && details.direct_video_url) {
+              card.direct_video_url = details.direct_video_url;
+              card.video_url = details.direct_video_url;
+              card.embed_url = details.direct_video_url;
+              card.duration = details.duration || card.duration;
+              if (details.title && details.title !== `TikTok Video #${card.original_id}`) {
+                card.title = details.title;
+              }
+              if (details.tags && details.tags.length > 0) {
+                card.tags = details.tags;
+              }
+              return card;
+            }
+          } catch (err) {}
+          return null;
+        })
+      );
+
+      resolvedList.filter(Boolean).forEach(c => videos.push(c));
+    }
+
     return {
       success: true,
       source: 'tiktok',
       query: query,
       page: parseInt(page, 10) || 1,
       count: videos.length,
-      videos: videos
+      videos: videos.filter(v => !!v.direct_video_url)
     };
   } catch (err) {
     console.error('[TikTok Scraper Error]', err.message);
