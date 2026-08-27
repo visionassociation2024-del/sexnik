@@ -125,6 +125,9 @@
         <button class="btn-pill btn-arabic" onclick="resetAndLoadCategory('sex_arabic')">
           <i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic
         </button>
+        <button class="btn-pill btn-gifs" onclick="loadGifsView(this)" style="background: rgba(255, 0, 127, 0.2); border-color: var(--accent-pink);">
+          <i class="fa fa-images" style="color: #ff007f;"></i> GIFs (متحركة 🔞)
+        </button>
         <button class="btn-pill btn-foryou" onclick="loadForYouFeed()">
           <i class="fa fa-magic" style="color: #c084fc;"></i> For You
         </button>
@@ -144,9 +147,11 @@
   <!-- Categories Scrollbar (Touch Optimized) -->
   <nav class="categories-bar" id="categoriesBar">
     <button class="cat-btn cat-arabic" onclick="setCategory(this, 'sex_arabic')"><i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic (عربي)</button>
+    <button class="cat-btn cat-gifs" onclick="loadGifsView(this)" style="background: linear-gradient(135deg, rgba(255, 0, 127, 0.25), rgba(157, 78, 221, 0.25)); border-color: var(--accent-pink); color: #fff; font-weight: 700;"><i class="fa fa-images" style="color: var(--accent-pink);"></i> GIFs (متحركة 🔞)</button>
     <button class="cat-btn cat-foryou" onclick="loadForYouFeed(this)"><i class="fa fa-magic"></i> For You (مخصص لك)</button>
     <button class="cat-btn" onclick="openCategoriesModal()"><i class="fa fa-th-large"></i> All Categories (التصنيفات)</button>
     <button class="cat-btn active" onclick="setCategory(this, 'trending')"><i class="fa fa-fire"></i> Trending</button>
+
     <button class="cat-btn" onclick="setCategory(this, '4k')"><i class="fa fa-tv"></i> 4K UHD</button>
     <button class="cat-btn" onclick="setCategory(this, 'amateur')"><i class="fa fa-user"></i> Amateur</button>
     <button class="cat-btn" onclick="setCategory(this, 'milf')"><i class="fa fa-heart"></i> Milf</button>
@@ -265,11 +270,34 @@
     </div>
   </div>
 
+  <!-- Adult GIFs Lightbox Modal with SmartLink Action -->
+  <div class="gif-modal-backdrop" id="gifModal" onclick="closeGifModal(event)">
+    <div class="gif-modal-content" onclick="event.stopPropagation()">
+      <button class="gif-modal-close" onclick="closeGifModal()">&times;</button>
+      <div class="gif-modal-media-wrap" id="gifModalMedia"></div>
+      <div class="gif-modal-body">
+        <h3 id="gifModalTitle" style="font-size: 16px; color: #fff; margin-bottom: 8px;">🔥 Hot HD Model GIF</h3>
+        <div class="gif-modal-actions">
+          <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-gif-action btn-gif-watch-hd">
+            <i class="fa fa-play-circle"></i> Watch Full 4K Video Stream
+          </a>
+          <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-gif-action" style="background: rgba(255,255,255,0.1); color: #fff;">
+            <i class="fa fa-download"></i> Download HD GIF
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-nav">
     <a class="bottom-nav-item" onclick="mobileNav('sex_arabic', this)" style="color: #ffd700;">
       <i class="fa fa-star"></i>
       <span>Arabic</span>
+    </a>
+    <a class="bottom-nav-item" onclick="loadGifsView(this)" style="color: var(--accent-pink);">
+      <i class="fa fa-images"></i>
+      <span>GIFs</span>
     </a>
     <a class="bottom-nav-item active" onclick="mobileNav('trending', this)">
       <i class="fa fa-fire"></i>
@@ -279,15 +307,12 @@
       <i class="fa fa-th-large"></i>
       <span>Categories</span>
     </a>
-    <a class="bottom-nav-item" onclick="loadForYouFeedMobile(this)" style="color: #c084fc;">
-      <i class="fa fa-magic"></i>
-      <span>For You</span>
-    </a>
-    <a class="bottom-nav-item" onclick="loadFavoritesMobile(this)" style="color: #ff007f;">
-      <i class="fa fa-heart"></i>
+    <a class="bottom-nav-item" onclick="loadFavoritesView(this)">
+      <i class="fa fa-heart" style="color: #ff007f;"></i>
       <span>Favorites</span>
     </a>
   </nav>
+
 
   <!-- Footer with Legal Disclaimer & Static Links -->
   <footer>

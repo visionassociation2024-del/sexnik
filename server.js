@@ -205,6 +205,40 @@ app.get('/api/videos', async (req, res) => {
     return res.json(responsePayload);
 });
 
+// 1.5 API: Hot Adult GIFs Feed with Hidden Smartlink Monetization Support
+const { fetchAdultGifs, CURATED_GIFS } = require('./scrapers/gifs');
+
+app.get('/api/gifs', async (req, res) => {
+    const { q = 'hot', page = 1 } = req.query;
+    const pageNum = parseInt(page, 10) || 1;
+    const cacheKey = `gifs_${q}_${pageNum}`;
+
+    const cached = getCached(cacheKey);
+    if (cached) return res.json(cached);
+
+    try {
+        const gifData = await fetchAdultGifs(q, pageNum);
+        const payload = {
+            success: true,
+            category: 'gifs',
+            page: pageNum,
+            count: gifData.gifs.length,
+            gifs: gifData.gifs
+        };
+        setCache(cacheKey, payload);
+        return res.json(payload);
+    } catch (err) {
+        return res.json({
+            success: true,
+            category: 'gifs',
+            page: pageNum,
+            count: CURATED_GIFS.length,
+            gifs: CURATED_GIFS
+        });
+    }
+});
+
+
 // 2. API: Fast Search across sources
 app.get('/api/search', async (req, res) => {
     const { q = 'hd', page = 1 } = req.query;

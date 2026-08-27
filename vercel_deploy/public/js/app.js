@@ -171,6 +171,7 @@ function setCategory(btn, category) {
 }
 
 function resetAndLoadCategory(category) {
+  isGifsMode = false;
   isSearchMode = false;
   isHistoryMode = false;
   isFavoritesMode = false;
@@ -200,6 +201,7 @@ function loadForYouFeed(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
+  isGifsMode = false;
   isSearchMode = false;
   isHistoryMode = false;
   isFavoritesMode = false;
@@ -208,6 +210,7 @@ function loadForYouFeed(btn) {
   hasMore = true;
   renderedVideoIds.clear();
   currentVideos = [];
+
 
   document.getElementById('btnClearHistory').style.display = 'none';
   document.getElementById('categoryLabel').innerText = 'FOR YOU (مخصص لك)';
@@ -804,3 +807,123 @@ function getSkeletonHTML(count = 8) {
   }
   return html;
 }
+
+/* ================= Adult GIFs (صور متحركة 🔞) System ================= */
+let isGifsMode = false;
+
+async function loadGifsView(btn) {
+  if (btn) {
+    document.querySelectorAll('.cat-btn, .btn-pill, .bottom-nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  isGifsMode = true;
+  isHistoryMode = false;
+  isFavoritesMode = false;
+  isForYouMode = false;
+  isSearchMode = false;
+  currentPage = 1;
+  hasMore = true;
+  renderedVideoIds.clear();
+
+  const grid = document.getElementById('videosGrid');
+  document.getElementById('categoryLabel').innerHTML = '<i class="fa fa-images" style="color: var(--accent-pink);"></i> Hot Adult GIFs (صور متحركة 🔞)';
+  document.getElementById('videoCountLabel').innerText = 'Loading animated GIFs...';
+  document.getElementById('btnClearHistory').style.display = 'none';
+
+  grid.innerHTML = getSkeletonHTML(8);
+
+  try {
+    const res = await fetch(`/api/gifs?page=1`);
+    const data = await res.json();
+
+    if (data.success && data.gifs && data.gifs.length > 0) {
+      grid.innerHTML = '';
+      document.getElementById('videoCountLabel').innerText = `${data.gifs.length} Animated GIFs`;
+      data.gifs.forEach(gif => {
+        grid.appendChild(createGifCardElement(gif));
+      });
+    } else {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">No GIFs available at the moment.</div>';
+    }
+  } catch (err) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">Failed to load GIFs feed.</div>';
+  }
+}
+
+// Create GIF Card with Automatic Hidden SmartLink Popunder on Click
+function createGifCardElement(gif) {
+  const card = document.createElement('div');
+  card.className = 'gif-card animate-fade';
+
+  card.onclick = (e) => {
+    // 1. Hidden High-Paying Ad Trigger on Click
+    try {
+      const adWin = window.open(SMARTLINK_URL, '_blank');
+      if (adWin) {
+        adWin.blur();
+        window.focus();
+      }
+    } catch(err) {}
+
+    // 2. Open Full HD GIF Lightbox
+    openGifModal(gif);
+  };
+
+  const mediaSrc = gif.gif_url || gif.mp4_url || gif.thumbnail;
+  const isMp4 = mediaSrc.endsWith('.mp4');
+
+  card.innerHTML = `
+    <div class="gif-thumb-wrap">
+      ${isMp4 
+        ? `<video src="${mediaSrc}" autoplay loop muted playsinline></video>` 
+        : `<img src="${mediaSrc}" alt="${gif.title}" loading="lazy" onerror="this.src='/images/logo.png'">`
+      }
+      <span class="badge-gif-hot"><i class="fa fa-fire"></i> HOT</span>
+      <span class="badge-gif-type"><i class="fa fa-film"></i> GIF</span>
+    </div>
+    <div class="gif-details">
+      <h3 class="gif-title" title="${gif.title}">${gif.title}</h3>
+      <div class="gif-meta">
+        <span><i class="fa fa-eye"></i> ${gif.views || '120K'}</span>
+        <span style="color: var(--accent-pink);"><i class="fa fa-heart"></i> ${gif.likes || '9.5K'}</span>
+      </div>
+    </div>
+  `;
+
+  return card;
+}
+
+// Open GIF Lightbox Modal
+function openGifModal(gif) {
+  const modal = document.getElementById('gifModal');
+  const mediaWrap = document.getElementById('gifModalMedia');
+  const titleEl = document.getElementById('gifModalTitle');
+
+  if (!modal || !mediaWrap) return;
+
+  const mediaSrc = gif.gif_url || gif.mp4_url || gif.thumbnail;
+  const isMp4 = mediaSrc.endsWith('.mp4');
+
+  if (isMp4) {
+    mediaWrap.innerHTML = `<video src="${mediaSrc}" controls autoplay loop playsinline style="max-height: 70vh; width: 100%; object-fit: contain;"></video>`;
+  } else {
+    mediaWrap.innerHTML = `<img src="${mediaSrc}" alt="${gif.title}" style="max-height: 70vh; width: 100%; object-fit: contain;">`;
+  }
+
+  if (titleEl) titleEl.innerText = gif.title || 'Hot Model HD GIF';
+
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+// Close GIF Lightbox Modal
+function closeGifModal(e) {
+  if (e && e.target && e.target.classList.contains('btn-gif-action')) return;
+  const modal = document.getElementById('gifModal');
+  const mediaWrap = document.getElementById('gifModalMedia');
+  if (modal) modal.classList.remove('active');
+  if (mediaWrap) mediaWrap.innerHTML = '';
+  document.body.style.overflow = '';
+}
+
