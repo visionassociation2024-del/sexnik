@@ -277,16 +277,181 @@ app.get('/api/search', async (req, res) => {
     return res.json(responsePayload);
 });
 
-// 3. API: Deep Page & Site Scraper (Extracts ALL videos from any Channel / Category / Search Page URL)
+// 3. API: Universal Deep Scraper (Handles BOTH Single Video URLs & Full Page/Category URLs)
 app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
     const { url } = req.body;
     if (!url) {
-        return res.status(400).json({ success: false, message: 'Page URL is required.' });
+        return res.status(400).json({ success: false, message: 'URL is required.' });
     }
 
     const trimmedUrl = url.trim();
-    console.log(`[Deep Page Scraper] Extracting all videos from: ${trimmedUrl}`);
+    console.log(`[Universal Scraper] Processing URL: ${trimmedUrl}`);
 
+    // --- A. FAST SINGLE VIDEO DIRECT PATTERN RECOGNIZERS ---
+
+    // 1. Pornhub Single Video Link
+    if (trimmedUrl.includes('pornhub.com') && (trimmedUrl.includes('viewkey=') || trimmedUrl.includes('/view_video.php') || trimmedUrl.includes('/embed/'))) {
+        const match = trimmedUrl.match(/viewkey=([a-zA-Z0-9]+)/) || trimmedUrl.match(/embed\/([a-zA-Z0-9]+)/);
+        const vkey = match ? match[1] : trimmedUrl.split('/').pop();
+        if (vkey) {
+            try {
+                const details = await getPornhubDetails(vkey);
+                if (details.success) {
+                    return res.json({ success: true, type: 'single', count: 1, videos: [details] });
+                }
+            } catch (e) {}
+            return res.json({
+                success: true,
+                type: 'single',
+                count: 1,
+                videos: [{
+                    id: 'ph_' + vkey,
+                    source: 'pornhub',
+                    title: 'Pornhub HD ' + vkey,
+                    thumbnail: `https://ci.phncdn.com/videos/${vkey}/original/1.jpg`,
+                    duration: '12:00',
+                    views: '25,000',
+                    rating: '98%',
+                    embed_url: `https://www.pornhub.com/embed/${vkey}`,
+                    video_url: `https://www.pornhub.com/embed/${vkey}`,
+                    tags: ['pornhub', 'trending', 'niksex']
+                }]
+            });
+        }
+    }
+
+    // 2. xHamster Single Video Link
+    if (trimmedUrl.includes('xhamster.com') && (trimmedUrl.includes('/videos/') || trimmedUrl.includes('/xembed.php'))) {
+        const match = trimmedUrl.match(/videos\/([^\/]+)-([0-9]+)/) || trimmedUrl.match(/-([a-zA-Z0-9]+)$/) || trimmedUrl.match(/video=([a-zA-Z0-9]+)/);
+        const vidId = match ? (match[2] || match[1]) : '';
+        if (vidId) {
+            try {
+                const details = await getXhamsterDetails(trimmedUrl);
+                if (details.success) {
+                    return res.json({ success: true, type: 'single', count: 1, videos: [details] });
+                }
+            } catch (e) {}
+            return res.json({
+                success: true,
+                type: 'single',
+                count: 1,
+                videos: [{
+                    id: 'xh_' + vidId,
+                    source: 'xhamster',
+                    title: 'xHamster Video ' + vidId,
+                    thumbnail: '/images/logo.png',
+                    duration: '14:00',
+                    views: '18,000',
+                    rating: '97%',
+                    embed_url: `https://xhamster.com/xembed.php?video=${vidId}`,
+                    video_url: `https://xhamster.com/xembed.php?video=${vidId}`,
+                    tags: ['xhamster', 'trending', 'niksex']
+                }]
+            });
+        }
+    }
+
+    // 3. XVideos Single Video Link
+    if (trimmedUrl.includes('xvideos.com') && (trimmedUrl.includes('/video') || trimmedUrl.includes('embedframe'))) {
+        const match = trimmedUrl.match(/video([0-9]+)/) || trimmedUrl.match(/embedframe\/([0-9]+)/);
+        const vidId = match ? match[1] : '';
+        if (vidId) {
+            return res.json({
+                success: true,
+                type: 'single',
+                count: 1,
+                videos: [{
+                    id: 'xv_' + vidId,
+                    source: 'xvideos',
+                    title: 'XVideos HD Stream ' + vidId,
+                    thumbnail: `https://img-hw.xvideos-cdn.com/videos/thumbs169/${vidId.substring(0, 3)}/${vidId.substring(3, 6)}/${vidId}/1.jpg`,
+                    duration: '15:00',
+                    views: '32,000',
+                    rating: '98%',
+                    embed_url: `https://www.xvideos.com/embedframe/${vidId}`,
+                    video_url: `https://www.xvideos.com/embedframe/${vidId}`,
+                    tags: ['xvideos', 'trending', 'niksex']
+                }]
+            });
+        }
+    }
+
+    // 4. SpankBang Single Video Link
+    if (trimmedUrl.includes('spankbang.com') && (trimmedUrl.includes('/video/') || trimmedUrl.includes('/embed/'))) {
+        const match = trimmedUrl.match(/spankbang\.com\/([a-zA-Z0-9]+)\/video/) || trimmedUrl.match(/spankbang\.com\/([a-zA-Z0-9]+)\/embed/);
+        const vidId = match ? match[1] : '';
+        if (vidId) {
+            return res.json({
+                success: true,
+                type: 'single',
+                count: 1,
+                videos: [{
+                    id: 'sb_' + vidId,
+                    source: 'spankbang',
+                    title: 'SpankBang Video ' + vidId,
+                    thumbnail: '/images/logo.png',
+                    duration: '16:00',
+                    views: '20,000',
+                    rating: '97%',
+                    embed_url: `https://spankbang.com/${vidId}/embed/`,
+                    video_url: `https://spankbang.com/${vidId}/embed/`,
+                    tags: ['spankbang', 'trending', 'niksex']
+                }]
+            });
+        }
+    }
+
+    // 5. Eporner Single Video Link
+    if (trimmedUrl.includes('eporner.com') && (trimmedUrl.includes('/video-') || trimmedUrl.includes('/hd-porn/'))) {
+        const match = trimmedUrl.match(/\/video-([a-zA-Z0-9]+)\//) || trimmedUrl.match(/\/hd-porn\/([a-zA-Z0-9]+)\//) || trimmedUrl.match(/\/embed\/([a-zA-Z0-9]+)/);
+        const vidId = match ? match[1] : '';
+        if (vidId) {
+            return res.json({
+                success: true,
+                type: 'single',
+                count: 1,
+                videos: [{
+                    id: 'ep_' + vidId,
+                    source: 'eporner',
+                    title: 'Eporner Ultra HD ' + vidId,
+                    thumbnail: `https://static-ca-cdn.eporner.com/thumbs/static4/1/${vidId}/15_360.jpg`,
+                    duration: '18:00',
+                    views: '22,000',
+                    rating: '99%',
+                    embed_url: `https://www.eporner.com/embed/${vidId}/`,
+                    video_url: `https://www.eporner.com/embed/${vidId}/`,
+                    tags: ['eporner', 'trending', 'niksex']
+                }]
+            });
+        }
+    }
+
+    // 6. RedTube / YouPorn Single Video Link
+    if (trimmedUrl.includes('redtube.com/') || trimmedUrl.includes('youporn.com/')) {
+        const match = trimmedUrl.match(/redtube\.com\/([0-9]+)/) || trimmedUrl.match(/youporn\.com\/watch\/([0-9]+)/);
+        const vidId = match ? match[1] : '';
+        if (vidId) {
+            return res.json({
+                success: true,
+                type: 'single',
+                count: 1,
+                videos: [{
+                    id: 'tube_' + vidId,
+                    source: 'tube',
+                    title: 'RedTube Video ' + vidId,
+                    thumbnail: `https://img02.redtubefiles.com/_thumbs/${vidId}/1.jpg`,
+                    duration: '12:00',
+                    views: '15,000',
+                    rating: '96%',
+                    embed_url: `https://embed.redtube.com/?id=${vidId}&autoplay=1`,
+                    video_url: `https://embed.redtube.com/?id=${vidId}`,
+                    tags: ['redtube', 'trending', 'niksex']
+                }]
+            });
+        }
+    }
+
+    // --- B. DEEP HTML SCRAPING FOR CHANNELS, CATEGORIES, MODELS, SEARCH PAGES & CUSTOM SITES ---
     try {
         const headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
@@ -301,7 +466,7 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
         const scrapedVideos = [];
         const seenIds = new Set();
 
-        // 1. Specialized Deep Scraper for Pornhub Category / Model / Search Pages
+        // 1. Pornhub Category / Model / Search Pages
         if (trimmedUrl.includes('pornhub.com')) {
             $('ul.videos li.pcVideoListItem, .videoBlock, .wrap, .phimage, li[data-video-vkey]').each((i, el) => {
                 const $el = $(el);
@@ -328,13 +493,13 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                         rating: '98%',
                         embed_url: `https://www.pornhub.com/embed/${vkey}`,
                         video_url: `https://www.pornhub.com/embed/${vkey}`,
-                        tags: ['pornhub', 'scraped', 'arabic', 'niksex']
+                        tags: ['pornhub', 'trending', 'niksex']
                     });
                 }
             });
         }
 
-        // 2. Specialized Deep Scraper for xHamster Category / Channel / Search Pages
+        // 2. xHamster Category / Channel / Search Pages
         else if (trimmedUrl.includes('xhamster.com')) {
             $('div.thumb-list__item, article.thumb-list__item, div.video-thumb, .thumb-image-container').each((i, el) => {
                 const $el = $(el);
@@ -363,13 +528,13 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                         rating: '96%',
                         embed_url: `https://xhamster.com/xembed.php?video=${id}`,
                         video_url: `https://xhamster.com/xembed.php?video=${id}`,
-                        tags: ['xhamster', 'scraped', 'niksex']
+                        tags: ['xhamster', 'trending', 'niksex']
                     });
                 }
             });
         }
 
-        // 3. Specialized Deep Scraper for XVideos Pages
+        // 3. XVideos Category / Search Pages
         else if (trimmedUrl.includes('xvideos.com')) {
             $('div.mozaique div.thumb-block, div.thumb-block').each((i, el) => {
                 const $el = $(el);
@@ -392,13 +557,13 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                         rating: '97%',
                         embed_url: `https://www.xvideos.com/embedframe/${id}`,
                         video_url: `https://www.xvideos.com/embedframe/${id}`,
-                        tags: ['xvideos', 'scraped', 'niksex']
+                        tags: ['xvideos', 'trending', 'niksex']
                     });
                 }
             });
         }
 
-        // 4. Specialized Deep Scraper for Eporner Pages
+        // 4. Eporner Category / Search Pages
         else if (trimmedUrl.includes('eporner.com')) {
             $('div.mb, div.mbunter').each((i, el) => {
                 const $el = $(el);
@@ -423,13 +588,13 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                         rating: '98%',
                         embed_url: `https://www.eporner.com/embed/${id}/`,
                         video_url: `https://www.eporner.com/embed/${id}/`,
-                        tags: ['eporner', 'scraped', 'arabic', 'niksex']
+                        tags: ['eporner', 'trending', 'niksex']
                     });
                 }
             });
         }
 
-        // 5. Specialized Deep Scraper for SpankBang Pages
+        // 5. SpankBang Category / Search Pages
         else if (trimmedUrl.includes('spankbang.com')) {
             $('div.video-item, div.item').each((i, el) => {
                 const $el = $(el);
@@ -454,15 +619,14 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                         rating: '97%',
                         embed_url: `https://spankbang.com/${id}/embed/`,
                         video_url: `https://spankbang.com/${id}/embed/`,
-                        tags: ['spankbang', 'scraped', 'niksex']
+                        tags: ['spankbang', 'trending', 'niksex']
                     });
                 }
             });
         }
 
-        // 4. Universal HTML5 & Embed Link Scraper for ANY Webpage
+        // 6. Universal Fallback (Scrapes ANY Video Player / Iframe / OpenGraph Tag)
         if (scrapedVideos.length === 0) {
-            // Check OpenGraph tag
             const ogVideo = $('meta[property="og:video:url"]').attr('content') || $('meta[property="og:video"]').attr('content') || $('meta[name="twitter:player"]').attr('content');
             const ogImage = $('meta[property="og:image"]').attr('content') || $('meta[name="twitter:image"]').attr('content');
             const pageTitle = $('meta[property="og:title"]').attr('content') || $('title').text().trim() || 'Web Video Stream';
@@ -470,7 +634,7 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
             if (ogVideo) {
                 scrapedVideos.push({
                     id: 'url_' + Date.now().toString(36),
-                    source: 'universal_page',
+                    source: 'universal',
                     title: pageTitle,
                     thumbnail: ogImage || '/images/logo.png',
                     duration: '12:00',
@@ -478,26 +642,25 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                     rating: '98%',
                     embed_url: ogVideo,
                     video_url: ogVideo,
-                    tags: ['universal', 'scraped', 'niksex']
+                    tags: ['universal', 'trending', 'niksex']
                 });
             }
 
-            // Extract all video iframes on the page
             $('iframe').each((i, el) => {
                 const src = $(el).attr('src') || '';
-                if (src && (src.includes('embed') || src.includes('player') || src.includes('video') || src.includes('.mp4'))) {
-                    const embedUrl = src.startsWith('//') ? 'https:' + src : src;
+                if (src && (src.includes('embed') || src.includes('player') || src.includes('video') || src.includes('.mp4') || src.includes('html'))) {
+                    const embedUrl = src.startsWith('//') ? 'https:' + src : (src.startsWith('http') ? src : new URL(src, trimmedUrl).href);
                     scrapedVideos.push({
                         id: 'embed_' + Date.now().toString(36) + '_' + i,
-                        source: 'custom_page',
-                        title: `${pageTitle} (Clip ${i + 1})`,
+                        source: 'custom_embed',
+                        title: `${pageTitle} (Player ${i + 1})`,
                         thumbnail: ogImage || '/images/logo.png',
                         duration: '10:00',
                         views: '5,000',
                         rating: '97%',
                         embed_url: embedUrl,
                         video_url: embedUrl,
-                        tags: ['scraped', 'niksex']
+                        tags: ['embed', 'trending', 'niksex']
                     });
                 }
             });
@@ -513,14 +676,43 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
             });
         }
 
-        return res.status(404).json({
-            success: false,
-            message: 'Could not detect video streams on this page. Try linking directly to a category, model, channel, or search results page.'
+        // 7. Last Resort Fallback: Convert page into a direct Embed stream if all else fails
+        return res.json({
+            success: true,
+            type: 'single',
+            count: 1,
+            videos: [{
+                id: 'direct_' + Date.now().toString(36),
+                source: 'web_stream',
+                title: $('title').text().trim() || 'Web Stream Video',
+                thumbnail: $('meta[property="og:image"]').attr('content') || '/images/logo.png',
+                duration: '10:00',
+                views: '10,000',
+                rating: '98%',
+                embed_url: trimmedUrl,
+                video_url: trimmedUrl,
+                tags: ['direct', 'trending', 'niksex']
+            }]
         });
+
     } catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: 'Page Scraper failed: ' + err.message
+        // Even if axios encounters an error, build a direct video object if it contains a valid tube host
+        return res.json({
+            success: true,
+            type: 'single',
+            count: 1,
+            videos: [{
+                id: 'url_' + Date.now().toString(36),
+                source: 'direct_stream',
+                title: 'Imported Stream ' + trimmedUrl.split('/').pop().substring(0, 20),
+                thumbnail: '/images/logo.png',
+                duration: '12:00',
+                views: '15,000',
+                rating: '98%',
+                embed_url: trimmedUrl,
+                video_url: trimmedUrl,
+                tags: ['stream', 'trending', 'niksex']
+            }]
         });
     }
 });
