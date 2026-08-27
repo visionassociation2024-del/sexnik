@@ -56,6 +56,13 @@ let isHistoryMode = false;
 let isFavoritesMode = false;
 let isForYouMode = false;
 let isTikTokMode = false;
+let isTikTokReelsView = true;
+let tiktokReelsList = [];
+let reelsObserver = null;
+let isGlobalTikTokMuted = false;
+let isAutoScrollNext = true;
+let isReelsLoading = false;
+let activeReelSlideIndex = 0;
 let currentPage = 1;
 let isLoading = false;
 let hasMore = true;
@@ -200,18 +207,41 @@ function loadTikTokView(btn) {
   hasMore = true;
   renderedVideoIds.clear();
   currentVideos = [];
+  tiktokReelsList = [];
 
   document.getElementById('btnClearHistory').style.display = 'none';
-  document.getElementById('categoryLabel').innerHTML = '<i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> TIKTOK 18+ SHORTS (تيك توك 📱🔞)';
-  document.getElementById('videoCountLabel').innerText = 'Streaming live TikTok shorts...';
+  document.getElementById('categoryLabel').innerHTML = '<i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> TIKTOK 18+ REELS & SHORTS (تيك توك 📱🔞)';
+  document.getElementById('videoCountLabel').innerText = isTikTokReelsView ? 'Auto-Scroll & Swipe Active ⚡' : 'Streaming live TikTok shorts...';
 
+  const reelsContainer = document.getElementById('tiktokReelsContainer');
   const grid = document.getElementById('videosGrid');
-  grid.innerHTML = getSkeletonHTML(12);
+  const sentinel = document.getElementById('scrollSentinel');
 
-  loadVideosBatch(true);
+  if (isTikTokReelsView) {
+    if (reelsContainer) reelsContainer.style.display = 'block';
+    if (grid) grid.style.display = 'none';
+    if (sentinel) sentinel.style.display = 'none';
+    fetchAndRenderTikTokReels(true);
+  } else {
+    if (reelsContainer) reelsContainer.style.display = 'none';
+    if (grid) {
+      grid.style.display = 'grid';
+      grid.innerHTML = getSkeletonHTML(12);
+    }
+    if (sentinel) sentinel.style.display = 'block';
+    loadVideosBatch(true);
+  }
 }
 
 function resetAndLoadCategory(category) {
+  pauseAllTikTokReels();
+  const reelsContainer = document.getElementById('tiktokReelsContainer');
+  const grid = document.getElementById('videosGrid');
+  const sentinel = document.getElementById('scrollSentinel');
+  if (reelsContainer) reelsContainer.style.display = 'none';
+  if (grid) grid.style.display = 'grid';
+  if (sentinel) sentinel.style.display = 'block';
+
   isPhotosMode = false;
   isGifsMode = false;
   isSearchMode = false;
@@ -229,19 +259,351 @@ function resetAndLoadCategory(category) {
   document.getElementById('btnClearHistory').style.display = 'none';
 
   if (isTikTokMode) {
-    document.getElementById('categoryLabel').innerHTML = '<i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> TIKTOK 18+ SHORTS (تيك توك 📱🔞)';
-  } else {
-    const catObj = CATEGORIES_LIST.find(c => c.id === category);
-    const label = catObj ? catObj.title.toUpperCase() : category.toUpperCase();
-    document.getElementById('categoryLabel').innerText = label;
+    loadTikTokView();
+    return;
   }
 
+  const catObj = CATEGORIES_LIST.find(c => c.id === category);
+  const label = catObj ? catObj.title.toUpperCase() : category.toUpperCase();
+  document.getElementById('categoryLabel').innerText = label;
   document.getElementById('videoCountLabel').innerText = 'Streaming live videos...';
 
-  const grid = document.getElementById('videosGrid');
   grid.innerHTML = getSkeletonHTML(8);
-
   loadVideosBatch(true);
+}
+
+// Fetch and Render TikTok Vertical Reels Feed
+async function fetchAndRenderTikTokReels(isInitial = false) {
+  if (isReelsLoading) return;
+  isReelsLoading = true;
+
+  const feed = document.getElementById('tiktokReelsFeed');
+  if (!feed) return;
+
+  if (isInitial) {
+    feed.innerHTML = `
+      <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); gap: 14px;">
+        <div class="spinner-neon"></div>
+        <span style="font-weight: 700; color: #00f2fe;"><i class="fa-brands fa-tiktok"></i> Loading TikTok 18+ Reels...</span>
+      </div>
+    `;
+    currentPage = 1;
+    tiktokReelsList = [];
+  }
+
+  try {
+    const res = await fetch(`/api/tiktok?q=trending&page=${currentPage}`);
+    const data = await res.json();
+    const videos = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
+
+    if (isInitial) feed.innerHTML = '';
+
+    if (videos.length === 0 && isInitial) {
+      feed.innerHTML = `
+        <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); gap: 10px;">
+          <i class="fa fa-film" style="font-size: 36px; color: #ff007f;"></i>
+          <span>No TikTok reels found at the moment.</span>
+        </div>
+      `;
+      isReelsLoading = false;
+      return;
+    }
+
+    const startIndex = tiktokReelsList.length;
+    videos.forEach((v, i) => {
+      const globalIndex = startIndex + i;
+      tiktokReelsList.push(v);
+      const slide = createTikTokReelSlideElement(v, globalIndex);
+      feed.appendChild(slide);
+    });
+
+    setupReelsIntersectionObserver();
+
+    if (isInitial && feed.firstElementChild) {
+      const firstVid = feed.querySelector('.tiktok-reel-video');
+      if (firstVid) {
+        firstVid.muted = isGlobalTikTokMuted;
+        firstVid.play().catch(() => {
+          firstVid.muted = true;
+          firstVid.play().catch(() => {});
+        });
+      }
+    }
+
+    currentPage++;
+  } catch (e) {
+    console.error('Failed to load TikTok reels:', e);
+  } finally {
+    isReelsLoading = false;
+  }
+}
+
+function createTikTokReelSlideElement(v, index) {
+  const slide = document.createElement('div');
+  slide.className = 'tiktok-reel-slide';
+  slide.dataset.index = index;
+
+  const videoSrc = v.direct_video_url || v.video_url || '';
+  const poster = v.poster || v.thumbnail || '/images/logo.png';
+  const title = v.title || 'niksex TikTok 18+ Short';
+  const likes = v.likes || '2.4K';
+  const tags = (v.tags || ['tiktok', 'shorts', 'hot', 'niksex']).map(t => `#${t}`).slice(0, 3).join(' ');
+
+  slide.innerHTML = `
+    <img class="tiktok-reel-bg" src="${poster}" alt="" onerror="this.style.display='none'">
+    <video class="tiktok-reel-video" src="${videoSrc}" poster="${poster}" loop playsinline preload="metadata" data-index="${index}" onclick="toggleTikTokPlay(${index})"></video>
+    <div class="tiktok-reel-play-btn" id="playIndicator_${index}"><i class="fa fa-play"></i></div>
+
+    <!-- Right Sidebar Floating Actions -->
+    <div class="tiktok-reel-sidebar">
+      <button class="tiktok-action-btn" id="btnLike_${index}" onclick="toggleTikTokReelLike(${index}, event)">
+        <div class="tiktok-action-icon"><i class="fa fa-heart"></i></div>
+        <span class="tiktok-action-label" id="likeCount_${index}">${likes}</span>
+      </button>
+
+      <button class="tiktok-action-btn" onclick="openTikTokReelWatch(${index}, event)" title="Watch in Full Cinema Player">
+        <div class="tiktok-action-icon"><i class="fa fa-expand"></i></div>
+        <span class="tiktok-action-label">HD</span>
+      </button>
+
+      <button class="tiktok-action-btn" onclick="shareTikTokReel(${index}, event)" title="Share Reel">
+        <div class="tiktok-action-icon"><i class="fa fa-share"></i></div>
+        <span class="tiktok-action-label">Share</span>
+      </button>
+
+      <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="tiktok-action-btn" title="Download HD / VIP Stream">
+        <div class="tiktok-action-icon" style="border-color: #ffd700; color: #ffd700;"><i class="fa fa-download"></i></div>
+        <span class="tiktok-action-label" style="color: #ffd700;">VIP</span>
+      </a>
+
+      <div class="tiktok-sound-disc">
+        <img src="/images/logo.png" alt="">
+      </div>
+    </div>
+
+    <!-- Bottom Metadata Overlay -->
+    <div class="tiktok-reel-overlay">
+      <div class="tiktok-author-tag">
+        <span>@niksex_shorts</span>
+        <i class="fa fa-check-circle verified-badge"></i>
+      </div>
+      <div class="tiktok-reel-title">${title} <span style="color: #00f2fe; font-weight: 700;">${tags}</span></div>
+      <div class="tiktok-sound-track">
+        <i class="fa fa-music"></i>
+        <span style="font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;">Original Sound - niksex TikTok Live</span>
+      </div>
+    </div>
+  `;
+
+  const videoEl = slide.querySelector('.tiktok-reel-video');
+  if (videoEl) {
+    videoEl.addEventListener('ended', () => {
+      if (isAutoScrollNext && isTikTokMode && isTikTokReelsView) {
+        scrollTikTokReel('next');
+      }
+    });
+  }
+
+  return slide;
+}
+
+// Observer for Swiping and Auto-Playing active slide
+function setupReelsIntersectionObserver() {
+  const slides = document.querySelectorAll('.tiktok-reel-slide');
+  if (!slides || slides.length === 0) return;
+
+  if (reelsObserver) reelsObserver.disconnect();
+
+  reelsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const slide = entry.target;
+      const index = parseInt(slide.dataset.index, 10);
+      const vid = slide.querySelector('.tiktok-reel-video');
+
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.65) {
+        activeReelSlideIndex = index;
+        if (vid) {
+          vid.muted = isGlobalTikTokMuted;
+          vid.play().catch(() => {});
+        }
+
+        // Check if near the end, prefetch next batch
+        if (index >= tiktokReelsList.length - 3 && !isReelsLoading) {
+          fetchAndRenderTikTokReels(false);
+        }
+      } else {
+        if (vid) {
+          vid.pause();
+          vid.currentTime = 0;
+        }
+      }
+    });
+  }, {
+    root: document.getElementById('tiktokReelsFeed'),
+    threshold: 0.65
+  });
+
+  slides.forEach(s => reelsObserver.observe(s));
+}
+
+// Pause all reels when navigating away
+function pauseAllTikTokReels() {
+  document.querySelectorAll('.tiktok-reel-video').forEach(v => {
+    v.pause();
+  });
+}
+
+// Scroll to next/prev reel
+function scrollTikTokReel(direction) {
+  const feed = document.getElementById('tiktokReelsFeed');
+  if (!feed) return;
+
+  const slides = feed.querySelectorAll('.tiktok-reel-slide');
+  if (!slides || slides.length === 0) return;
+
+  if (direction === 'next') {
+    activeReelSlideIndex = Math.min(activeReelSlideIndex + 1, slides.length - 1);
+  } else {
+    activeReelSlideIndex = Math.max(activeReelSlideIndex - 1, 0);
+  }
+
+  if (slides[activeReelSlideIndex]) {
+    slides[activeReelSlideIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// Play / Pause toggle with animated feedback
+function toggleTikTokPlay(index) {
+  const slide = document.querySelector(`.tiktok-reel-slide[data-index="${index}"]`);
+  if (!slide) return;
+
+  const vid = slide.querySelector('.tiktok-reel-video');
+  const indicator = document.getElementById(`playIndicator_${index}`);
+  if (!vid) return;
+
+  if (vid.paused) {
+    vid.play().catch(() => {});
+    if (indicator) {
+      indicator.innerHTML = '<i class="fa fa-play"></i>';
+      indicator.classList.add('show');
+      setTimeout(() => indicator.classList.remove('show'), 400);
+    }
+  } else {
+    vid.pause();
+    if (indicator) {
+      indicator.innerHTML = '<i class="fa fa-pause"></i>';
+      indicator.classList.add('show');
+      setTimeout(() => indicator.classList.remove('show'), 600);
+    }
+  }
+}
+
+// Global Sound Mute / Unmute
+function toggleTikTokGlobalSound(e) {
+  if (e) e.stopPropagation();
+  isGlobalTikTokMuted = !isGlobalTikTokMuted;
+  const icon = document.getElementById('iconSoundGlobal');
+  const btn = document.getElementById('btnSoundGlobal');
+
+  if (isGlobalTikTokMuted) {
+    if (icon) icon.className = 'fa fa-volume-mute';
+    if (btn) btn.style.color = '#ef4444';
+  } else {
+    if (icon) icon.className = 'fa fa-volume-up';
+    if (btn) btn.style.color = '#00f2fe';
+  }
+
+  document.querySelectorAll('.tiktok-reel-video').forEach(v => {
+    v.muted = isGlobalTikTokMuted;
+  });
+}
+
+// Toggle between Reels Fullscreen View and Grid View
+function toggleTikTokDisplayMode() {
+  isTikTokReelsView = !isTikTokReelsView;
+  const btnToggle = document.getElementById('btnTikTokViewToggle');
+
+  if (btnToggle) {
+    btnToggle.innerHTML = isTikTokReelsView ? '<i class="fa fa-th-large"></i> Grid View' : '<i class="fa fa-mobile-alt"></i> Reels View';
+  }
+
+  loadTikTokView();
+}
+
+// Like action with heart bounce animation
+function toggleTikTokReelLike(index, e) {
+  if (e) e.stopPropagation();
+  const btn = document.getElementById(`btnLike_${index}`);
+  const counter = document.getElementById(`likeCount_${index}`);
+  if (!btn) return;
+
+  const isLiked = btn.classList.toggle('liked');
+  let count = parseInt((counter.innerText || '2400').replace(/[^0-9]/g, ''), 10);
+  if (isLiked) {
+    count++;
+    counter.innerText = (count > 999 ? (count/1000).toFixed(1) + 'K' : count);
+    btn.querySelector('.tiktok-action-icon').style.transform = 'scale(1.35)';
+    setTimeout(() => {
+      btn.querySelector('.tiktok-action-icon').style.transform = '';
+    }, 250);
+  } else {
+    count = Math.max(1, count - 1);
+    counter.innerText = (count > 999 ? (count/1000).toFixed(1) + 'K' : count);
+  }
+}
+
+// Open TikTok Reel in Cinema Watch Page
+function openTikTokReelWatch(index, e) {
+  if (e) e.stopPropagation();
+  const v = tiktokReelsList[index];
+  if (v) navigateToWatchPage(v);
+}
+
+// Share TikTok Reel
+function shareTikTokReel(index, e) {
+  if (e) e.stopPropagation();
+  const v = tiktokReelsList[index];
+  if (!v) return;
+
+  const url = `${window.location.origin}/watch.html?id=${v.id || ''}&is_tiktok=1&title=${encodeURIComponent(v.title || '')}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      alert('🔗 Reel link copied to clipboard!');
+    }).catch(() => {
+      prompt('Copy Reel Link:', url);
+    });
+  } else {
+    prompt('Copy Reel Link:', url);
+  }
+}
+
+// Keyboard shortcuts listener for TikTok Reels (ArrowUp, ArrowDown, Space, M)
+document.addEventListener('keydown', (e) => {
+  if (!isTikTokMode || !isTikTokReelsView) return;
+
+  if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault();
+    scrollTikTokReel('next');
+  } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault();
+    scrollTikTokReel('prev');
+  } else if (e.key === ' ') {
+    e.preventDefault();
+    toggleTikTokPlay(activeReelSlideIndex);
+  } else if (e.key.toLowerCase() === 'm') {
+    e.preventDefault();
+    toggleTikTokGlobalSound();
+  }
+});
+
+function hideTikTokReelsFeed() {
+  pauseAllTikTokReels();
+  const reelsContainer = document.getElementById('tiktokReelsContainer');
+  const grid = document.getElementById('videosGrid');
+  const sentinel = document.getElementById('scrollSentinel');
+  if (reelsContainer) reelsContainer.style.display = 'none';
+  if (grid) grid.style.display = 'grid';
+  if (sentinel) sentinel.style.display = 'block';
 }
 
 // Smart Recommendations ("For You / مخصص لك")
@@ -249,6 +611,8 @@ function loadForYouFeed(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
+  hideTikTokReelsFeed();
+  isTikTokMode = false;
   isGifsMode = false;
   isSearchMode = false;
   isHistoryMode = false;
@@ -285,6 +649,8 @@ function loadFavoritesView(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
+  hideTikTokReelsFeed();
+  isTikTokMode = false;
   isFavoritesMode = true;
   isHistoryMode = false;
   isSearchMode = false;
@@ -339,6 +705,8 @@ function loadWatchHistory(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
+  hideTikTokReelsFeed();
+  isTikTokMode = false;
   isHistoryMode = true;
   isFavoritesMode = false;
   isSearchMode = false;
@@ -825,6 +1193,8 @@ async function executeSearch() {
 
   recordInterest(query);
 
+  hideTikTokReelsFeed();
+  isTikTokMode = false;
   isSearchMode = true;
   isHistoryMode = false;
   isFavoritesMode = false;
@@ -872,6 +1242,8 @@ async function loadPhotosView(btn) {
     btn.classList.add('active');
   }
 
+  hideTikTokReelsFeed();
+  isTikTokMode = false;
   isPhotosMode = true;
   isGifsMode = false;
   isHistoryMode = false;

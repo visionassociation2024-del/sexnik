@@ -206,7 +206,18 @@ function initWatchPage() {
           }
         })
         .catch(() => {});
+    if (videoEl) {
+      videoEl.onended = () => {
+        // Auto play next TikTok short
+        const nextVideoCard = document.querySelector('#relatedList .related-item') || document.querySelector('#similarVideosGrid .video-card');
+        if (nextVideoCard && isTikTok) {
+          nextVideoCard.click();
+        }
+      };
     }
+
+    const btnReels = document.getElementById('btnWatchTikTokReels');
+    if (btnReels && isTikTok) btnReels.style.display = 'inline-flex';
   } else {
     // Normal Iframe Embed (Pornhub, Eporner, etc.)
     if (!embedUrl) {

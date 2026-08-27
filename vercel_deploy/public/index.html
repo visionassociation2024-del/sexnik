@@ -234,14 +234,47 @@
     </div>
 
     <!-- Sponsored Native Ad Banner -->
-    <div class="ad-banner-container">
+    <div class="ad-banner-container" id="adBannerTop">
       <div class="ad-badge">RECOMMENDED / مقترح</div>
       <script async="async" data-cfasync="false" src="https://pl31054763.profitableratecpmnetwork.com/6712c8762e9a78dc0f1d32bdd0e76e7d/invoke.js"></script>
       <div id="container-6712c8762e9a78dc0f1d32bdd0e76e7d"></div>
     </div>
 
-    <!-- Grid of Videos -->
+    <!-- TikTok Reels / Shorts Vertical Interactive Swiper Feed -->
+    <div id="tiktokReelsContainer" class="tiktok-reels-container" style="display: none;">
+      <!-- Top Reels Toolbar -->
+      <div class="tiktok-top-toolbar">
+        <div class="tiktok-live-indicator">
+          <span class="tiktok-live-dot"></span>
+          <span>TIKTOK 18+ REELS</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-reels-switch" id="btnSoundGlobal" onclick="toggleTikTokGlobalSound(event)">
+            <i class="fa fa-volume-up" id="iconSoundGlobal"></i> Sound
+          </button>
+          <button class="btn-reels-switch" id="btnTikTokViewToggle" onclick="toggleTikTokDisplayMode()">
+            <i class="fa fa-th-large"></i> Grid View
+          </button>
+        </div>
+      </div>
 
+      <!-- Vertical Reel Scroll Feed -->
+      <div class="tiktok-reels-feed" id="tiktokReelsFeed">
+        <!-- Reel slides rendered dynamically via app.js -->
+      </div>
+
+      <!-- Desktop Nav Arrows -->
+      <div class="tiktok-nav-controls">
+        <button class="btn-reel-nav" onclick="scrollTikTokReel('prev')" title="Previous Reel (Up Arrow)">
+          <i class="fa fa-chevron-up"></i>
+        </button>
+        <button class="btn-reel-nav" onclick="scrollTikTokReel('next')" title="Next Reel (Down Arrow)">
+          <i class="fa fa-chevron-down"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Standard Grid of Videos -->
     <div class="videos-grid" id="videosGrid">
       <!-- Loaded dynamically via app.js -->
     </div>
