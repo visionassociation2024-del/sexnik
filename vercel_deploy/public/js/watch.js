@@ -1,27 +1,45 @@
-// Anti-External Navigation & Anti-Popup Security Guard
-(function initAntiRedirectShield() {
-  window.open = function(url, target, features) {
-    console.warn('[Anti-Redirect] Blocked window.open popup attempt:', url);
-    return null;
-  };
+// Monetization & Smartlink Configuration
+const SMARTLINK_URL = 'https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab';
+const ALLOWED_AD_DOMAINS = [
+  'profitableratecpmnetwork.com',
+  'highrevenueformat.com'
+];
+
+function isAllowedAdUrl(urlStr) {
+  if (!urlStr) return false;
+  try {
+    const parsed = new URL(urlStr, window.location.origin);
+    return ALLOWED_AD_DOMAINS.some(domain => parsed.hostname.includes(domain));
+  } catch (e) {
+    return false;
+  }
+}
+
+// Smart Popunder Handler for High-Revenue Smartlink
+(function initSmartlinkMonetization() {
+  const STORAGE_KEY = 'nx_smartlink_watch_session';
+  let firedInSession = sessionStorage.getItem(STORAGE_KEY) === 'true';
 
   document.addEventListener('click', function(e) {
     const link = e.target.closest('a');
-    if (link && link.href) {
-      try {
-        const targetUrl = new URL(link.href, window.location.origin);
-        if (targetUrl.hostname !== window.location.hostname && (targetUrl.protocol === 'http:' || targetUrl.protocol === 'https:')) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.warn('[Anti-Redirect] Blocked external link click:', link.href);
-          return false;
-        }
-      } catch (err) {
-        e.preventDefault();
-      }
+    if (link && isAllowedAdUrl(link.href)) {
+      return; // Allow direct click without intercepting
     }
-  }, true);
+
+    if (!firedInSession) {
+      firedInSession = true;
+      sessionStorage.setItem(STORAGE_KEY, 'true');
+      try {
+        const adWin = window.open(SMARTLINK_URL, '_blank');
+        if (adWin) {
+          adWin.blur();
+          window.focus();
+        }
+      } catch (err) {}
+    }
+  }, { capture: true });
 })();
+
 
 let currentVideoObj = null;
 
