@@ -398,6 +398,68 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
             });
         }
 
+        // 4. Specialized Deep Scraper for Eporner Pages
+        else if (trimmedUrl.includes('eporner.com')) {
+            $('div.mb, div.mbunter').each((i, el) => {
+                const $el = $(el);
+                const link = $el.find('.mbtit a, .mbimage a').first();
+                const href = link.attr('href') || '';
+                const match = href.match(/\/hd-porn\/([a-zA-Z0-9]+)\//) || href.match(/\/video-([a-zA-Z0-9]+)\//);
+                const id = match ? match[1] : '';
+                const title = link.text().trim() || $el.find('.mbtit').text().trim() || 'Eporner Video ' + id;
+                const img = $el.find('img').first();
+                const thumb = img.attr('src') || img.attr('data-src') || '';
+                const duration = $el.find('.mblg, .mbdur').first().text().trim() || '12:00';
+
+                if (id && !seenIds.has(id)) {
+                    seenIds.add(id);
+                    scrapedVideos.push({
+                        id: 'ep_' + id,
+                        source: 'eporner',
+                        title: title,
+                        thumbnail: thumb,
+                        duration: duration,
+                        views: '18,000',
+                        rating: '98%',
+                        embed_url: `https://www.eporner.com/embed/${id}/`,
+                        video_url: `https://www.eporner.com/embed/${id}/`,
+                        tags: ['eporner', 'scraped', 'arabic', 'niksex']
+                    });
+                }
+            });
+        }
+
+        // 5. Specialized Deep Scraper for SpankBang Pages
+        else if (trimmedUrl.includes('spankbang.com')) {
+            $('div.video-item, div.item').each((i, el) => {
+                const $el = $(el);
+                const link = $el.find('a.n, a.thumb').first();
+                const href = link.attr('href') || '';
+                const match = href.match(/\/([a-zA-Z0-9]+)\/video\//);
+                const id = match ? match[1] : '';
+                const title = link.attr('title') || $el.find('a.n').text().trim() || 'SpankBang Video ' + id;
+                const img = $el.find('img').first();
+                const thumb = img.attr('data-src') || img.attr('src') || '';
+                const duration = $el.find('.l').text().trim() || '10:00';
+
+                if (id && !seenIds.has(id)) {
+                    seenIds.add(id);
+                    scrapedVideos.push({
+                        id: 'sb_' + id,
+                        source: 'spankbang',
+                        title: title,
+                        thumbnail: thumb,
+                        duration: duration,
+                        views: '14,000',
+                        rating: '97%',
+                        embed_url: `https://spankbang.com/${id}/embed/`,
+                        video_url: `https://spankbang.com/${id}/embed/`,
+                        tags: ['spankbang', 'scraped', 'niksex']
+                    });
+                }
+            });
+        }
+
         // 4. Universal HTML5 & Embed Link Scraper for ANY Webpage
         if (scrapedVideos.length === 0) {
             // Check OpenGraph tag

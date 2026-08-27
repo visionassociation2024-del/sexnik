@@ -1,3 +1,30 @@
+// Anti-External Navigation & Anti-Popup Security Guard
+(function initAntiRedirectShield() {
+  // 1. Block any attempt to open external popups or popunders
+  window.open = function(url, target, features) {
+    console.warn('[Anti-Redirect] Blocked popup window:', url);
+    return null;
+  };
+
+  // 2. Intercept all clicks on links and buttons, ensuring all stays strictly inside niksex
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('a');
+    if (link && link.href) {
+      try {
+        const targetUrl = new URL(link.href, window.location.origin);
+        if (targetUrl.hostname !== window.location.hostname && (targetUrl.protocol === 'http:' || targetUrl.protocol === 'https:')) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.warn('[Anti-Redirect] Blocked external navigation:', link.href);
+          return false;
+        }
+      } catch (err) {
+        e.preventDefault();
+      }
+    }
+  }, true);
+})();
+
 let currentVideos = [];
 let currentCategory = 'trending';
 let currentSearchQuery = '';
