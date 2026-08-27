@@ -466,7 +466,7 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
         const scrapedVideos = [];
         const seenIds = new Set();
 
-        // 1. Pornhub Category / Model / Search Pages
+        // 1. Specialized Scraper for Pornhub Pages
         if (trimmedUrl.includes('pornhub.com')) {
             $('ul.videos li.pcVideoListItem, .videoBlock, .wrap, .phimage, li[data-video-vkey]').each((i, el) => {
                 const $el = $(el);
@@ -497,9 +497,34 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                     });
                 }
             });
+
+            // If HTML was blocked by age gate, fallback to API search
+            if (scrapedVideos.length === 0) {
+                const termMatch = trimmedUrl.match(/video\/search\?search=([^&]+)/) || trimmedUrl.match(/category\/([^/?]+)/) || trimmedUrl.match(/channels\/([^/?]+)/);
+                const queryTerm = termMatch ? decodeURIComponent(termMatch[1].replace(/\+/g, ' ')) : 'trending';
+                try {
+                    const apiRes = await axios.get(`https://www.pornhub.com/webmasters/search?search=${encodeURIComponent(queryTerm)}&thumbsize=large`, { timeout: 4000 });
+                    if (apiRes.data && apiRes.data.videos) {
+                        apiRes.data.videos.slice(0, 40).forEach(pv => {
+                            scrapedVideos.push({
+                                id: 'ph_' + pv.video_id,
+                                source: 'pornhub',
+                                title: pv.title,
+                                thumbnail: pv.default_thumb,
+                                duration: pv.duration || '12:00',
+                                views: pv.views ? parseInt(pv.views, 10).toLocaleString() : '20,000',
+                                rating: (pv.rating || '96') + '%',
+                                embed_url: pv.embed_url || `https://www.pornhub.com/embed/${pv.video_id}`,
+                                video_url: pv.embed_url || `https://www.pornhub.com/embed/${pv.video_id}`,
+                                tags: ['pornhub', queryTerm, 'niksex']
+                            });
+                        });
+                    }
+                } catch (e) {}
+            }
         }
 
-        // 2. xHamster Category / Channel / Search Pages
+        // 2. Specialized Scraper for xHamster Category / Channel / Search Pages
         else if (trimmedUrl.includes('xhamster.com')) {
             $('div.thumb-list__item, article.thumb-list__item, div.video-thumb, .thumb-image-container').each((i, el) => {
                 const $el = $(el);
@@ -534,7 +559,7 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
             });
         }
 
-        // 3. XVideos Category / Search Pages
+        // 3. Specialized Scraper for XVideos Category / Search Pages
         else if (trimmedUrl.includes('xvideos.com')) {
             $('div.mozaique div.thumb-block, div.thumb-block').each((i, el) => {
                 const $el = $(el);
@@ -563,8 +588,9 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
             });
         }
 
-        // 4. Eporner Category / Search Pages
+        // 4. Specialized Scraper for Eporner (Bypasses Age Verification via Direct High-Speed API)
         else if (trimmedUrl.includes('eporner.com')) {
+            // Check HTML grid first
             $('div.mb, div.mbunter').each((i, el) => {
                 const $el = $(el);
                 const link = $el.find('.mbtit a, .mbimage a').first();
@@ -576,7 +602,7 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                 const thumb = img.attr('src') || img.attr('data-src') || '';
                 const duration = $el.find('.mblg, .mbdur').first().text().trim() || '12:00';
 
-                if (id && !seenIds.has(id)) {
+                if (id && !seenIds.has(id) && !title.toLowerCase().includes('age verification')) {
                     seenIds.add(id);
                     scrapedVideos.push({
                         id: 'ep_' + id,
@@ -592,9 +618,41 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                     });
                 }
             });
+
+            // If HTML returned 0 videos (due to Age Gate), extract term and call Eporner API directly
+            if (scrapedVideos.length === 0) {
+                const termMatch = trimmedUrl.match(/\/category\/([^/?]+)/) || trimmedUrl.match(/\/search\/([^/?]+)/) || trimmedUrl.match(/\/cat\/([^/?]+)/);
+                const queryTerm = termMatch ? decodeURIComponent(termMatch[1].replace(/[-_]/g, ' ')) : 'arabic';
+                
+                try {
+                    const epApiUrl = `https://www.eporner.com/api/v2/video/search/?query=${encodeURIComponent(queryTerm)}&per_page=60&thumbsize=big`;
+                    const epApiRes = await axios.get(epApiUrl, { timeout: 5000 });
+                    if (epApiRes.data && epApiRes.data.videos && epApiRes.data.videos.length > 0) {
+                        epApiRes.data.videos.forEach(v => {
+                            if (!seenIds.has(v.id)) {
+                                seenIds.add(v.id);
+                                scrapedVideos.push({
+                                    id: 'ep_' + v.id,
+                                    source: 'eporner',
+                                    title: v.title,
+                                    thumbnail: v.default_thumb ? v.default_thumb.src : '/images/logo.png',
+                                    duration: v.length_min || '12:00',
+                                    views: v.views ? parseInt(v.views, 10).toLocaleString() : '25,000',
+                                    rating: (v.rate || '98') + '%',
+                                    embed_url: v.embed,
+                                    video_url: v.embed,
+                                    category: queryTerm.includes('arabic') ? 'sex_arabic' : 'trending',
+                                    is_trending: true,
+                                    tags: [queryTerm, 'trending', 'eporner', 'niksex']
+                                });
+                            }
+                        });
+                    }
+                } catch (e) {}
+            }
         }
 
-        // 5. SpankBang Category / Search Pages
+        // 5. Specialized Scraper for SpankBang Pages
         else if (trimmedUrl.includes('spankbang.com')) {
             $('div.video-item, div.item').each((i, el) => {
                 const $el = $(el);
@@ -625,13 +683,16 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
             });
         }
 
-        // 6. Universal Fallback (Scrapes ANY Video Player / Iframe / OpenGraph Tag)
+        // 6. Universal HTML5 & Embed Link Scraper for ANY Webpage
         if (scrapedVideos.length === 0) {
             const ogVideo = $('meta[property="og:video:url"]').attr('content') || $('meta[property="og:video"]').attr('content') || $('meta[name="twitter:player"]').attr('content');
             const ogImage = $('meta[property="og:image"]').attr('content') || $('meta[name="twitter:image"]').attr('content');
             const pageTitle = $('meta[property="og:title"]').attr('content') || $('title').text().trim() || 'Web Video Stream';
 
-            if (ogVideo) {
+            // Filter out junk Age Verification / Disclaimer titles
+            const isJunkTitle = /age verification|disclaimer|just a moment|cloudflare|robot/i.test(pageTitle);
+
+            if (ogVideo && !isJunkTitle) {
                 scrapedVideos.push({
                     id: 'url_' + Date.now().toString(36),
                     source: 'universal',
@@ -653,7 +714,7 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
                     scrapedVideos.push({
                         id: 'embed_' + Date.now().toString(36) + '_' + i,
                         source: 'custom_embed',
-                        title: `${pageTitle} (Player ${i + 1})`,
+                        title: isJunkTitle ? `Video Stream (Clip ${i + 1})` : `${pageTitle} (Player ${i + 1})`,
                         thumbnail: ogImage || '/images/logo.png',
                         duration: '10:00',
                         views: '5,000',
@@ -676,43 +737,39 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
             });
         }
 
-        // 7. Last Resort Fallback: Convert page into a direct Embed stream if all else fails
-        return res.json({
-            success: true,
-            type: 'single',
-            count: 1,
-            videos: [{
-                id: 'direct_' + Date.now().toString(36),
-                source: 'web_stream',
-                title: $('title').text().trim() || 'Web Stream Video',
-                thumbnail: $('meta[property="og:image"]').attr('content') || '/images/logo.png',
-                duration: '10:00',
-                views: '10,000',
-                rating: '98%',
-                embed_url: trimmedUrl,
-                video_url: trimmedUrl,
-                tags: ['direct', 'trending', 'niksex']
-            }]
+        // 7. Last Resort Fallback: If not a junk page, create direct stream
+        const rawTitle = $('title').text().trim();
+        const isJunk = /age verification|disclaimer|just a moment|cloudflare|robot/i.test(rawTitle);
+
+        if (!isJunk && rawTitle) {
+            return res.json({
+                success: true,
+                type: 'single',
+                count: 1,
+                videos: [{
+                    id: 'direct_' + Date.now().toString(36),
+                    source: 'web_stream',
+                    title: rawTitle,
+                    thumbnail: $('meta[property="og:image"]').attr('content') || '/images/logo.png',
+                    duration: '10:00',
+                    views: '10,000',
+                    rating: '98%',
+                    embed_url: trimmedUrl,
+                    video_url: trimmedUrl,
+                    tags: ['direct', 'trending', 'niksex']
+                }]
+            });
+        }
+
+        return res.status(400).json({
+            success: false,
+            message: 'Unable to bypass page security or no videos found. Please try another category or search link.'
         });
 
     } catch (err) {
-        // Even if axios encounters an error, build a direct video object if it contains a valid tube host
-        return res.json({
-            success: true,
-            type: 'single',
-            count: 1,
-            videos: [{
-                id: 'url_' + Date.now().toString(36),
-                source: 'direct_stream',
-                title: 'Imported Stream ' + trimmedUrl.split('/').pop().substring(0, 20),
-                thumbnail: '/images/logo.png',
-                duration: '12:00',
-                views: '15,000',
-                rating: '98%',
-                embed_url: trimmedUrl,
-                video_url: trimmedUrl,
-                tags: ['stream', 'trending', 'niksex']
-            }]
+        return res.status(500).json({
+            success: false,
+            message: 'Scraping failed: ' + err.message
         });
     }
 });
