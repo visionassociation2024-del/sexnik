@@ -47,9 +47,103 @@ function isAllowedAdUrl(urlStr) {
 
 let currentVideoObj = null;
 
+// Instant Hover & Touch Video Preview Controller
+function attachVideoPreviewHandlers(card, v) {
+  const thumbWrap = card.querySelector('.thumb-wrap, .related-thumb');
+  if (!thumbWrap) return;
+
+  const videoEl = thumbWrap.querySelector('.preview-video-el');
+  const progressFill = thumbWrap.querySelector('.preview-progress-fill');
+  const mobilePreviewBtn = thumbWrap.querySelector('.btn-mobile-preview');
+
+  let previewTimer = null;
+  let progressInterval = null;
+  let isPreviewing = false;
+
+  function startPreview(e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (isPreviewing) return;
+
+    previewTimer = setTimeout(() => {
+      isPreviewing = true;
+      card.classList.add('preview-active');
+
+      if (v.preview_video && videoEl) {
+        if (!videoEl.src) {
+          videoEl.src = v.preview_video;
+        }
+        videoEl.muted = true;
+        videoEl.currentTime = 0;
+        const playPromise = videoEl.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
+      }
+
+      // Start scrubber progress fill animation
+      let progress = 0;
+      if (progressFill) {
+        progressFill.style.width = '0%';
+        clearInterval(progressInterval);
+        progressInterval = setInterval(() => {
+          progress = (progress + 2) % 100;
+          progressFill.style.width = `${progress}%`;
+        }, 100);
+      }
+    }, 180); // 180ms smooth debounce
+  }
+
+  function stopPreview(e) {
+    if (previewTimer) clearTimeout(previewTimer);
+    if (!isPreviewing) return;
+    isPreviewing = false;
+    card.classList.remove('preview-active');
+
+    if (videoEl) {
+      videoEl.pause();
+      videoEl.currentTime = 0;
+    }
+    if (progressInterval) clearInterval(progressInterval);
+    if (progressFill) progressFill.style.width = '0%';
+  }
+
+  // Desktop Mouse Hover
+  thumbWrap.addEventListener('mouseenter', startPreview);
+  thumbWrap.addEventListener('mouseleave', stopPreview);
+
+  // Mobile Touch Quick Preview Button
+  if (mobilePreviewBtn) {
+    mobilePreviewBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (isPreviewing) {
+        stopPreview();
+      } else {
+        startPreview();
+      }
+    });
+  }
+
+  // Touch and hold / long press on mobile
+  let touchStartTime = 0;
+  thumbWrap.addEventListener('touchstart', (e) => {
+    touchStartTime = Date.now();
+    previewTimer = setTimeout(() => {
+      startPreview(e);
+    }, 250);
+  }, { passive: true });
+
+  thumbWrap.addEventListener('touchend', (e) => {
+    if (Date.now() - touchStartTime < 250) {
+      if (previewTimer) clearTimeout(previewTimer);
+    }
+  }, { passive: true });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initWatchPage();
 });
+
 
 function initWatchPage() {
   const params = new URLSearchParams(window.location.search);
@@ -303,11 +397,17 @@ async function loadRelatedVideos() {
             window.location.href = `/watch.html?${params.toString()}`;
           };
 
+          const previewVideo = v.preview_video || '';
+
           card.innerHTML = `
             <div class="thumb-wrap">
               <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" loading="lazy" onerror="this.src='/images/logo.png'">
+              ${previewVideo ? `<video class="preview-video-el" src="${previewVideo}" muted playsinline loop preload="none"></video>` : ''}
+              <span class="badge-preview-live"><i class="fa fa-play"></i> Preview</span>
               <span class="badge-hd">1080p HD</span>
               <span class="badge-duration">${v.duration || '10:00'}</span>
+              <button class="btn-mobile-preview" aria-label="Preview Video"><i class="fa fa-eye"></i> معاينة</button>
+              <div class="preview-progress-bar"><div class="preview-progress-fill"></div></div>
             </div>
             <div class="card-details">
               <h3 class="video-title" style="font-size: 12px; height: 32px;" title="${v.title}">${v.title}</h3>
@@ -317,7 +417,9 @@ async function loadRelatedVideos() {
               </div>
             </div>
           `;
+          attachVideoPreviewHandlers(card, v);
           similarGrid.appendChild(card);
+
 
           // In-Feed Ad in Similar Videos every 4 videos!
           if ((idx + 1) % 4 === 0) {

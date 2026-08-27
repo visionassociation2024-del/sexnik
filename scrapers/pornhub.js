@@ -53,12 +53,18 @@ async function searchPornhub(query = '', page = 1) {
             const duration = $el.find('.duration, var.duration').first().text().trim() || '00:00';
             const views = $el.find('.views var, .views').first().text().trim() || '0';
             const rating = $el.find('.value').first().text().trim() || '90%';
+            const previewVideo = $el.attr('data-mediabook') 
+                || imgEl.attr('data-mediabook') 
+                || imgEl.attr('data-preview') 
+                || $el.find('video source').attr('src')
+                || '';
 
             videos.push({
                 source: 'pornhub',
                 id: finalKey,
                 title: title,
                 thumbnail: thumbnail,
+                preview_video: previewVideo,
                 duration: duration,
                 views: views,
                 rating: rating,
@@ -69,6 +75,7 @@ async function searchPornhub(query = '', page = 1) {
                 video_type: 'embed',
                 tags: query ? [query, 'pornhub'] : ['pornhub']
             });
+
         });
 
         return {
