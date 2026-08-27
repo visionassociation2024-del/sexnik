@@ -150,38 +150,84 @@ function initWatchPage() {
   const id = params.get('id') || 'sample';
   const title = params.get('title') || 'niksex HD Video Stream';
   let embedUrl = params.get('embed') || '';
+  const directVideo = params.get('direct') || '';
   const thumb = params.get('thumb') || '/images/logo.png';
   const views = params.get('views') || '18,400';
   const duration = params.get('duration') || '12:00';
   const rating = params.get('rating') || '98%';
   const tagsParam = params.get('tags') || 'niksex,Ultra HD,Popular,Arabic';
+  const isTikTok = params.get('is_tiktok') === '1' || id.startsWith('tik_');
 
   currentVideoObj = {
     id,
     title,
-    embed_url: embedUrl,
-    video_url: embedUrl,
+    embed_url: embedUrl || directVideo,
+    video_url: embedUrl || directVideo,
+    direct_video_url: directVideo,
     thumbnail: thumb,
     duration,
     views,
     rating,
+    is_tiktok: isTikTok,
     tags: tagsParam.split(',')
   };
 
-  // If no direct embed param provided, build fallback embed URL
-  if (!embedUrl) {
-    if (id.startsWith('ph')) {
-      embedUrl = `https://www.pornhub.com/embed/${id.replace('ph', '')}`;
-    } else {
-      embedUrl = `https://www.eporner.com/embed/${id}/`;
-    }
-    currentVideoObj.embed_url = embedUrl;
-  }
+  const iframeEl = document.getElementById('cinemaIframe');
+  const videoEl = document.getElementById('cinemaVideo');
+  const wrapEl = document.getElementById('cinemaWrap');
 
-  // Inject Autoplay and Unmuted Sound parameters
-  const separator = embedUrl.includes('?') ? '&' : '?';
-  if (!embedUrl.includes('autoplay=')) {
-    embedUrl += `${separator}autoplay=1&muted=0&sound=1&volume=100`;
+  // Handle TikTok / Direct MP4 Streaming
+  if (isTikTok || embedUrl.includes('.mp4') || directVideo.includes('.mp4') || (embedUrl && embedUrl.includes('video-cdn.tik.porn'))) {
+    if (wrapEl) wrapEl.classList.add('portrait-mode');
+
+    let streamUrl = directVideo || (embedUrl.includes('.mp4') ? embedUrl : '');
+
+    if (streamUrl) {
+      if (iframeEl) iframeEl.style.display = 'none';
+      if (videoEl) {
+        videoEl.style.display = 'block';
+        videoEl.src = streamUrl;
+        videoEl.play().catch(() => {});
+      }
+    } else if (id.startsWith('tik_') || isTikTok) {
+      const cleanVidId = id.replace('tik_', '');
+      fetch(`/api/tiktok/video/${cleanVidId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.direct_video_url) {
+            currentVideoObj.direct_video_url = data.direct_video_url;
+            currentVideoObj.embed_url = data.direct_video_url;
+            if (iframeEl) iframeEl.style.display = 'none';
+            if (videoEl) {
+              videoEl.style.display = 'block';
+              videoEl.src = data.direct_video_url;
+              videoEl.play().catch(() => {});
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  } else {
+    // Normal Iframe Embed (Pornhub, Eporner, etc.)
+    if (!embedUrl) {
+      if (id.startsWith('ph')) {
+        embedUrl = `https://www.pornhub.com/embed/${id.replace('ph', '')}`;
+      } else {
+        embedUrl = `https://www.eporner.com/embed/${id}/`;
+      }
+      currentVideoObj.embed_url = embedUrl;
+    }
+
+    const separator = embedUrl.includes('?') ? '&' : '?';
+    if (!embedUrl.includes('autoplay=')) {
+      embedUrl += `${separator}autoplay=1&muted=0&sound=1&volume=100`;
+    }
+
+    if (videoEl) videoEl.style.display = 'none';
+    if (iframeEl) {
+      iframeEl.style.display = 'block';
+      iframeEl.src = embedUrl;
+    }
   }
 
   // Update Page Elements
@@ -190,7 +236,6 @@ function initWatchPage() {
   document.getElementById('watchViews').innerText = views;
   document.getElementById('watchDuration').innerText = duration;
   document.getElementById('watchRating').innerText = rating;
-  document.getElementById('cinemaIframe').src = embedUrl;
 
   // Render Tags
   const tagsContainer = document.getElementById('watchTags');
@@ -351,9 +396,22 @@ async function loadRelatedVideos() {
   if (tagLabel) tagLabel.innerHTML = `Based on: <strong style="color: var(--accent-pink);">#${relevantQuery}</strong>`;
 
   try {
-    const res = await fetch(`/api/search?q=${encodeURIComponent(relevantQuery)}&page=1`);
-    const data = await res.json();
-    let videos = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
+    let videos = [];
+    if (currentVideoObj && (currentVideoObj.is_tiktok || (currentVideoObj.id && currentVideoObj.id.startsWith('tik_')))) {
+      try {
+        const tikRes = await fetch('/api/tiktok?q=trending&page=1');
+        const tikData = await tikRes.json();
+        if (tikData.success && tikData.videos) {
+          videos = tikData.videos;
+        }
+      } catch (e) {}
+    }
+
+    if (videos.length === 0) {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(relevantQuery)}&page=1`);
+      const data = await res.json();
+      videos = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
+    }
 
     // If search didn't return enough videos, fallback to trending
     if (videos.length < 8) {

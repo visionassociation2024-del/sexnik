@@ -1258,6 +1258,44 @@ footer .footer-logo {
   color: #fff;
 }
 
+/* ================= TikTok 18+ Shorts Specific Styles ================= */
+.badge-tiktok {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: linear-gradient(135deg, #00f2fe, #ff007f);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+  z-index: 4;
+}
+
+.tiktok-card {
+  border-color: rgba(0, 242, 254, 0.2);
+}
+
+.tiktok-card:hover {
+  border-color: #00f2fe;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 242, 254, 0.3);
+}
+
+.special-tiktok {
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(255, 0, 127, 0.2)) !important;
+  border-color: #00f2fe !important;
+}
+
+.special-tiktok i {
+  color: #00f2fe !important;
+}
+
+
 
 
 

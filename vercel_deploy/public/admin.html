@@ -412,6 +412,7 @@
           </div>
           <div style="display: flex; gap: 12px; flex-wrap: wrap;">
             <button class="btn-pill btn-arabic" onclick="autoScrapeKeyword('Arabic', 30)"><i class="fa fa-star" style="color: #ffd700;"></i> 1-Click Auto Scrape Arabic Batch (30 Videos)</button>
+            <button class="btn-pill" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff;" onclick="autoScrapeKeyword('TikTok', 30)"><i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> 1-Click Auto Scrape TikTok 18+ (30 Videos)</button>
             <button class="btn-pill" onclick="autoScrapeKeyword('4K', 30)"><i class="fa fa-tv"></i> 1-Click Auto Scrape 4K Ultra HD (30 Videos)</button>
             <button class="btn-pill" onclick="autoScrapeKeyword('Milf', 30)"><i class="fa fa-heart"></i> 1-Click Auto Scrape Milf (30 Videos)</button>
           </div>
@@ -427,6 +428,7 @@
               <input type="text" id="filterSearchInput" placeholder="Search stored videos..." class="form-input" style="width: 200px; padding: 6px 12px; font-size: 12px;" oninput="applyVideoFilters()">
               <select id="filterCategorySelect" class="form-select" style="width: 140px; padding: 6px; font-size: 12px;" onchange="applyVideoFilters()">
                 <option value="all">All Categories</option>
+                <option value="tiktok">TikTok 18+ (تيك توك)</option>
                 <option value="sex_arabic">Sex Arabic</option>
                 <option value="trending">Trending</option>
                 <option value="4k">4K UHD</option>
@@ -475,7 +477,7 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Embed URL or Video Stream URL *</label>
-                <input type="url" id="addVideoEmbed" class="form-input" placeholder="https://www.eporner.com/embed/... or iframe src" required>
+                <input type="url" id="addVideoEmbed" class="form-input" placeholder="https://www.eporner.com/embed/... or mp4 link" required>
               </div>
               <div class="form-group">
                 <label class="form-label">Thumbnail Image URL</label>
@@ -488,6 +490,7 @@
                 <label class="form-label">Category</label>
                 <select id="addVideoCategory" class="form-select">
                   <option value="trending">Trending (شائع)</option>
+                  <option value="tiktok">TikTok 18+ (تيك توك)</option>
                   <option value="sex_arabic">Sex Arabic (عربي)</option>
                   <option value="4k">4K Ultra HD</option>
                   <option value="amateur">Amateur</option>

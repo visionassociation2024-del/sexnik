@@ -7,6 +7,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const { searchPornhub, getPornhubDetails } = require('./scrapers/pornhub');
 const { searchXhamster, getXhamsterDetails } = require('./scrapers/xhamster');
+const { scrapeTikPornFeed, scrapeTikPornSingle, scrapeTikPornBatch } = require('./scrapers/tiktok');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -127,6 +128,34 @@ app.get('/api/videos', async (req, res) => {
         return res.json(cachedData);
     }
 
+    // Special handler for TikTok 18+ Shorts
+    if (normalizedCat === 'tiktok' || normalizedCat === 'shorts' || normalizedCat === 'tik') {
+        try {
+            const tikResult = await scrapeTikPornFeed('trending', pageNum);
+            let tiktokVideos = tikResult.videos || [];
+            
+            // Prepend persistent custom videos if category is tiktok
+            if (persistentVideos.length > 0 && pageNum === 1) {
+                const customTik = persistentVideos.filter(v => (v.category === 'tiktok' || (v.tags && v.tags.some(t => t.toLowerCase().includes('tiktok')))));
+                tiktokVideos = customTik.concat(tiktokVideos);
+            }
+
+            const payload = {
+                success: true,
+                category: 'tiktok',
+                page: pageNum,
+                count: tiktokVideos.length,
+                videos: tiktokVideos
+            };
+            if (tiktokVideos.length > 0) {
+                setCache(cacheKey, payload);
+            }
+            return res.json(payload);
+        } catch (e) {
+            console.warn('[TikTok Feed Error]', e.message);
+        }
+    }
+
     let videos = [];
     let queryTerm = normalizedCat;
     if (normalizedCat === 'sex_arabic' || normalizedCat === 'sex arabic' || normalizedCat === 'arabic') {
@@ -203,6 +232,62 @@ app.get('/api/videos', async (req, res) => {
     }
 
     return res.json(responsePayload);
+});
+
+// 1.3 API: Dedicated TikTok 18+ Shorts Feed
+app.get('/api/tiktok', async (req, res) => {
+    const { q = 'trending', page = 1 } = req.query;
+    const pageNum = parseInt(page, 10) || 1;
+    const cacheKey = `tiktok_feed_${q.toLowerCase().trim()}_${pageNum}`;
+
+    const cached = getCached(cacheKey);
+    if (cached) return res.json(cached);
+
+    try {
+        const feed = await scrapeTikPornFeed(q, pageNum);
+        let tiktokVideos = feed.videos || [];
+
+        if (persistentVideos.length > 0 && pageNum === 1) {
+            const customTik = persistentVideos.filter(v => (v.category === 'tiktok' || (v.tags && v.tags.some(t => t.toLowerCase().includes('tiktok')))));
+            tiktokVideos = customTik.concat(tiktokVideos);
+        }
+
+        const payload = {
+            success: true,
+            category: 'tiktok',
+            query: q,
+            page: pageNum,
+            count: tiktokVideos.length,
+            videos: tiktokVideos
+        };
+        if (tiktokVideos.length > 0) {
+            setCache(cacheKey, payload);
+        }
+        return res.json(payload);
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message, videos: [] });
+    }
+});
+
+// 1.4 API: Single TikTok Video Stream Details
+app.get('/api/tiktok/video/:id', async (req, res) => {
+    const { id } = req.params;
+    const cleanId = id.replace('tik_', '');
+    const cacheKey = `tiktok_single_${cleanId}`;
+
+    const cached = getCached(cacheKey);
+    if (cached) return res.json(cached);
+
+    try {
+        const single = await scrapeTikPornSingle(cleanId);
+        if (single && single.success) {
+            setCache(cacheKey, single);
+            return res.json(single);
+        }
+        return res.status(404).json({ success: false, message: 'Video not found' });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
 });
 
 // 1.5 API: Hot Adult GIFs & Photos Feed (NPNS.fr + Curated + Pornhub)
@@ -387,6 +472,18 @@ app.post('/api/admin/scrape-url', requireAdminAuth, async (req, res) => {
     console.log(`[Universal Scraper] Processing URL: ${trimmedUrl}`);
 
     // --- A. FAST SINGLE VIDEO DIRECT PATTERN RECOGNIZERS ---
+
+    // 0. TikTok (tik.porn) Single Video or Batch Category Page
+    if (trimmedUrl.includes('tik.porn')) {
+        try {
+            const batchResult = await scrapeTikPornBatch(trimmedUrl);
+            if (batchResult && batchResult.success && batchResult.videos && batchResult.videos.length > 0) {
+                return res.json(batchResult);
+            }
+        } catch (e) {
+            console.warn('[Tik.Porn Scraper Error]', e.message);
+        }
+    }
 
     // 1. Pornhub Single Video Link
     if (trimmedUrl.includes('pornhub.com') && (trimmedUrl.includes('viewkey=') || trimmedUrl.includes('/view_video.php') || trimmedUrl.includes('/embed/'))) {
@@ -1090,6 +1187,37 @@ app.post('/api/admin/toggle-trending/:id', requireAdminAuth, (req, res) => {
 app.post('/api/admin/batch-auto-scrape', requireAdminAuth, async (req, res) => {
     const { keyword = 'arabic', count = 30 } = req.body;
     const targetCount = Math.min(parseInt(count, 10) || 30, 60);
+
+    // Special handler for TikTok keyword
+    if (keyword.toLowerCase().includes('tiktok') || keyword.toLowerCase().includes('shorts')) {
+        try {
+            const tikResult = await scrapeTikPornFeed('trending', 1);
+            if (tikResult.success && tikResult.videos && tikResult.videos.length > 0) {
+                const existingIds = new Set(persistentVideos.map(v => v.id));
+                const newVideos = tikResult.videos
+                    .filter(v => !existingIds.has(v.id))
+                    .map(v => ({
+                        ...v,
+                        category: 'tiktok',
+                        is_trending: true,
+                        imported_at: Date.now()
+                    }));
+
+                persistentVideos = newVideos.concat(persistentVideos);
+                savePersistentVideos(persistentVideos);
+                cache.clear();
+
+                return res.json({
+                    success: true,
+                    message: `Successfully auto-scraped & imported ${newVideos.length} fresh TikTok 18+ shorts into CMS!`,
+                    imported_count: newVideos.length,
+                    total_stored: persistentVideos.length
+                });
+            }
+        } catch (e) {
+            return res.status(500).json({ success: false, message: 'TikTok batch scrape failed: ' + e.message });
+        }
+    }
 
     try {
         const url = `https://www.eporner.com/api/v2/video/search/?query=${encodeURIComponent(keyword)}&per_page=${targetCount}&thumbsize=big`;

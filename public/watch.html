@@ -283,9 +283,10 @@
 
       <!-- Main Video Column -->
       <div class="watch-main-col">
-        <!-- 16:9 Cinema Video Player with Strict Anti-Redirect Sandbox -->
+        <!-- 16:9 / 9:16 Cinema Video Player with Strict Anti-Redirect Sandbox -->
         <div class="cinema-player-wrap" id="cinemaWrap">
           <iframe id="cinemaIframe" src="" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"></iframe>
+          <video id="cinemaVideo" controls autoplay playsinline loop style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; object-fit: contain; background:#000;"></video>
         </div>
 
         <!-- High-CTR Server & VIP Action Buttons -->

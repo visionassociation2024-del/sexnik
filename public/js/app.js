@@ -55,6 +55,7 @@ let isSearchMode = false;
 let isHistoryMode = false;
 let isFavoritesMode = false;
 let isForYouMode = false;
+let isTikTokMode = false;
 let currentPage = 1;
 let isLoading = false;
 let hasMore = true;
@@ -64,6 +65,7 @@ let scrollObserver = null;
 // Categories Database
 const CATEGORIES_LIST = [
   { id: 'sex_arabic', title: 'Sex Arabic (عربي)', icon: 'fa-star', special: true, count: '10,000+' },
+  { id: 'tiktok', title: 'TikTok 18+ (تيك توك 📱🔞)', icon: 'fa-brands fa-tiktok', specialTikTok: true, count: '25,000+' },
   { id: 'trending', title: 'Trending', icon: 'fa-fire', count: '50,000+' },
   { id: '4k', title: '4K Ultra HD', icon: 'fa-tv', count: '12,500+' },
   { id: 'amateur', title: 'Amateur (هواة)', icon: 'fa-user', count: '35,000+' },
@@ -105,6 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (q) {
     document.getElementById('searchInput').value = q;
     executeSearch();
+  } else if (cat === 'tiktok') {
+    loadTikTokView();
   } else if (cat) {
     resetAndLoadCategory(cat);
   } else if (hist) {
@@ -134,10 +138,14 @@ function renderCategoriesGridModal() {
   container.innerHTML = '';
   CATEGORIES_LIST.forEach(c => {
     const card = document.createElement('div');
-    card.className = `cat-explore-card ${c.special ? 'special-arabic' : ''}`;
+    card.className = `cat-explore-card ${c.special ? 'special-arabic' : (c.specialTikTok ? 'special-tiktok' : '')}`;
     card.onclick = () => {
       closeCategoriesModal();
-      resetAndLoadCategory(c.id);
+      if (c.id === 'tiktok') {
+        loadTikTokView();
+      } else {
+        resetAndLoadCategory(c.id);
+      }
     };
 
     card.innerHTML = `
@@ -167,15 +175,50 @@ function closeCategoriesModal(e) {
 function setCategory(btn, category) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  resetAndLoadCategory(category);
+  if (category === 'tiktok') {
+    loadTikTokView(btn);
+  } else {
+    resetAndLoadCategory(category);
+  }
+}
+
+// Dedicated TikTok View Loader
+function loadTikTokView(btn) {
+  document.querySelectorAll('.cat-btn, .btn-pill, .bottom-nav-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  isTikTokMode = true;
+  isPhotosMode = false;
+  isGifsMode = false;
+  isHistoryMode = false;
+  isFavoritesMode = false;
+  isForYouMode = false;
+  isSearchMode = false;
+  currentCategory = 'tiktok';
+  currentSearchQuery = '';
+  currentPage = 1;
+  hasMore = true;
+  renderedVideoIds.clear();
+  currentVideos = [];
+
+  document.getElementById('btnClearHistory').style.display = 'none';
+  document.getElementById('categoryLabel').innerHTML = '<i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> TIKTOK 18+ SHORTS (تيك توك 📱🔞)';
+  document.getElementById('videoCountLabel').innerText = 'Streaming live TikTok shorts...';
+
+  const grid = document.getElementById('videosGrid');
+  grid.innerHTML = getSkeletonHTML(12);
+
+  loadVideosBatch(true);
 }
 
 function resetAndLoadCategory(category) {
+  isPhotosMode = false;
   isGifsMode = false;
   isSearchMode = false;
   isHistoryMode = false;
   isFavoritesMode = false;
   isForYouMode = false;
+  isTikTokMode = (category === 'tiktok');
   currentSearchQuery = '';
   currentCategory = category;
   currentPage = 1;
@@ -185,9 +228,14 @@ function resetAndLoadCategory(category) {
 
   document.getElementById('btnClearHistory').style.display = 'none';
 
-  const catObj = CATEGORIES_LIST.find(c => c.id === category);
-  const label = catObj ? catObj.title.toUpperCase() : category.toUpperCase();
-  document.getElementById('categoryLabel').innerText = label;
+  if (isTikTokMode) {
+    document.getElementById('categoryLabel').innerHTML = '<i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> TIKTOK 18+ SHORTS (تيك توك 📱🔞)';
+  } else {
+    const catObj = CATEGORIES_LIST.find(c => c.id === category);
+    const label = catObj ? catObj.title.toUpperCase() : category.toUpperCase();
+    document.getElementById('categoryLabel').innerText = label;
+  }
+
   document.getElementById('videoCountLabel').innerText = 'Streaming live videos...';
 
   const grid = document.getElementById('videosGrid');
@@ -613,7 +661,8 @@ function attachVideoPreviewHandlers(card, v) {
 // Create individual video card element with live hover/touch preview
 function createVideoCardElement(v, isHistory = false) {
   const card = document.createElement('div');
-  card.className = 'video-card animate-fade';
+  const isTik = v.is_tiktok || v.source === 'tiktok' || (v.category === 'tiktok') || isTikTokMode;
+  card.className = `video-card animate-fade ${isTik ? 'tiktok-card' : ''}`;
   card.onclick = () => navigateToWatchPage(v);
 
   const thumb = v.thumbnail || '/images/logo.png';
@@ -621,14 +670,14 @@ function createVideoCardElement(v, isHistory = false) {
   const title = v.title || 'niksex Stream';
   const views = v.views || '15.2K';
   const rating = v.rating || '96%';
-  const previewVideo = v.preview_video || '';
+  const previewVideo = v.preview_video || v.direct_video_url || '';
 
   card.innerHTML = `
     <div class="thumb-wrap">
       <img src="${thumb}" alt="${title}" loading="lazy" onerror="this.src='/images/logo.png'">
       ${previewVideo ? `<video class="preview-video-el" src="${previewVideo}" muted playsinline loop preload="none"></video>` : ''}
       <span class="badge-preview-live"><i class="fa fa-play"></i> Preview</span>
-      <span class="badge-hd">1080p HD</span>
+      ${isTik ? '<span class="badge-tiktok"><i class="fa-brands fa-tiktok"></i> TikTok 18+</span>' : '<span class="badge-hd">1080p HD</span>'}
       ${isHistory ? '<span class="badge-watched"><i class="fa fa-check"></i> Watched</span>' : ''}
       <span class="badge-duration">${duration}</span>
       <button class="btn-mobile-preview" aria-label="Preview Video"><i class="fa fa-eye"></i> معاينة</button>
@@ -638,7 +687,7 @@ function createVideoCardElement(v, isHistory = false) {
       <h3 class="video-title" title="${title}">${title}</h3>
       <div class="video-meta">
         <span><i class="fa fa-eye"></i> ${views}</span>
-        <span class="meta-rating"><i class="fa fa-thumbs-up"></i> ${rating}</span>
+        <span class="meta-rating"><i class="${isTik ? 'fa fa-heart' : 'fa fa-thumbs-up'}" style="${isTik ? 'color: #ff007f;' : ''}"></i> ${isTik ? (v.likes || '1.5K') : rating}</span>
       </div>
     </div>
   `;
@@ -740,15 +789,20 @@ function navigateToWatchPage(v) {
     } catch(e) {}
   }
 
+  const isTik = v.is_tiktok || v.source === 'tiktok' || (v.category === 'tiktok') || isTikTokMode;
+
   const params = new URLSearchParams({
     id: v.id || '',
     title: v.title || 'niksex Video Stream',
-    embed: v.embed_url || v.video_url || '',
-    thumb: v.thumbnail || '',
-    duration: v.duration || '10:00',
+    embed: v.embed_url || v.video_url || v.direct_video_url || '',
+    direct: v.direct_video_url || '',
+    thumb: v.thumbnail || v.poster || '',
+    duration: v.duration || '00:30',
     views: v.views || '15K',
+    likes: v.likes || '1.2K',
     rating: v.rating || '98%',
-    tags: (v.tags || ['niksex', 'HD', 'Popular']).join(',')
+    is_tiktok: isTik ? '1' : '0',
+    tags: (v.tags || ['niksex', 'HD', 'TikTok', 'Shorts']).join(',')
   });
 
   window.location.href = `/watch.html?${params.toString()}`;
