@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>niksex Admin Panel | Secure Control Center</title>
+  <title>niksex Admin Panel | Bulk Page Scraper & Control Center</title>
   <link rel="icon" type="image/png" href="/images/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=2.6">
   <style>
-    /* Login Screen Styles */
     .login-overlay {
       position: fixed;
       inset: 0;
@@ -74,7 +73,6 @@
       display: none;
     }
 
-    /* Admin Container Styles */
     .admin-container {
       max-width: 1200px;
       margin: 30px auto 80px;
@@ -256,7 +254,6 @@
   <!-- Authenticated Admin Panel -->
   <div id="adminPanelContent" style="display: none;">
 
-    <!-- Admin Navbar -->
     <header class="navbar">
       <div class="nav-container">
         <a href="/" class="brand-logo">
@@ -277,18 +274,18 @@
       <div class="stats-row">
         <div class="stat-card">
           <div>
-            <div style="font-size: 12px; color: var(--text-muted);">Security Status</div>
-            <div class="stat-val" style="font-size: 18px; color: #10b981;"><i class="fa fa-lock"></i> Protected</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Engine Status</div>
+            <div class="stat-val" style="font-size: 18px; color: #10b981;"><i class="fa fa-bolt"></i> Ultra-Fast (Cached)</div>
           </div>
-          <i class="fa fa-shield-alt fa-2x" style="color: rgba(16, 185, 129, 0.3);"></i>
+          <i class="fa fa-tachometer-alt fa-2x" style="color: rgba(16, 185, 129, 0.3);"></i>
         </div>
 
         <div class="stat-card">
           <div>
-            <div style="font-size: 12px; color: var(--text-muted);">Scraper Engine</div>
-            <div class="stat-val" style="font-size: 18px; color: #fff;">Native Direct Scraper</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Scraper Mode</div>
+            <div class="stat-val" style="font-size: 18px; color: #fff;">Bulk Page / Site Scraper</div>
           </div>
-          <i class="fa fa-bolt fa-2x" style="color: var(--accent-glow);"></i>
+          <i class="fa fa-layer-group fa-2x" style="color: var(--accent-glow);"></i>
         </div>
 
         <div class="stat-card">
@@ -300,37 +297,34 @@
         </div>
       </div>
 
-      <!-- Universal URL Scraper Section -->
+      <!-- Bulk Page & Site URL Scraper Section -->
       <div class="admin-card">
         <div class="admin-header">
           <h2 class="admin-title">
-            <i class="fa fa-globe"></i> Universal URL Video Scraper (Any Website)
+            <i class="fa fa-globe"></i> Bulk Page URL Video Scraper (Any Category or Channel Page)
           </h2>
           <span class="btn-pill" style="font-size: 11px; border-color: var(--accent-pink);">
-            Single Video OR Full Category/Channel Page
+            Extracts All Videos on the Webpage at Once
           </span>
         </div>
 
         <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 8px;">
-          Paste <strong>any video link or any webpage URL</strong> from any adult platform. The engine will automatically extract the video player, metadata, and import it into your permanent storage.
+          ضع <strong>رابط أي صفحة أو قسم أو قناة أو تصنيف</strong> (مثال: صفحة بحث، صفحة ممثلة، صفحة قسم عربي). سيقوم المحرك الذكي بسحب جميع الفيديوهات الموجودة في الصفحة دفعة واحدة واستخراج مشغلاتها وتخزينها للموقع مباشرة.
         </p>
 
         <div class="supported-badges">
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> Pornhub</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> xHamster</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> XVideos</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> SpankBang</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> RedTube</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> YouPorn</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> Eporner</span>
-          <span class="supported-badge"><i class="fa fa-check text-success"></i> Any Embed URL</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> Pornhub Category/Search Pages</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> xHamster Channels & Lists</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> XVideos Tags & Search Pages</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> SpankBang & RedTube Pages</span>
+          <span class="supported-badge"><i class="fa fa-check text-success"></i> Any Adult Webpage Link</span>
         </div>
 
         <form onsubmit="handleScrapeUrl(event)" style="margin-top: 15px;">
           <div class="url-input-group">
-            <input type="url" id="targetUrlInput" placeholder="Paste ANY video or page link (e.g. https://www.pornhub.com/..., https://xhamster.com/..., https://www.xvideos.com/...)" required>
+            <input type="url" id="targetUrlInput" placeholder="Paste Page / Category URL (e.g. https://www.pornhub.com/video?c=105, https://xhamster.com/categories/arabic, https://www.xvideos.com/tags/arabic)" required>
             <button type="submit" class="btn-scrape" id="btnScrapeUrl">
-              <i class="fa fa-cloud-download-alt"></i> Scrape & Extract
+              <i class="fa fa-layer-group"></i> Extract All Videos on Page
             </button>
           </div>
         </form>
@@ -340,9 +334,12 @@
         <div class="scraped-preview" id="scrapedPreview">
           <div class="preview-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
-              <h3 style="font-size: 16px; font-weight: 700; color: #fff;" id="previewHeading">Extracted Video(s)</h3>
+              <div>
+                <h3 style="font-size: 16px; font-weight: 700; color: #fff;" id="previewHeading">Extracted Video(s)</h3>
+                <span style="font-size: 12px; color: var(--text-muted);" id="pageUrlPreview"></span>
+              </div>
               <button class="btn-pill" style="background: var(--accent-pink); border: none;" id="btnPublishAll" onclick="publishExtractedVideos()">
-                <i class="fa fa-save"></i> Save Permanently to Live Stream
+                <i class="fa fa-save"></i> Save All to Permanent Storage
               </button>
             </div>
 
@@ -475,7 +472,7 @@
         if (data.success && data.videos) {
           document.getElementById('statImportedCount').innerText = data.videos.length;
           if (data.videos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 25px;">No custom videos stored yet. Scrape any link above to add!</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 25px;">No custom videos stored yet. Scrape any page link above to add!</td></tr>';
             return;
           }
 
@@ -521,7 +518,7 @@
       const previewBox = document.getElementById('scrapedPreview');
       const grid = document.getElementById('extractedGrid');
 
-      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Extracting...';
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Extracting all videos from page...';
       btn.disabled = true;
       alertBox.style.display = 'none';
       previewBox.style.display = 'none';
@@ -538,21 +535,22 @@
         });
         const data = await res.json();
 
-        btn.innerHTML = '<i class="fa fa-cloud-download-alt"></i> Scrape & Extract';
+        btn.innerHTML = '<i class="fa fa-layer-group"></i> Extract All Videos on Page';
         btn.disabled = false;
 
         if (data.success) {
           let vids = [];
-          if (data.type === 'single') {
-            vids = [data.video];
-          } else if (data.type === 'batch') {
+          if (data.videos && Array.isArray(data.videos)) {
             vids = data.videos;
+          } else if (data.video) {
+            vids = [data.video];
           }
 
           extractedVideosCache = vids;
           renderExtractedVideos(vids);
           previewBox.style.display = 'block';
-          document.getElementById('previewHeading').innerText = `Extracted ${vids.length} Video(s) from URL`;
+          document.getElementById('previewHeading').innerText = `Extracted ${vids.length} Video(s) from Page`;
+          document.getElementById('pageUrlPreview').innerText = `Source: ${url}`;
         } else {
           alertBox.style.display = 'block';
           alertBox.className = 'btn-pill';
@@ -561,7 +559,7 @@
           alertBox.innerHTML = `<i class="fa fa-exclamation-triangle"></i> ${data.message || 'Scraping failed'}`;
         }
       } catch (err) {
-        btn.innerHTML = '<i class="fa fa-cloud-download-alt"></i> Scrape & Extract';
+        btn.innerHTML = '<i class="fa fa-layer-group"></i> Extract All Videos on Page';
         btn.disabled = false;
         alertBox.style.display = 'block';
         alertBox.innerHTML = 'Error: ' + err.message;
@@ -583,7 +581,7 @@
           </div>
           <div class="card-details">
             <h4 class="video-title" style="font-size: 12px; height: 32px;" title="${v.title}">${v.title}</h4>
-            <span style="font-size: 11px; color: #10b981;"><i class="fa fa-check-circle"></i> Ready to save permanently</span>
+            <span style="font-size: 11px; color: #10b981;"><i class="fa fa-check-circle"></i> Ready to save (${v.source})</span>
           </div>
         `;
         grid.appendChild(div);
@@ -593,7 +591,7 @@
     async function publishExtractedVideos() {
       if (extractedVideosCache.length === 0) return;
       const btn = document.getElementById('btnPublishAll');
-      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving Permanently...';
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving All to Permanent Storage...';
       btn.disabled = true;
 
       try {
@@ -608,13 +606,13 @@
         const data = await res.json();
 
         if (data.success) {
-          btn.innerHTML = '<i class="fa fa-check"></i> Saved Permanently!';
+          btn.innerHTML = '<i class="fa fa-check"></i> Saved All Permanently!';
           btn.style.background = '#10b981';
           loadStoredVideos();
           alert('🎉 ' + data.message);
         }
       } catch (e) {
-        btn.innerHTML = '<i class="fa fa-save"></i> Save Permanently to Live Stream';
+        btn.innerHTML = '<i class="fa fa-save"></i> Save All to Permanent Storage';
         btn.disabled = false;
         alert('Failed to save: ' + e.message);
       }
