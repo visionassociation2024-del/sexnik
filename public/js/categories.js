@@ -1,29 +1,199 @@
-// Categories Data
+// Categories Data with Real High-Definition Category Image Thumbnails
 const ALL_CATEGORIES = [
-  { id: 'sex_arabic', title: 'Sex Arabic (عربي)', icon: 'fa-star', count: '15,000+', link: '/arabic.html', special: 'arabic' },
-  { id: 'nikroli', title: 'nikroli Reels (نكرولي 📱🔞)', icon: 'fa-brands fa-tiktok', count: '25,000+', link: '/nikroli.html', special: 'tiktok' },
-  { id: 'trending', title: 'Trending (الشائع 🔥)', icon: 'fa-fire', count: '50,000+', link: '/trending.html' },
-  { id: '4k', title: '4K Ultra HD (فائق الدقة 📺)', icon: 'fa-tv', count: '12,500+', link: '/4k.html' },
-  { id: 'photos', title: 'Photos & GIFs (صور ومتحركة 📸)', icon: 'fa-camera-retro', count: '18,000+', link: '/photos.html' },
-  { id: 'amateur', title: 'Amateur (هواة)', icon: 'fa-user', count: '35,000+', link: '/?cat=amateur' },
-  { id: 'milf', title: 'MILF (أمهات)', icon: 'fa-heart', count: '28,000+', link: '/?cat=milf' },
-  { id: 'lesbian', title: 'Lesbian (سحاقيات)', icon: 'fa-venus-double', count: '19,000+', link: '/?cat=lesbian' },
-  { id: 'teen', title: '18+ Teen (مراهقات)', icon: 'fa-star-half-alt', count: '22,000+', link: '/?cat=teen' },
-  { id: 'anal', title: 'Anal (خلفي)', icon: 'fa-circle-notch', count: '18,000+', link: '/?cat=anal' },
-  { id: 'blowjob', title: 'Blowjob (مص)', icon: 'fa-kiss', count: '25,000+', link: '/?cat=blowjob' },
-  { id: 'hardcore', title: 'Hardcore (عنيف)', icon: 'fa-bolt', count: '30,000+', link: '/?cat=hardcore' },
-  { id: 'asian', title: 'Asian (آسيوي)', icon: 'fa-globe-asia', count: '16,000+', link: '/?cat=asian' },
-  { id: 'ebony', title: 'Ebony (سمراء)', icon: 'fa-moon', count: '14,000+', link: '/?cat=ebony' },
-  { id: 'latina', title: 'Latina (لاتيني)', icon: 'fa-sun', count: '17,000+', link: '/?cat=latina' },
-  { id: 'hentai', title: 'Hentai & Anime (أنمي)', icon: 'fa-dragon', count: '11,000+', link: '/?cat=hentai' },
-  { id: 'vr', title: 'VR 360° (واقع افتراضي)', icon: 'fa-vr-cardboard', count: '6,000+', link: '/?cat=vr' },
-  { id: 'creampie', title: 'Creampie (داخلي)', icon: 'fa-tint', count: '21,000+', link: '/?cat=creampie' },
-  { id: 'threesome', title: 'Threesome (ثلاثي)', icon: 'fa-users', count: '13,000+', link: '/?cat=threesome' },
-  { id: 'fetish', title: 'Fetish & BDSM (فيتيش)', icon: 'fa-mask', count: '9,000+', link: '/?cat=fetish' },
-  { id: 'masturbation', title: 'Solo & Masturbation (استمناء)', icon: 'fa-hand-sparkles', count: '15,000+', link: '/?cat=masturbation' },
-  { id: 'big_tits', title: 'Big Tits (أثداء كبيرة)', icon: 'fa-heartbeat', count: '27,000+', link: '/?cat=big_tits' },
-  { id: 'big_ass', title: 'Big Ass (مؤخرات كبيرة)', icon: 'fa-ring', count: '24,000+', link: '/?cat=big_ass' },
-  { id: 'squirt', title: 'Squirting (قذف)', icon: 'fa-water', count: '10,000+', link: '/?cat=squirt' }
+  {
+    id: 'sex_arabic',
+    title: 'Sex Arabic (عربي)',
+    icon: 'fa-star',
+    count: '15,400+',
+    link: '/arabic.html',
+    special: 'arabic',
+    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'nikroli',
+    title: 'nikroli Reels (نكرولي 📱🔞)',
+    icon: 'fa-brands fa-tiktok',
+    count: '25,800+',
+    link: '/nikroli.html',
+    special: 'tiktok',
+    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'trending',
+    title: 'Trending (الشائع 🔥)',
+    icon: 'fa-fire',
+    count: '54,200+',
+    link: '/trending.html',
+    image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: '4k',
+    title: '4K Ultra HD (فائق الدقة 📺)',
+    icon: 'fa-tv',
+    count: '12,900+',
+    link: '/4k.html',
+    image: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'photos',
+    title: 'Photos & GIFs (صور ومتحركة 📸)',
+    icon: 'fa-camera-retro',
+    count: '18,500+',
+    link: '/photos.html',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'amateur',
+    title: 'Amateur (هواة)',
+    icon: 'fa-user',
+    count: '36,400+',
+    link: '/?cat=amateur',
+    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'milf',
+    title: 'MILF (أمهات)',
+    icon: 'fa-heart',
+    count: '29,100+',
+    link: '/?cat=milf',
+    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'lesbian',
+    title: 'Lesbian (سحاقيات)',
+    icon: 'fa-venus-double',
+    count: '19,800+',
+    link: '/?cat=lesbian',
+    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'teen',
+    title: '18+ Teen (مراهقات)',
+    icon: 'fa-star-half-alt',
+    count: '23,400+',
+    link: '/?cat=teen',
+    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'anal',
+    title: 'Anal (خلفي)',
+    icon: 'fa-circle-notch',
+    count: '18,700+',
+    link: '/?cat=anal',
+    image: 'https://images.unsplash.com/photo-1516726817505-f5ed825624d8?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'blowjob',
+    title: 'Blowjob (مص)',
+    icon: 'fa-kiss',
+    count: '26,500+',
+    link: '/?cat=blowjob',
+    image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'hardcore',
+    title: 'Hardcore (عنيف)',
+    icon: 'fa-bolt',
+    count: '31,200+',
+    link: '/?cat=hardcore',
+    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'asian',
+    title: 'Asian (آسيوي)',
+    icon: 'fa-globe-asia',
+    count: '16,800+',
+    link: '/?cat=asian',
+    image: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'ebony',
+    title: 'Ebony (سمراء)',
+    icon: 'fa-moon',
+    count: '14,900+',
+    link: '/?cat=ebony',
+    image: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'latina',
+    title: 'Latina (لاتيني)',
+    icon: 'fa-sun',
+    count: '17,600+',
+    link: '/?cat=latina',
+    image: 'https://images.unsplash.com/photo-1524502397800-2eeaad7c3fe5?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'hentai',
+    title: 'Hentai & Anime (أنمي)',
+    icon: 'fa-dragon',
+    count: '11,400+',
+    link: '/?cat=hentai',
+    image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'vr',
+    title: 'VR 360° (واقع افتراضي)',
+    icon: 'fa-vr-cardboard',
+    count: '6,800+',
+    link: '/?cat=vr',
+    image: 'https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'creampie',
+    title: 'Creampie (داخلي)',
+    icon: 'fa-tint',
+    count: '21,900+',
+    link: '/?cat=creampie',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'threesome',
+    title: 'Threesome (ثلاثي)',
+    icon: 'fa-users',
+    count: '13,500+',
+    link: '/?cat=threesome',
+    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'fetish',
+    title: 'Fetish & BDSM (فيتيش)',
+    icon: 'fa-mask',
+    count: '9,400+',
+    link: '/?cat=fetish',
+    image: 'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'masturbation',
+    title: 'Solo & Masturbation (استمناء)',
+    icon: 'fa-hand-sparkles',
+    count: '15,800+',
+    link: '/?cat=masturbation',
+    image: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'big_tits',
+    title: 'Big Tits (أثداء كبيرة)',
+    icon: 'fa-heartbeat',
+    count: '28,100+',
+    link: '/?cat=big_tits',
+    image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'big_ass',
+    title: 'Big Ass (مؤخرات كبيرة)',
+    icon: 'fa-ring',
+    count: '24,900+',
+    link: '/?cat=big_ass',
+    image: 'https://images.unsplash.com/photo-1516726817505-f5ed825624d8?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'squirt',
+    title: 'Squirting (قذف)',
+    icon: 'fa-water',
+    count: '10,700+',
+    link: '/?cat=squirt',
+    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80'
+  }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -46,13 +216,15 @@ function renderCategoriesGrid(list) {
     card.href = c.link;
     card.className = `category-card-standalone ${c.special === 'arabic' ? 'special-arabic-card' : (c.special === 'tiktok' ? 'special-tiktok-card' : '')}`;
 
+    const fallbackImg = '/images/logo.png';
+    const imgSrc = c.image || fallbackImg;
+
     card.innerHTML = `
-      <div class="cat-icon-wrap">
-        <i class="fa ${c.icon}"></i>
-      </div>
+      <img src="${imgSrc}" alt="${c.title}" class="category-card-bg" loading="lazy" onerror="this.src='${fallbackImg}'">
+      <div class="category-card-gradient"></div>
       <div class="cat-text-info">
-        <h3>${c.title}</h3>
-        <span>${c.count} Videos</span>
+        <h3><i class="fa ${c.icon}"></i> ${c.title}</h3>
+        <span><i class="fa fa-play-circle"></i> ${c.count} Videos</span>
       </div>
     `;
 
