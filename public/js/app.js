@@ -101,9 +101,14 @@ const SEARCH_SUGGESTIONS = [
   'creampie hardcore', 'anal deepthroat', 'japanese uncensored', 'vr 360 virtual reality'
 ];
 
+// Global Spotlight state
+let currentSpotlightVideo = null;
+
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
-  renderCategoriesGridModal();
+  initSpotlightHero();
+  initNikroliStrip();
+  initArabicCuratedBlock();
 
   const urlParams = new URLSearchParams(window.location.search);
   const q = urlParams.get('q');
@@ -114,8 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (q) {
     document.getElementById('searchInput').value = q;
     executeSearch();
-  } else if (cat === 'tiktok') {
-    loadTikTokView();
+  } else if (cat === 'tiktok' || cat === 'nikroli') {
+    loadNikroliView();
   } else if (cat) {
     resetAndLoadCategory(cat);
   } else if (hist) {
@@ -137,118 +142,174 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Render Categories in Modal
-function renderCategoriesGridModal() {
-  const container = document.getElementById('categoriesGridCards');
+// 1. Initialize Spotlight Hero with top trending video
+async function initSpotlightHero() {
+  try {
+    const res = await fetch('/api/videos?category=trending&page=1');
+    const data = await res.json();
+    if (data.success && data.videos && data.videos.length > 0) {
+      const topVid = data.videos[0];
+      currentSpotlightVideo = topVid;
+
+      const titleEl = document.getElementById('heroSpotlightTitle');
+      const imgEl = document.getElementById('heroSpotlightImg');
+      const viewsEl = document.getElementById('heroSpotlightViews');
+      const ratingEl = document.getElementById('heroSpotlightRating');
+      const durEl = document.getElementById('heroSpotlightDuration');
+
+      if (titleEl) titleEl.innerText = topVid.title || 'Featured High Definition Video of the Day';
+      if (imgEl && topVid.thumbnail) imgEl.src = topVid.thumbnail;
+      if (viewsEl) viewsEl.innerText = topVid.views || '185.4K';
+      if (ratingEl) ratingEl.innerText = topVid.rating || '99%';
+      if (durEl) durEl.innerText = topVid.duration || '24:15';
+    }
+  } catch (e) {
+    console.error('Failed to load spotlight video:', e);
+  }
+}
+
+function playSpotlightVideo(e) {
+  if (e) e.stopPropagation();
+  if (currentSpotlightVideo) {
+    navigateToWatchPage(currentSpotlightVideo);
+  } else {
+    window.location.href = '/watch.html';
+  }
+}
+
+// 2. Initialize nikroli Viral Reels Strip
+async function initNikroliStrip() {
+  const container = document.getElementById('nikroliStripContainer');
   if (!container) return;
 
-  container.innerHTML = '';
-  CATEGORIES_LIST.forEach(c => {
-    const card = document.createElement('div');
-    card.className = `cat-explore-card ${c.special ? 'special-arabic' : (c.specialTikTok ? 'special-tiktok' : '')}`;
-    card.onclick = () => {
-      closeCategoriesModal();
-      if (c.id === 'tiktok') {
-        loadTikTokView();
-      } else {
-        resetAndLoadCategory(c.id);
-      }
-    };
+  try {
+    const res = await fetch('/api/tiktok?q=trending&page=1');
+    const data = await res.json();
+    const reels = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
 
-    card.innerHTML = `
-      <div class="cat-icon-box">
-        <i class="fa ${c.icon}"></i>
-      </div>
-      <div class="cat-info">
-        <h4>${c.title}</h4>
-        <span>${c.count} Videos</span>
-      </div>
-    `;
-    container.appendChild(card);
-  });
+    if (reels.length === 0) {
+      container.innerHTML = '<div style="padding: 20px; color: var(--text-muted);">nikroli reels streaming soon...</div>';
+      return;
+    }
+
+    container.innerHTML = '';
+    reels.slice(0, 14).forEach(r => {
+      const card = document.createElement('a');
+      card.href = '/nikroli.html';
+      card.className = 'nikroli-strip-card';
+
+      const thumb = r.poster || r.thumbnail || '/images/logo.png';
+      const title = r.title || 'nikroli 18+ Viral Reel';
+      const likes = r.likes || '3.2K';
+
+      card.innerHTML = `
+        <img src="${thumb}" alt="${title}" loading="lazy" onerror="this.src='/images/logo.png'">
+        <div class="nikroli-strip-gradient"></div>
+        <span class="nikroli-strip-badge"><i class="fa-brands fa-tiktok"></i> nikroli</span>
+        <div class="nikroli-strip-play-icon"><i class="fa fa-play"></i></div>
+        <div class="nikroli-strip-info">
+          <h4>${title}</h4>
+          <span><i class="fa fa-heart" style="color: #ff007f;"></i> ${likes}</span>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  } catch (e) {
+    container.innerHTML = '<div style="padding: 20px; color: #ef4444;">Failed to load nikroli reels.</div>';
+  }
+}
+
+// 3. Initialize Sex Arabic Curated Block
+async function initArabicCuratedBlock() {
+  const container = document.getElementById('arabicFeaturedGrid');
+  if (!container) return;
+
+  try {
+    const res = await fetch('/api/videos?category=arabic&page=1');
+    const data = await res.json();
+    const arabicVids = (data.success && data.videos && data.videos.length > 0) ? data.videos.slice(0, 4) : [];
+
+    container.innerHTML = '';
+    if (arabicVids.length > 0) {
+      arabicVids.forEach(v => {
+        const card = createVideoCardElement(v);
+        container.appendChild(card);
+      });
+    } else {
+      container.innerHTML = '<div style="grid-column: 1/-1; color: var(--text-muted); text-align: center; padding: 20px;">No Arabic videos found.</div>';
+    }
+  } catch (e) {
+    container.innerHTML = '<div style="grid-column: 1/-1; color: #ef4444; text-align: center; padding: 20px;">Failed to load Arabic section.</div>';
+  }
+}
+
+// Dedicated Standalone Page Routing Functions
+function loadNikroliView() {
+  window.location.href = '/nikroli.html';
+}
+
+function loadTikTokView() {
+  window.location.href = '/nikroli.html';
+}
+
+function loadPhotosView() {
+  window.location.href = '/photos.html';
+}
+
+function loadGifsView() {
+  window.location.href = '/photos.html';
+}
+
+function loadFavoritesView() {
+  window.location.href = '/favorites.html';
+}
+
+function loadWatchHistory() {
+  window.location.href = '/history.html';
 }
 
 function openCategoriesModal() {
-  document.getElementById('categoriesModal').style.display = 'flex';
+  window.location.href = '/categories.html';
 }
 
-function closeCategoriesModal(e) {
-  if (!e || e.target.id === 'categoriesModal' || e.target.closest('.btn-close-modal')) {
-    document.getElementById('categoriesModal').style.display = 'none';
-  }
+function loadFavoritesView() {
+  window.location.href = '/favorites.html';
+}
+
+function loadWatchHistory() {
+  window.location.href = '/history.html';
+}
+
+function openCategoriesModal() {
+  window.location.href = '/categories.html';
 }
 
 // Category switcher
 function setCategory(btn, category) {
+  if (category === 'tiktok' || category === 'shorts') {
+    window.location.href = '/scroll.html';
+    return;
+  }
+  if (category === 'sex_arabic' || category === 'arabic') {
+    window.location.href = '/arabic.html';
+    return;
+  }
+  if (category === 'photos' || category === 'gifs') {
+    window.location.href = '/photos.html';
+    return;
+  }
+  if (category === '4k') {
+    window.location.href = '/4k.html';
+    return;
+  }
+
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  if (category === 'tiktok') {
-    loadTikTokView(btn);
-  } else {
-    resetAndLoadCategory(category);
-  }
-}
-
-// Dedicated TikTok View Loader
-function loadTikTokView(btn) {
-  document.querySelectorAll('.cat-btn, .btn-pill, .bottom-nav-item').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-
-  isTikTokMode = true;
-  isPhotosMode = false;
-  isGifsMode = false;
-  isHistoryMode = false;
-  isFavoritesMode = false;
-  isForYouMode = false;
-  isSearchMode = false;
-  currentCategory = 'tiktok';
-  currentSearchQuery = '';
-  currentPage = 1;
-  hasMore = true;
-  renderedVideoIds.clear();
-  currentVideos = [];
-  tiktokReelsList = [];
-
-  document.getElementById('btnClearHistory').style.display = 'none';
-  document.getElementById('categoryLabel').innerHTML = '<i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> TIKTOK 18+ REELS & SHORTS (تيك توك 📱🔞)';
-  document.getElementById('videoCountLabel').innerText = isTikTokReelsView ? 'Auto-Scroll & Swipe Active ⚡' : 'Streaming live TikTok shorts...';
-
-  const reelsContainer = document.getElementById('tiktokReelsContainer');
-  const grid = document.getElementById('videosGrid');
-  const sentinel = document.getElementById('scrollSentinel');
-
-  if (isTikTokReelsView) {
-    document.body.classList.add('reels-fullscreen-active');
-    if (reelsContainer) reelsContainer.style.display = 'flex';
-    fetchAndRenderTikTokReels(true);
-  } else {
-    document.body.classList.remove('reels-fullscreen-active');
-    if (reelsContainer) reelsContainer.style.display = 'none';
-    if (grid) {
-      grid.style.display = 'grid';
-      grid.innerHTML = getSkeletonHTML(12);
-    }
-    if (sentinel) sentinel.style.display = 'block';
-    loadVideosBatch(true);
-  }
+  resetAndLoadCategory(category);
 }
 
 function resetAndLoadCategory(category) {
-  pauseAllTikTokReels();
-  const reelsContainer = document.getElementById('tiktokReelsContainer');
-  const grid = document.getElementById('videosGrid');
-  const sentinel = document.getElementById('scrollSentinel');
-  if (reelsContainer) reelsContainer.style.display = 'none';
-  if (grid) grid.style.display = 'grid';
-  if (sentinel) sentinel.style.display = 'block';
-
-  isPhotosMode = false;
-  isGifsMode = false;
   isSearchMode = false;
-  isHistoryMode = false;
-  isFavoritesMode = false;
-  isForYouMode = false;
-  isTikTokMode = (category === 'tiktok');
   currentSearchQuery = '';
   currentCategory = category;
   currentPage = 1;
@@ -256,19 +317,18 @@ function resetAndLoadCategory(category) {
   renderedVideoIds.clear();
   currentVideos = [];
 
-  document.getElementById('btnClearHistory').style.display = 'none';
-
-  if (isTikTokMode) {
-    loadTikTokView();
-    return;
-  }
-
   const catObj = CATEGORIES_LIST.find(c => c.id === category);
   const label = catObj ? catObj.title.toUpperCase() : category.toUpperCase();
-  document.getElementById('categoryLabel').innerText = label;
-  document.getElementById('videoCountLabel').innerText = 'Streaming live videos...';
+  const catLabelEl = document.getElementById('categoryLabel');
+  if (catLabelEl) catLabelEl.innerText = label;
 
-  grid.innerHTML = getSkeletonHTML(8);
+  const countLabelEl = document.getElementById('videoCountLabel');
+  if (countLabelEl) countLabelEl.innerText = 'Streaming live videos...';
+
+  const grid = document.getElementById('videosGrid');
+  if (grid) {
+    grid.innerHTML = getSkeletonHTML(8);
+  }
   loadVideosBatch(true);
 }
 

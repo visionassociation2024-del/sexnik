@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Watch Video - niksex | Ultra HD Streaming</title>
-  <meta name="description" content="Watch high-definition streaming video on niksex.">
+  <meta name="description" content="Watch high-definition streaming video on niksex with multi-server playback and ultra-fast loading.">
   <link rel="icon" type="image/png" href="/images/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=2.8">
+  <link rel="stylesheet" href="/css/style.css?v=3.0">
 
   <!-- Monetization & Popunder Scripts -->
   <script src="https://pl31054762.profitableratecpmnetwork.com/72/f4/9a/72f49a7889c2432c21f5fdf844a52e5d.js"></script>
@@ -31,10 +31,15 @@
       background: #000;
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 25px rgba(255, 0, 127, 0.2);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 25px rgba(255, 0, 127, 0.25);
       border: 1px solid var(--border-pink);
       transition: all 0.3s ease;
       z-index: 10;
+    }
+    .cinema-player-wrap.portrait-mode {
+      padding-top: 150%;
+      max-width: 460px;
+      margin: 0 auto;
     }
     .cinema-player-wrap iframe {
       position: absolute;
@@ -44,12 +49,89 @@
       height: 100%;
       border: 0;
     }
+
+    /* Multi-Server Selector Bar */
+    .server-selector-card {
+      background: rgba(22, 22, 34, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 18px;
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      backdrop-filter: blur(10px);
+    }
+    .server-selector-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .server-selector-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-server-item {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 18px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    .btn-server-item:hover, .btn-server-item.active {
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .btn-server-item.btn-vip-stream {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 136, 0, 0.3));
+      border-color: #ffd700;
+      color: #ffd700;
+    }
+    .btn-server-item.btn-vip-stream:hover {
+      background: linear-gradient(135deg, #ffd700, #ff8800);
+      color: #000;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    }
+    .btn-server-reload {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 18px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-server-reload:hover {
+      color: #fff;
+      border-color: var(--accent-pink);
+    }
+
     .watch-details-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 24px;
-      margin-top: 20px;
+      margin-top: 16px;
     }
     .watch-video-title {
       font-size: 22px;
@@ -240,11 +322,25 @@
         </button>
       </div>
 
-      <div class="nav-actions">
-        <a href="/?cat=tiktok" class="btn-pill btn-tiktok" id="btnWatchTikTokReels" style="display: none; background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff;">
-          <i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> TikTok Reels (تيك توك 📱🔞)
+      <div class="nav-actions desktop-only">
+        <a href="/arabic.html" class="btn-pill btn-arabic">
+          <i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic (عربي)
         </a>
-        <a href="/" class="btn-pill"><i class="fa fa-arrow-left"></i> Browse Videos</a>
+        <a href="/nikroli.html" class="btn-pill btn-tiktok" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff; box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);">
+          <i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> nikroli (نكرولي 📱🔞)
+        </a>
+        <a href="/photos.html" class="btn-pill btn-photos" style="background: rgba(255, 0, 127, 0.2); border-color: var(--accent-pink); color: #fff;">
+          <i class="fa fa-camera-retro" style="color: #ff007f;"></i> Photos & GIFs (صور ومتحركة 📸)
+        </a>
+        <a href="/4k.html" class="btn-pill">
+          <i class="fa fa-tv" style="color: #c084fc;"></i> 4K UHD
+        </a>
+        <a href="/categories.html" class="btn-pill">
+          <i class="fa fa-th-large"></i> Categories
+        </a>
+        <a href="/favorites.html" class="btn-pill">
+          <i class="fa fa-heart" style="color: #ff007f;"></i> Favorites
+        </a>
       </div>
     </div>
   </header>
@@ -286,13 +382,40 @@
 
       <!-- Main Video Column -->
       <div class="watch-main-col">
-        <!-- 16:9 / 9:16 Cinema Video Player with Strict Anti-Redirect Sandbox -->
+        
+        <!-- 16:9 / 9:16 Cinema Video Player (Unrestricted Embed & HTML5 Native Stream) -->
         <div class="cinema-player-wrap" id="cinemaWrap">
-          <iframe id="cinemaIframe" src="" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"></iframe>
+          <button class="btn-close-pip" id="btnClosePiP" onclick="closeMiniPiP(event)" title="Close Mini Player">&times;</button>
+          <iframe id="cinemaIframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
           <video id="cinemaVideo" controls autoplay playsinline loop style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; object-fit: contain; background:#000;"></video>
         </div>
 
-        <!-- High-CTR Server & VIP Action Buttons -->
+        <!-- Multi-Server Selector Card (100% Reliable Switching) -->
+        <div class="server-selector-card">
+          <div class="server-selector-label">
+            <i class="fa fa-server" style="color: var(--accent-pink);"></i>
+            <span>Video Server / سيرفر التشغيل:</span>
+          </div>
+          <div class="server-selector-buttons" id="serverButtonsGroup">
+            <button class="btn-server-item active" id="btnServer1" onclick="switchVideoServer(1)">
+              <i class="fa fa-bolt" style="color: #00f2fe;"></i> Server 1 (HD Fast)
+            </button>
+            <button class="btn-server-item" id="btnServer2" onclick="switchVideoServer(2)">
+              <i class="fa fa-cloud" style="color: #c084fc;"></i> Server 2 (Cloud Mirror)
+            </button>
+            <button class="btn-server-item" id="btnServer3" onclick="switchVideoServer(3)">
+              <i class="fa fa-play-circle" style="color: var(--accent-pink);"></i> Server 3 (Direct Web)
+            </button>
+            <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-server-item btn-vip-stream">
+              <i class="fa fa-crown" style="color: #ffd700;"></i> Server 4 (VIP 4K UHD)
+            </a>
+            <button class="btn-server-reload" onclick="reloadCurrentPlayer()" title="Reload Player (إعادة تشغيل المشغل)">
+              <i class="fa fa-rotate-right"></i> Reload
+            </button>
+          </div>
+        </div>
+
+        <!-- High-CTR VIP Action Buttons -->
         <div class="player-servers-bar">
           <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-server-ad btn-server-vip">
             <i class="fa fa-bolt"></i> Stream VIP Server (4K UHD)
@@ -306,7 +429,6 @@
         </div>
 
         <!-- Video Metadata & Interaction Bar -->
-
         <div class="watch-details-card">
           <h1 class="watch-video-title" id="watchTitle">Loading video stream...</h1>
 
@@ -367,7 +489,7 @@
           <div id="container-6712c8762e9a78dc0f1d32bdd0e76e7d"></div>
         </div>
 
-        <!-- Similar Videos Grid Directly Below Video Details (Exact Red Circle Location) -->
+        <!-- Similar Videos Grid Directly Below Video Details -->
         <section class="similar-videos-section" style="margin-top: 25px;">
           <div class="section-header" style="margin-bottom: 16px;">
             <h2 class="section-title" style="font-size: 18px;">
@@ -429,21 +551,29 @@
 
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-nav">
-    <a href="/?cat=sex_arabic" class="bottom-nav-item" style="color: #ffd700;">
+    <a href="/arabic.html" class="bottom-nav-item" style="color: #ffd700;">
       <i class="fa fa-star"></i>
       <span>Arabic</span>
+    </a>
+    <a href="/nikroli.html" class="bottom-nav-item" style="color: #00f2fe;">
+      <i class="fa-brands fa-tiktok"></i>
+      <span>nikroli</span>
+    </a>
+    <a href="/photos.html" class="bottom-nav-item" style="color: var(--accent-pink);">
+      <i class="fa fa-images"></i>
+      <span>Photos</span>
     </a>
     <a href="/" class="bottom-nav-item active">
       <i class="fa fa-home"></i>
       <span>Home</span>
     </a>
-    <a href="/?cat=trending" class="bottom-nav-item">
-      <i class="fa fa-fire"></i>
-      <span>Trending</span>
+    <a href="/categories.html" class="bottom-nav-item">
+      <i class="fa fa-th-large"></i>
+      <span>Categories</span>
     </a>
-    <a href="/?history=1" class="bottom-nav-item">
-      <i class="fa fa-history"></i>
-      <span>History</span>
+    <a href="/favorites.html" class="bottom-nav-item">
+      <i class="fa fa-heart" style="color: #ff007f;"></i>
+      <span>Favorites</span>
     </a>
   </nav>
 
@@ -531,11 +661,9 @@
           'params' : {}
         };
       </script>
-      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
     </div>
   </div>
 
-  <script src="/js/watch.js?v=2.8"></script>
+  <script src="/js/watch.js?v=3.0"></script>
 </body>
 </html>
-

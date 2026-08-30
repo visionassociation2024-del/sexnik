@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Adult Photos & Animated GIFs Gallery - niksex</title>
+  <meta name="description" content="Explore thousands of hot adult GIFs, HD model photos, animated clips, and high-definition galleries on niksex.">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css?v=3.0">
+
+  <!-- Monetization & Popunder Scripts -->
+  <script src="https://pl31054762.profitableratecpmnetwork.com/72/f4/9a/72f49a7889c2432c21f5fdf844a52e5d.js"></script>
+  <script src="https://pl31054764.profitableratecpmnetwork.com/16/4d/5c/164d5cb44941d85d54f598046baf38b5.js"></script>
+
+  <style>
+    .photos-page-container {
+      max-width: 1400px;
+      margin: 20px auto 60px;
+      padding: 0 20px;
+    }
+    .photos-filter-tabs {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 20px;
+      padding-bottom: 4px;
+    }
+    .photos-filter-tabs::-webkit-scrollbar { display: none; }
+    .btn-photo-tab {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-photo-tab:hover, .btn-photo-tab.active {
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .photos-masonry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .photos-page-container { padding: 0 12px; margin-top: 12px; }
+      .photos-masonry-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="brand-logo">
+        <img src="/images/logo.png" alt="niksex Logo">
+      </a>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search photos, hot GIFs, models..." onkeypress="handlePhotosSearch(event)">
+        <button class="search-btn" onclick="executePhotosSearch()" aria-label="Search">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+
+      <div class="nav-actions desktop-only">
+        <a href="/arabic.html" class="btn-pill btn-arabic">
+          <i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic (عربي)
+        </a>
+        <a href="/nikroli.html" class="btn-pill btn-tiktok" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff;">
+          <i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> nikroli (نكرولي 📱🔞)
+        </a>
+        <a href="/categories.html" class="btn-pill">
+          <i class="fa fa-th-large"></i> Categories
+        </a>
+        <a href="/" class="btn-pill">
+          <i class="fa fa-home"></i> Home
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Photos Main Container -->
+  <main class="photos-page-container">
+
+    <!-- Top Desktop Leaderboard 728x90 -->
+    <div class="ad-wrapper ad-desktop-only" style="margin-top: 0; margin-bottom: 20px;">
+      <div class="ad-badge">SPONSORED / إعلان</div>
+      <script>
+        atOptions = {
+          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
+    </div>
+
+    <!-- Top Mobile Banner 320x50 -->
+    <div class="ad-wrapper ad-mobile-only" style="margin-top: 0; margin-bottom: 16px;">
+      <div class="ad-badge">SPONSORED / إعلان</div>
+      <script>
+        atOptions = {
+          'key' : '0f2a63fbd6da2fd879750c7de7658080',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
+    </div>
+
+    <div class="section-header">
+      <h1 class="section-title" style="font-size: 20px;">
+        <i class="fa fa-camera-retro" style="color: var(--accent-pink);"></i>
+        <span>Photos & Animated GIFs Gallery (معرض الصور والمتحركة 📸🔞)</span>
+      </h1>
+      <span class="text-muted" id="photosCountLabel" style="font-size: 13px;">Loading media gallery...</span>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="photos-filter-tabs">
+      <button class="btn-photo-tab active" onclick="switchPhotosTab('all', this)"><i class="fa fa-layer-group"></i> All Media (الكل)</button>
+      <button class="btn-photo-tab" onclick="switchPhotosTab('gifs', this)"><i class="fa fa-film"></i> Hot GIFs (متحركة 🔥)</button>
+      <button class="btn-photo-tab" onclick="switchPhotosTab('photos', this)"><i class="fa fa-camera"></i> HD Photos (صور عارضات 📸)</button>
+      <button class="btn-photo-tab" onclick="switchPhotosTab('arabic', this)"><i class="fa fa-star" style="color: #ffd700;"></i> Arabic Models (عربي)</button>
+      <button class="btn-photo-tab" onclick="switchPhotosTab('asian', this)"><i class="fa fa-globe-asia"></i> Asian & Japanese</button>
+      <button class="btn-photo-tab" onclick="switchPhotosTab('amateur', this)"><i class="fa fa-user"></i> Amateur couples</button>
+    </div>
+
+    <!-- Media Grid -->
+    <div class="photos-masonry-grid" id="photosGrid">
+      <!-- Dynamically populated via photos.js -->
+    </div>
+
+    <!-- Infinite Scroll Loader -->
+    <div id="photosLoader" class="infinite-loader" style="display: none;">
+      <div class="spinner-neon"></div>
+      <span>Loading more HD photos & GIFs...</span>
+    </div>
+
+    <!-- Sentinel Element -->
+    <div id="photosSentinel" style="height: 40px; width: 100%;"></div>
+
+  </main>
+
+  <!-- Lightbox Modal Viewer -->
+  <div class="gif-modal-backdrop" id="photoLightboxModal" onclick="closePhotoLightbox(event)">
+    <div class="gif-modal-content" onclick="event.stopPropagation()">
+      <button class="gif-modal-close" onclick="closePhotoLightbox()">&times;</button>
+      <div class="gif-modal-media-wrap" id="photoLightboxMedia"></div>
+      <div class="gif-modal-body">
+        <h3 id="photoLightboxTitle" style="font-size: 16px; color: #fff; margin-bottom: 8px;">🔥 HD Model Media</h3>
+        <div class="gif-modal-actions">
+          <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-gif-action btn-gif-watch-hd">
+            <i class="fa fa-play-circle"></i> Watch Full 4K Video Stream
+          </a>
+          <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-gif-action" style="background: rgba(255,255,255,0.1); color: #fff;">
+            <i class="fa fa-download"></i> Download HD Media
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav">
+    <a href="/arabic.html" class="bottom-nav-item" style="color: #ffd700;">
+      <i class="fa fa-star"></i>
+      <span>Arabic</span>
+    </a>
+    <a href="/nikroli.html" class="bottom-nav-item" style="color: #00f2fe;">
+      <i class="fa-brands fa-tiktok"></i>
+      <span>nikroli</span>
+    </a>
+    <a href="/photos.html" class="bottom-nav-item active" style="color: var(--accent-pink);">
+      <i class="fa fa-images"></i>
+      <span>Photos</span>
+    </a>
+    <a href="/" class="bottom-nav-item">
+      <i class="fa fa-home"></i>
+      <span>Home</span>
+    </a>
+    <a href="/categories.html" class="bottom-nav-item">
+      <i class="fa fa-th-large"></i>
+      <span>Categories</span>
+    </a>
+  </nav>
+
+  <!-- Footer with Legal Disclaimer & Static Links -->
+  <footer>
+    <img src="/images/logo.png" alt="niksex" class="footer-logo">
+    
+    <div class="footer-links">
+      <a href="/dmca.html">DMCA & Copyright</a>
+      <span>•</span>
+      <a href="/terms.html">Terms of Service</a>
+      <span>•</span>
+      <a href="/privacy.html">Privacy Policy</a>
+      <span>•</span>
+      <a href="/2257.html">18 U.S.C. 2257</a>
+      <span>•</span>
+      <a href="/contact.html">Contact Us / Removal</a>
+    </div>
+
+    <!-- Bottom Desktop Leaderboard 728x90 -->
+    <div class="ad-wrapper ad-desktop-only" style="margin-top: 30px;">
+      <div class="ad-badge">SPONSORED / إعلان</div>
+      <script>
+        atOptions = {
+          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
+    </div>
+
+    <!-- Bottom Mobile Banner 320x50 -->
+    <div class="ad-wrapper ad-mobile-only" style="margin-top: 20px;">
+      <div class="ad-badge">SPONSORED / إعلان</div>
+      <script>
+        atOptions = {
+          'key' : '0f2a63fbd6da2fd879750c7de7658080',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
+    </div>
+
+    <div class="disclaimer-container">
+      <p class="disclaimer-text">
+        <strong>إخلاء مسؤولية قانوني:</strong> موقع <strong>niksex</strong> هو محرك بحث رقمي ووسيط تقني لعرض وتضمين مقاطع الفيديو والوسائط (Embed Intermediary Interface). موقعنا لا يستضيف ولا يخزن أي ملفات على خوادمه الخاصة.
+      </p>
+    </div>
+
+    <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 niksex. All rights reserved.</p>
+  </footer>
+
+  <script src="/js/photos.js?v=3.0"></script>
+</body>
+</html>

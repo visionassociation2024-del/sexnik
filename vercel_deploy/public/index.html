@@ -3,18 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>niksex - WATCH • EXPLORE • ENJOY | Next-Gen Video Streaming</title>
-  <meta name="description" content="Watch high-definition videos with ultra-fast streaming, Sex Arabic collection, categories, smart personalization, and infinite scrolling on niksex.">
+  <title>niksex - WATCH • EXPLORE • ENJOY | Next-Gen Adult Video Streaming</title>
+  <meta name="description" content="Watch high-definition adult videos with ultra-fast streaming, Sex Arabic collection, nikroli 18+ Reels & Shorts, 4K UHD, and infinite scrolling on niksex.">
+  <meta name="keywords" content="niksex, nikroli, نكرولي, sex arabic, سكس عربي, 4k adult videos, adult streaming, porn videos, free hd porn, viral adult reels, افلام سكس مترجمة, نيك عربي">
   <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="canonical" href="https://niksex.com/">
+
+  <!-- OpenGraph & Twitter Meta Tags for Maximum SEO Traffic -->
+  <meta property="og:title" content="niksex - WATCH • EXPLORE • ENJOY | Ultra HD Streaming">
+  <meta property="og:description" content="Watch high-definition adult videos, Sex Arabic exclusives, nikroli viral reels, and 4K Ultra HD streaming.">
+  <meta property="og:image" content="/images/logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://niksex.com/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Schema.org JSON-LD Structured Data for Google Indexing -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "niksex",
+    "url": "https://niksex.com/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://niksex.com/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=2.8">
+  <link rel="stylesheet" href="/css/style.css?v=4.0">
 
   <!-- Monetization & Popunder Scripts -->
   <script src="https://pl31054762.profitableratecpmnetwork.com/72/f4/9a/72f49a7889c2432c21f5fdf844a52e5d.js"></script>
   <script src="https://pl31054764.profitableratecpmnetwork.com/16/4d/5c/164d5cb44941d85d54f598046baf38b5.js"></script>
 
   <style>
-    /* Filter Bar Styles */
+    /* Search Autocomplete dropdown */
+    .autocomplete-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(14, 14, 22, 0.98);
+      border: 1px solid var(--border-pink);
+      border-radius: 12px;
+      margin-top: 6px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      display: none;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+    }
+    .autocomplete-item {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-color);
+      transition: var(--transition);
+    }
+    .autocomplete-item:hover {
+      background: rgba(255, 0, 127, 0.15);
+      color: var(--accent-pink);
+    }
+
+    /* Duration & Sort Bar */
     .filter-bar {
       max-width: 1400px;
       margin: 0 auto 16px;
@@ -51,39 +109,6 @@
       color: #fff;
     }
 
-    /* Live Search Autocomplete Popup */
-    .autocomplete-dropdown {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: rgba(22, 22, 34, 0.98);
-      border: 1px solid var(--border-pink);
-      border-radius: 12px;
-      margin-top: 6px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
-      z-index: 2000;
-      display: none;
-      overflow: hidden;
-      backdrop-filter: blur(16px);
-    }
-    .autocomplete-item {
-      padding: 10px 16px;
-      font-size: 13px;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      border-bottom: 1px solid var(--border-color);
-      transition: var(--transition);
-    }
-    .autocomplete-item:hover {
-      background: rgba(255, 0, 127, 0.15);
-      color: var(--accent-pink);
-    }
-
-    /* Footer Static Page Links */
     .footer-links {
       display: flex;
       align-items: center;
@@ -93,11 +118,37 @@
       margin: 16px 0 10px;
       font-size: 13px;
     }
-    .footer-links a {
-      color: var(--text-muted);
+    .footer-links a { color: var(--text-muted); transition: var(--transition); }
+    .footer-links a:hover { color: var(--accent-pink); }
+
+    /* Quick category badge matrix */
+    .categories-matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+    .cat-matrix-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
       transition: var(--transition);
     }
-    .footer-links a:hover {
+    .cat-matrix-pill:hover {
+      background: rgba(0, 242, 254, 0.15);
+      border-color: #00f2fe;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.2);
+    }
+    .cat-matrix-pill i {
       color: var(--accent-pink);
     }
   </style>
@@ -107,9 +158,9 @@
   <!-- Navigation Bar -->
   <header class="navbar">
     <div class="nav-container">
-      <div class="brand-logo" onclick="resetAndLoadCategory('trending')">
+      <a href="/" class="brand-logo">
         <img src="/images/logo.png" alt="niksex Logo">
-      </div>
+      </a>
 
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="Search Arabic, 4K, models, categories..." oninput="handleSearchInput(event)" onkeypress="handleSearch(event)" autocomplete="off">
@@ -122,42 +173,36 @@
       </div>
 
       <div class="nav-actions desktop-only">
-        <button class="btn-pill btn-arabic" onclick="resetAndLoadCategory('sex_arabic')">
-          <i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic
-        </button>
-        <button class="btn-pill btn-tiktok" onclick="loadTikTokView(this)" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff; box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);">
-          <i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> TikTok (تيك توك 📱🔞)
-        </button>
-        <button class="btn-pill btn-photos" onclick="loadPhotosView(this)" style="background: rgba(255, 0, 127, 0.25); border-color: var(--accent-pink); color: #fff;">
-          <i class="fa fa-camera-retro" style="color: #ff007f;"></i> Photos & GIFs (صور ومتحركة 📸)
-        </button>
-        <button class="btn-pill btn-foryou" onclick="loadForYouFeed()">
-          <i class="fa fa-magic" style="color: #c084fc;"></i> For You
-        </button>
-        <button class="btn-pill" onclick="openCategoriesModal()">
+        <a href="/arabic.html" class="btn-pill btn-arabic">
+          <i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic (عربي)
+        </a>
+        <a href="/nikroli.html" class="btn-pill btn-tiktok" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff; box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);">
+          <i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> nikroli (نكرولي 📱🔞)
+        </a>
+        <a href="/photos.html" class="btn-pill btn-photos" style="background: rgba(255, 0, 127, 0.2); border-color: var(--accent-pink); color: #fff;">
+          <i class="fa fa-camera-retro" style="color: #ff007f;"></i> Photos & GIFs
+        </a>
+        <a href="/4k.html" class="btn-pill">
+          <i class="fa fa-tv" style="color: #c084fc;"></i> 4K UHD
+        </a>
+        <a href="/categories.html" class="btn-pill">
           <i class="fa fa-th-large"></i> Categories
-        </button>
-        <button class="btn-pill" onclick="loadFavoritesView()">
+        </a>
+        <a href="/favorites.html" class="btn-pill">
           <i class="fa fa-heart" style="color: #ff007f;"></i> Favorites
-        </button>
-        <button class="btn-pill" onclick="loadWatchHistory()">
-          <i class="fa fa-history"></i> History
-        </button>
+        </a>
       </div>
     </div>
   </header>
 
   <!-- Categories Scrollbar (Touch Optimized) -->
   <nav class="categories-bar" id="categoriesBar">
-    <button class="cat-btn cat-arabic" onclick="setCategory(this, 'sex_arabic')"><i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic (عربي)</button>
-    <button class="cat-btn cat-tiktok" onclick="loadTikTokView(this)" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff; font-weight: 700; box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);"><i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> TikTok 18+ (تيك توك 📱🔞)</button>
-    <button class="cat-btn cat-photos" onclick="loadPhotosView(this)" style="background: linear-gradient(135deg, rgba(255, 0, 127, 0.3), rgba(157, 78, 221, 0.3)); border-color: var(--accent-pink); color: #fff; font-weight: 700;"><i class="fa fa-camera-retro" style="color: var(--accent-pink);"></i> Photos & GIFs (صور ومتحركة 📸🔞)</button>
-    <button class="cat-btn cat-foryou" onclick="loadForYouFeed(this)"><i class="fa fa-magic"></i> For You (مخصص لك)</button>
-    <button class="cat-btn" onclick="openCategoriesModal()"><i class="fa fa-th-large"></i> All Categories (التصنيفات)</button>
-    <button class="cat-btn active" onclick="setCategory(this, 'trending')"><i class="fa fa-fire"></i> Trending</button>
-
-
-    <button class="cat-btn" onclick="setCategory(this, '4k')"><i class="fa fa-tv"></i> 4K UHD</button>
+    <a href="/arabic.html" class="cat-btn cat-arabic"><i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic (عربي)</a>
+    <a href="/nikroli.html" class="cat-btn cat-tiktok" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff; font-weight: 700; box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);"><i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> nikroli (نكرولي 📱🔞)</a>
+    <a href="/photos.html" class="cat-btn cat-photos" style="background: linear-gradient(135deg, rgba(255, 0, 127, 0.3), rgba(157, 78, 221, 0.3)); border-color: var(--accent-pink); color: #fff; font-weight: 700;"><i class="fa fa-camera-retro" style="color: var(--accent-pink);"></i> Photos & GIFs 📸</a>
+    <a href="/4k.html" class="cat-btn"><i class="fa fa-tv"></i> 4K Ultra HD</a>
+    <a href="/categories.html" class="cat-btn"><i class="fa fa-th-large"></i> All Categories (التصنيفات)</a>
+    <button class="cat-btn active" onclick="setCategory(this, 'trending')"><i class="fa fa-fire"></i> Trending (الشائع)</button>
     <button class="cat-btn" onclick="setCategory(this, 'amateur')"><i class="fa fa-user"></i> Amateur</button>
     <button class="cat-btn" onclick="setCategory(this, 'milf')"><i class="fa fa-heart"></i> Milf</button>
     <button class="cat-btn" onclick="setCategory(this, 'lesbian')"><i class="fa fa-venus-double"></i> Lesbian</button>
@@ -165,59 +210,153 @@
     <button class="cat-btn" onclick="setCategory(this, 'anal')"><i class="fa fa-circle-notch"></i> Anal</button>
     <button class="cat-btn" onclick="setCategory(this, 'blowjob')"><i class="fa fa-kiss"></i> Blowjob</button>
     <button class="cat-btn" onclick="setCategory(this, 'hardcore')"><i class="fa fa-bolt"></i> Hardcore</button>
-    <button class="cat-btn" onclick="loadFavoritesView(this)"><i class="fa fa-heart" style="color: #ff007f;"></i> Favorites (المفضلة)</button>
-    <button class="cat-btn" onclick="loadWatchHistory(this)"><i class="fa fa-history"></i> My History (السجل)</button>
   </nav>
 
-  <!-- Duration & Sorting Filters Bar -->
-  <div class="filter-bar">
-    <div class="filter-group">
-      <span style="font-size: 11px; color: var(--text-muted); margin-right: 4px;"><i class="fa fa-clock"></i> Duration:</span>
-      <button class="filter-btn active" onclick="setDurationFilter(this, 'all')">All</button>
-      <button class="filter-btn" onclick="setDurationFilter(this, 'short')">&lt; 10 min</button>
-      <button class="filter-btn" onclick="setDurationFilter(this, 'medium')">10 - 20 min</button>
-      <button class="filter-btn" onclick="setDurationFilter(this, 'long')">20+ min</button>
-    </div>
+  <!-- 1. Featured Spotlight Hero Section (Enterprise Spotlight) -->
+  <section class="hero-spotlight-section">
+    <div class="hero-spotlight-card" id="heroSpotlightCard" onclick="playSpotlightVideo()">
+      <img src="https://picsum.photos/seed/spotlight99/1200/500" alt="Spotlight Video" class="hero-spotlight-bg" id="heroSpotlightImg">
+      <div class="hero-spotlight-gradient"></div>
+      
+      <div class="hero-spotlight-content">
+        <div class="hero-spotlight-badges">
+          <span class="badge-spotlight-gold"><i class="fa fa-crown"></i> Spotlight of the Day</span>
+          <span class="badge-spotlight-4k"><i class="fa fa-bolt"></i> 4K ULTRA HD</span>
+          <span class="badge-spotlight-gold" style="background: rgba(0,0,0,0.6); color: #00f2fe; border: 1px solid #00f2fe;"><i class="fa fa-check-circle"></i> VERIFIED MASTER</span>
+        </div>
 
-    <div class="filter-group">
-      <span style="font-size: 11px; color: var(--text-muted); margin-right: 4px;"><i class="fa fa-sort"></i> Sort:</span>
-      <button class="filter-btn active" onclick="setSortFilter(this, 'trending')">Trending</button>
-      <button class="filter-btn" onclick="setSortFilter(this, 'views')">Most Viewed</button>
-      <button class="filter-btn" onclick="setSortFilter(this, 'rating')">Top Rated</button>
+        <h1 class="hero-spotlight-title" id="heroSpotlightTitle">Featured High Definition Video of the Day</h1>
+
+        <div class="hero-spotlight-meta">
+          <span><i class="fa fa-eye"></i> <strong id="heroSpotlightViews">185.4K</strong> Views</span>
+          <span><i class="fa fa-thumbs-up" style="color: #00f2fe;"></i> <strong id="heroSpotlightRating">99%</strong> Rating</span>
+          <span><i class="fa fa-clock"></i> <strong id="heroSpotlightDuration">24:15</strong></span>
+        </div>
+
+        <div class="hero-spotlight-actions">
+          <button class="btn-spotlight-play" onclick="playSpotlightVideo(event)">
+            <i class="fa fa-play"></i> Watch Full Stream Now
+          </button>
+          <a href="/nikroli.html" class="btn-spotlight-reels" onclick="event.stopPropagation()">
+            <i class="fa-brands fa-tiktok"></i> Open nikroli Reels
+          </a>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <!-- Top Desktop Leaderboard 728x90 -->
+  <div class="ad-wrapper ad-desktop-only" style="margin-top: 0; margin-bottom: 20px;">
+    <div class="ad-badge">SPONSORED / إعلان</div>
+    <script>
+      atOptions = {
+        'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
   </div>
 
-  <!-- Main Content Grid -->
-  <main class="main-container">
+  <!-- Top Mobile Banner 320x50 -->
+  <div class="ad-wrapper ad-mobile-only" style="margin-top: 0; margin-bottom: 16px;">
+    <div class="ad-badge">SPONSORED / إعلان</div>
+    <script>
+      atOptions = {
+        'key' : '0f2a63fbd6da2fd879750c7de7658080',
+        'format' : 'iframe',
+        'height' : 50,
+        'width' : 320,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
+  </div>
 
-    <!-- Top Desktop Leaderboard 728x90 -->
-    <div class="ad-wrapper ad-desktop-only">
-      <div class="ad-badge">SPONSORED / إعلان</div>
-      <script>
-        atOptions = {
-          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
+  <!-- 2. nikroli Horizontal Reels & Shorts Strip (Enterprise Reel Slider) -->
+  <section class="nikroli-strip-section">
+    <div class="nikroli-strip-header">
+      <h2 class="nikroli-strip-title">
+        <i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i>
+        <span>nikroli Viral Reels (مقاطع نكرولي 📱🔞)</span>
+      </h2>
+      <a href="/nikroli.html" class="btn-view-all-pill">
+        <span>Open nikroli (ملء الشاشة)</span> <i class="fa fa-arrow-right"></i>
+      </a>
     </div>
 
-    <!-- Top Mobile Banner 320x50 -->
-    <div class="ad-wrapper ad-mobile-only">
-      <div class="ad-badge">SPONSORED / إعلان</div>
-      <script>
-        atOptions = {
-          'key' : '0f2a63fbd6da2fd879750c7de7658080',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
+    <div class="nikroli-strip-container" id="nikroliStripContainer">
+      <!-- Populated dynamically via app.js -->
+      <div style="padding: 20px; color: var(--text-muted);"><div class="spinner-neon"></div> Loading nikroli reels...</div>
+    </div>
+  </section>
+
+  <!-- 3. Sex Arabic Curated Block (سكس عربي حصري) -->
+  <section class="curated-block-section">
+    <div class="curated-block-header">
+      <h2 class="curated-block-title" style="color: #ffd700;">
+        <i class="fa fa-star" style="color: #ffd700;"></i>
+        <span>Sex Arabic Exclusives (أحدث الفيديوهات العربية 🇸🇦🇪🇬)</span>
+      </h2>
+      <a href="/arabic.html" class="btn-view-all-pill" style="border-color: rgba(255, 215, 0, 0.4); color: #ffd700;">
+        <span>جميع الفيديوهات العربية</span> <i class="fa fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="videos-grid" id="arabicFeaturedGrid">
+      <!-- Populated dynamically via app.js -->
+    </div>
+  </section>
+
+  <!-- 4. Quick Visual Categories Matrix -->
+  <section class="curated-block-section">
+    <div class="curated-block-header">
+      <h2 class="curated-block-title">
+        <i class="fa fa-th-large" style="color: var(--accent-pink);"></i>
+        <span>Explore Top Categories (استكشاف التصنيفات)</span>
+      </h2>
+      <a href="/categories.html" class="btn-view-all-pill">
+        <span>All 24+ Categories</span> <i class="fa fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="categories-matrix-grid">
+      <a href="/arabic.html" class="cat-matrix-pill" style="border-color: rgba(255, 215, 0, 0.4);"><i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic</a>
+      <a href="/nikroli.html" class="cat-matrix-pill" style="border-color: rgba(0, 242, 254, 0.4);"><i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> nikroli Reels</a>
+      <a href="/4k.html" class="cat-matrix-pill"><i class="fa fa-tv" style="color: #c084fc;"></i> 4K Ultra HD</a>
+      <a href="/photos.html" class="cat-matrix-pill"><i class="fa fa-camera-retro" style="color: #ff007f;"></i> Photos & GIFs</a>
+      <a href="/?cat=amateur" class="cat-matrix-pill"><i class="fa fa-user"></i> Amateur</a>
+      <a href="/?cat=milf" class="cat-matrix-pill"><i class="fa fa-heart"></i> MILF</a>
+      <a href="/?cat=lesbian" class="cat-matrix-pill"><i class="fa fa-venus-double"></i> Lesbian</a>
+      <a href="/?cat=teen" class="cat-matrix-pill"><i class="fa fa-star-half-alt"></i> 18+ Teen</a>
+      <a href="/?cat=anal" class="cat-matrix-pill"><i class="fa fa-circle-notch"></i> Anal</a>
+      <a href="/?cat=blowjob" class="cat-matrix-pill"><i class="fa fa-kiss"></i> Blowjob</a>
+      <a href="/?cat=hardcore" class="cat-matrix-pill"><i class="fa fa-bolt"></i> Hardcore</a>
+      <a href="/?cat=asian" class="cat-matrix-pill"><i class="fa fa-globe-asia"></i> Asian</a>
+    </div>
+  </section>
+
+  <!-- 5. Infinite Trending Feed Section -->
+  <main class="main-container">
+
+    <!-- Duration & Sorting Filters Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span style="font-size: 11px; color: var(--text-muted); margin-right: 4px;"><i class="fa fa-clock"></i> Duration:</span>
+        <button class="filter-btn active" onclick="setDurationFilter(this, 'all')">All</button>
+        <button class="filter-btn" onclick="setDurationFilter(this, 'short')">&lt; 10 min</button>
+        <button class="filter-btn" onclick="setDurationFilter(this, 'medium')">10 - 20 min</button>
+        <button class="filter-btn" onclick="setDurationFilter(this, 'long')">20+ min</button>
+      </div>
+
+      <div class="filter-group">
+        <span style="font-size: 11px; color: var(--text-muted); margin-right: 4px;"><i class="fa fa-sort"></i> Sort:</span>
+        <button class="filter-btn active" onclick="setSortFilter(this, 'trending')">Trending</button>
+        <button class="filter-btn" onclick="setSortFilter(this, 'views')">Most Viewed</button>
+        <button class="filter-btn" onclick="setSortFilter(this, 'rating')">Top Rated</button>
+      </div>
     </div>
 
     <div class="section-header">
@@ -227,9 +366,6 @@
       </h2>
       <div style="display: flex; align-items: center; gap: 10px;">
         <span class="text-muted" id="videoCountLabel" style="font-size: 13px;">Streaming live videos...</span>
-        <button id="btnClearHistory" class="btn-pill" style="display: none; padding: 4px 10px; font-size: 11px; border-color: #ef4444; color: #ef4444;" onclick="clearHistory()">
-          <i class="fa fa-trash"></i> Clear History
-        </button>
       </div>
     </div>
 
@@ -255,72 +391,33 @@
     <div id="scrollSentinel" style="height: 40px; width: 100%;"></div>
   </main>
 
-  <!-- Categories Explorer Modal -->
-  <div class="modal-overlay" id="categoriesModal" onclick="closeCategoriesModal(event)">
-    <div class="modal-card" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h3 class="modal-title">
-          <i class="fa fa-th-large" style="color: var(--accent-pink);"></i> Browse All Categories (التصنيفات)
-        </h3>
-        <button class="btn-close-modal" onclick="closeCategoriesModal()" aria-label="Close">
-          <i class="fa fa-times"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="categories-grid-cards" id="categoriesGridCards">
-          <!-- Populated by app.js -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Adult GIFs Lightbox Modal with SmartLink Action -->
-  <div class="gif-modal-backdrop" id="gifModal" onclick="closeGifModal(event)">
-    <div class="gif-modal-content" onclick="event.stopPropagation()">
-      <button class="gif-modal-close" onclick="closeGifModal()">&times;</button>
-      <div class="gif-modal-media-wrap" id="gifModalMedia"></div>
-      <div class="gif-modal-body">
-        <h3 id="gifModalTitle" style="font-size: 16px; color: #fff; margin-bottom: 8px;">🔥 Hot HD Model GIF</h3>
-        <div class="gif-modal-actions">
-          <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-gif-action btn-gif-watch-hd">
-            <i class="fa fa-play-circle"></i> Watch Full 4K Video Stream
-          </a>
-          <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-gif-action" style="background: rgba(255,255,255,0.1); color: #fff;">
-            <i class="fa fa-download"></i> Download HD GIF
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-nav">
-    <a class="bottom-nav-item" onclick="mobileNav('sex_arabic', this)" style="color: #ffd700;">
+    <a href="/arabic.html" class="bottom-nav-item" style="color: #ffd700;">
       <i class="fa fa-star"></i>
       <span>Arabic</span>
     </a>
-    <a class="bottom-nav-item" onclick="loadTikTokView(this)" style="color: #00f2fe;">
+    <a href="/nikroli.html" class="bottom-nav-item" style="color: #00f2fe;">
       <i class="fa-brands fa-tiktok"></i>
-      <span>TikTok</span>
+      <span>nikroli</span>
     </a>
-    <a class="bottom-nav-item" onclick="loadGifsView(this)" style="color: var(--accent-pink);">
+    <a href="/photos.html" class="bottom-nav-item" style="color: var(--accent-pink);">
       <i class="fa fa-images"></i>
-      <span>GIFs</span>
+      <span>Photos</span>
     </a>
-    <a class="bottom-nav-item active" onclick="mobileNav('trending', this)">
+    <a href="/" class="bottom-nav-item active">
       <i class="fa fa-fire"></i>
-      <span>Trending</span>
+      <span>Home</span>
     </a>
-    <a class="bottom-nav-item" onclick="openCategoriesModal()">
+    <a href="/categories.html" class="bottom-nav-item">
       <i class="fa fa-th-large"></i>
       <span>Categories</span>
     </a>
-    <a class="bottom-nav-item" onclick="loadFavoritesView(this)">
+    <a href="/favorites.html" class="bottom-nav-item">
       <i class="fa fa-heart" style="color: #ff007f;"></i>
       <span>Favorites</span>
     </a>
   </nav>
-
 
   <!-- Footer with Legal Disclaimer & Static Links -->
   <footer>
@@ -370,92 +467,13 @@
 
     <div class="disclaimer-container">
       <p class="disclaimer-text">
-        <strong>إخلاء مسؤولية قانوني:</strong> موقع <strong>niksex</strong> هو محرك بحث رقمي، واجهة تشغيل، ووسيط تقني لعرض وتضمين مقاطع الفيديو (Embed Intermediary Interface). موقعنا لا يستضيف ولا يخزن أي ملفات فيديو على خوادمه الخاصة.
+        <strong>إخلاء مسؤولية قانوني:</strong> موقع <strong>niksex</strong> هو محرك بحث رقمي ووسيط تقني لعرض وتضمين مقاطع الفيديو والريلز (Embed Intermediary Interface). موقعنا لا يستضيف ولا يخزن أي ملفات فيديو على خوادمه الخاصة.
       </p>
     </div>
 
     <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 niksex. All rights reserved.</p>
   </footer>
 
-  <!-- Sticky Bottom Floating Ad Bar -->
-  <div class="sticky-bottom-ad" id="stickyBottomAd">
-    <button class="btn-close-sticky-ad" onclick="document.getElementById('stickyBottomAd').style.display='none'" aria-label="Close Ad">&times;</button>
-    
-    <!-- Desktop 728x90 -->
-    <div class="ad-desktop-only" style="min-width: 728px; min-height: 90px; text-align: center;">
-      <script>
-        atOptions = {
-          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
-    </div>
-
-    <!-- Mobile 320x50 -->
-    <div class="ad-mobile-only" style="min-width: 320px; min-height: 50px; text-align: center;">
-      <script>
-        atOptions = {
-          'key' : '0f2a63fbd6da2fd879750c7de7658080',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-    </div>
-  </div>
-
-  <!-- Ultra-Immersive Fullscreen TikTok Reels & Shorts Feed -->
-  <div id="tiktokReelsContainer" class="tiktok-fullscreen-modal" style="display: none;">
-    <div class="tiktok-reels-stage">
-      
-      <!-- Top Reels Floating Toolbar -->
-      <div class="tiktok-top-toolbar">
-        <button class="btn-reel-circle" onclick="exitTikTokReels()" title="Exit Reels (الرجوع)">
-          <i class="fa fa-arrow-left"></i>
-        </button>
-
-        <div class="tiktok-live-indicator">
-          <span class="tiktok-live-dot"></span>
-          <span>TIKTOK 18+ REELS</span>
-        </div>
-
-        <div style="display: flex; gap: 8px;">
-          <button class="btn-reels-switch" id="btnSoundGlobal" onclick="toggleTikTokGlobalSound(event)">
-            <i class="fa fa-volume-up" id="iconSoundGlobal"></i> <span class="desktop-only-inline">Sound</span>
-          </button>
-          <button class="btn-reels-switch" id="btnTikTokViewToggle" onclick="toggleTikTokDisplayMode()">
-            <i class="fa fa-th-large"></i> <span class="desktop-only-inline">Grid</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Vertical Reel Scroll Feed -->
-      <div class="tiktok-reels-feed" id="tiktokReelsFeed">
-        <!-- Reel slides rendered dynamically via app.js -->
-      </div>
-
-    </div>
-
-    <!-- Desktop Nav Controls (Floating on the right side) -->
-    <div class="tiktok-desktop-controls">
-      <button class="btn-reel-nav" onclick="scrollTikTokReel('prev')" title="Previous Reel (Up Arrow)">
-        <i class="fa fa-chevron-up"></i>
-      </button>
-      <button class="btn-reel-nav" onclick="scrollTikTokReel('next')" title="Next Reel (Down Arrow)">
-        <i class="fa fa-chevron-down"></i>
-      </button>
-      <button class="btn-reel-nav" onclick="exitTikTokReels()" title="Exit (Esc)" style="background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ef4444;">
-        <i class="fa fa-times"></i>
-      </button>
-    </div>
-  </div>
-
-  <script src="/js/app.js?v=2.8"></script>
+  <script src="/js/app.js?v=4.0"></script>
 </body>
 </html>
-

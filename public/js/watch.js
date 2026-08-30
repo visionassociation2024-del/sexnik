@@ -43,113 +43,78 @@ function isAllowedAdUrl(urlStr) {
   }, { capture: true });
 })();
 
-
-
 let currentVideoObj = null;
-
-// Instant Hover & Touch Video Preview Controller
-function attachVideoPreviewHandlers(card, v) {
-  const thumbWrap = card.querySelector('.thumb-wrap, .related-thumb');
-  if (!thumbWrap) return;
-
-  const videoEl = thumbWrap.querySelector('.preview-video-el');
-  const progressFill = thumbWrap.querySelector('.preview-progress-fill');
-  const mobilePreviewBtn = thumbWrap.querySelector('.btn-mobile-preview');
-
-  let previewTimer = null;
-  let progressInterval = null;
-  let isPreviewing = false;
-
-  function startPreview(e) {
-    if (e && e.stopPropagation) e.stopPropagation();
-    if (isPreviewing) return;
-
-    previewTimer = setTimeout(() => {
-      isPreviewing = true;
-      card.classList.add('preview-active');
-
-      if (v.preview_video && videoEl) {
-        if (!videoEl.src) {
-          videoEl.src = v.preview_video;
-        }
-        videoEl.muted = true;
-        videoEl.currentTime = 0;
-        const playPromise = videoEl.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {});
-        }
-      }
-
-      // Start scrubber progress fill animation
-      let progress = 0;
-      if (progressFill) {
-        progressFill.style.width = '0%';
-        clearInterval(progressInterval);
-        progressInterval = setInterval(() => {
-          progress = (progress + 2) % 100;
-          progressFill.style.width = `${progress}%`;
-        }, 100);
-      }
-    }, 180); // 180ms smooth debounce
-  }
-
-  function stopPreview(e) {
-    if (previewTimer) clearTimeout(previewTimer);
-    if (!isPreviewing) return;
-    isPreviewing = false;
-    card.classList.remove('preview-active');
-
-    if (videoEl) {
-      videoEl.pause();
-      videoEl.currentTime = 0;
-    }
-    if (progressInterval) clearInterval(progressInterval);
-    if (progressFill) progressFill.style.width = '0%';
-  }
-
-  // Desktop Mouse Hover
-  thumbWrap.addEventListener('mouseenter', startPreview);
-  thumbWrap.addEventListener('mouseleave', stopPreview);
-
-  // Mobile Touch Quick Preview Button
-  if (mobilePreviewBtn) {
-    mobilePreviewBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      if (isPreviewing) {
-        stopPreview();
-      } else {
-        startPreview();
-      }
-    });
-  }
-
-  // Touch and hold / long press on mobile
-  let touchStartTime = 0;
-  thumbWrap.addEventListener('touchstart', (e) => {
-    touchStartTime = Date.now();
-    previewTimer = setTimeout(() => {
-      startPreview(e);
-    }, 250);
-  }, { passive: true });
-
-  thumbWrap.addEventListener('touchend', (e) => {
-    if (Date.now() - touchStartTime < 250) {
-      if (previewTimer) clearTimeout(previewTimer);
-    }
-  }, { passive: true });
-}
+let currentServerIndex = 1;
+let availableServers = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   initWatchPage();
 });
 
+function extractCleanEmbedUrl(urlOrIframe) {
+  if (!urlOrIframe) return '';
+  const trimmed = urlOrIframe.trim();
+  if (trimmed.includes('<iframe')) {
+    const match = trimmed.match(/src=["']([^"']+)["']/i);
+    if (match && match[1]) return match[1];
+  }
+  return trimmed;
+}
 
-function initWatchPage() {
+function resolvePlatformEmbedUrl(id, rawEmbed = '') {
+  let embed = extractCleanEmbedUrl(rawEmbed);
+  if (embed && embed.startsWith('http')) {
+    return embed;
+  }
+
+  const rawId = String(id || '').trim();
+  if (!rawId) return 'https://www.eporner.com/embed/sample/';
+
+  // Pornhub
+  if (rawId.startsWith('ph_') || rawId.startsWith('ph')) {
+    const cleanKey = rawId.replace(/^ph_?/, '');
+    return `https://www.pornhub.com/embed/${cleanKey}`;
+  }
+
+  // xHamster
+  if (rawId.startsWith('xh_') || rawId.startsWith('xh')) {
+    const cleanKey = rawId.replace(/^xh_?/, '');
+    return `https://xhamster.com/xembed.php?video=${cleanKey}`;
+  }
+
+  // XVideos
+  if (rawId.startsWith('xv_') || rawId.startsWith('xv')) {
+    const cleanKey = rawId.replace(/^xv_?/, '');
+    return `https://www.xvideos.com/embedframe/${cleanKey}`;
+  }
+
+  // SpankBang
+  if (rawId.startsWith('sb_') || rawId.startsWith('sb')) {
+    const cleanKey = rawId.replace(/^sb_?/, '');
+    return `https://spankbang.com/${cleanKey}/embed/`;
+  }
+
+  // RedTube
+  if (rawId.startsWith('tube_') || rawId.startsWith('red_')) {
+    const cleanKey = rawId.replace(/^(tube_|red_)/, '');
+    return `https://embed.redtube.com/?id=${cleanKey}&autoplay=1`;
+  }
+
+  // Eporner
+  if (rawId.startsWith('ep_')) {
+    const cleanKey = rawId.replace(/^ep_/, '');
+    return `https://www.eporner.com/embed/${cleanKey}/`;
+  }
+
+  // Default Eporner / Standard embed
+  return `https://www.eporner.com/embed/${rawId}/`;
+}
+
+async function initWatchPage() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id') || 'sample';
-  const title = params.get('title') || 'niksex HD Video Stream';
-  let embedUrl = params.get('embed') || '';
+  const titleParam = params.get('title') || '';
+  let embedUrl = extractCleanEmbedUrl(params.get('embed') || '');
   const directVideo = params.get('direct') || '';
   const thumb = params.get('thumb') || '/images/logo.png';
   const views = params.get('views') || '18,400';
@@ -160,7 +125,7 @@ function initWatchPage() {
 
   currentVideoObj = {
     id,
-    title,
+    title: titleParam || 'niksex HD Video Stream',
     embed_url: embedUrl || directVideo,
     video_url: embedUrl || directVideo,
     direct_video_url: directVideo,
@@ -172,95 +137,69 @@ function initWatchPage() {
     tags: tagsParam.split(',')
   };
 
-  const iframeEl = document.getElementById('cinemaIframe');
-  const videoEl = document.getElementById('cinemaVideo');
-  const wrapEl = document.getElementById('cinemaWrap');
-
-  // Handle TikTok / Direct MP4 Streaming
-  if (isTikTok || embedUrl.includes('.mp4') || directVideo.includes('.mp4') || (embedUrl && embedUrl.includes('video-cdn.tik.porn'))) {
-    if (wrapEl) wrapEl.classList.add('portrait-mode');
-
-    let streamUrl = directVideo || (embedUrl.includes('.mp4') ? embedUrl : '');
-
-    if (streamUrl) {
-      if (iframeEl) iframeEl.style.display = 'none';
-      if (videoEl) {
-        videoEl.style.display = 'block';
-        videoEl.src = streamUrl;
-        videoEl.play().catch(() => {});
+  // If title was missing or only ID was provided, query /api/video/:id for full data
+  if (!embedUrl && id && id !== 'sample') {
+    try {
+      const apiRes = await fetch(`/api/video/${encodeURIComponent(id)}`);
+      const apiData = await apiRes.json();
+      if (apiData.success && apiData.video) {
+        const v = apiData.video;
+        currentVideoObj = {
+          ...currentVideoObj,
+          title: v.title || currentVideoObj.title,
+          embed_url: v.embed_url || currentVideoObj.embed_url,
+          video_url: v.video_url || currentVideoObj.video_url,
+          direct_video_url: v.direct_video_url || currentVideoObj.direct_video_url,
+          thumbnail: v.thumbnail || currentVideoObj.thumbnail,
+          duration: v.duration || currentVideoObj.duration,
+          views: v.views || currentVideoObj.views,
+          rating: v.rating || currentVideoObj.rating,
+          tags: v.tags || currentVideoObj.tags,
+          servers: v.servers || []
+        };
+        availableServers = v.servers || [];
       }
-    } else if (id.startsWith('tik_') || isTikTok) {
-      const cleanVidId = id.replace('tik_', '');
-      fetch(`/api/tiktok/video/${cleanVidId}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.direct_video_url) {
-            currentVideoObj.direct_video_url = data.direct_video_url;
-            currentVideoObj.embed_url = data.direct_video_url;
-            if (iframeEl) iframeEl.style.display = 'none';
-            if (videoEl) {
-              videoEl.style.display = 'block';
-              videoEl.src = data.direct_video_url;
-              videoEl.play().catch(() => {});
-            }
-          }
-        })
-        .catch(() => {});
-    if (videoEl) {
-      videoEl.onended = () => {
-        // Auto play next TikTok short
-        const nextVideoCard = document.querySelector('#relatedList .related-item') || document.querySelector('#similarVideosGrid .video-card');
-        if (nextVideoCard && isTikTok) {
-          nextVideoCard.click();
-        }
-      };
-    }
-
-    const btnReels = document.getElementById('btnWatchTikTokReels');
-    if (btnReels && isTikTok) btnReels.style.display = 'inline-flex';
-  } else {
-    // Normal Iframe Embed (Pornhub, Eporner, etc.)
-    if (!embedUrl) {
-      if (id.startsWith('ph')) {
-        embedUrl = `https://www.pornhub.com/embed/${id.replace('ph', '')}`;
-      } else {
-        embedUrl = `https://www.eporner.com/embed/${id}/`;
-      }
-      currentVideoObj.embed_url = embedUrl;
-    }
-
-    const separator = embedUrl.includes('?') ? '&' : '?';
-    if (!embedUrl.includes('autoplay=')) {
-      embedUrl += `${separator}autoplay=1&muted=0&sound=1&volume=100`;
-    }
-
-    if (videoEl) videoEl.style.display = 'none';
-    if (iframeEl) {
-      iframeEl.style.display = 'block';
-      iframeEl.src = embedUrl;
+    } catch (e) {
+      console.warn('[Video Meta Fetch]', e.message);
     }
   }
 
-  // Update Page Elements
-  document.title = `${title} - niksex`;
-  document.getElementById('watchTitle').innerText = title;
-  document.getElementById('watchViews').innerText = views;
-  document.getElementById('watchDuration').innerText = duration;
-  document.getElementById('watchRating').innerText = rating;
+  // Setup Available Servers
+  if (!availableServers || availableServers.length === 0) {
+    const primaryEmbed = currentVideoObj.embed_url || resolvePlatformEmbedUrl(currentVideoObj.id);
+    availableServers = [
+      { name: 'Server 1 (nikroli Ultra HD Cloud)', url: primaryEmbed, type: 'embed' },
+      { name: 'Server 2 (Alternate Mirror)', url: primaryEmbed, type: 'embed' },
+      { name: 'Server 3 (Direct Web Stream HTML5)', url: currentVideoObj.direct_video_url || primaryEmbed, type: 'embed' },
+      { name: 'Server 4 (VIP 4K Stream)', url: SMARTLINK_URL, type: 'vip' }
+    ];
+  }
+
+  // Render Video Player
+  renderVideoPlayer(currentVideoObj);
+
+  // Update Page Metadata & Texts
+  document.title = `${currentVideoObj.title} - niksex`;
+  document.getElementById('watchTitle').innerText = currentVideoObj.title;
+  document.getElementById('watchViews').innerText = currentVideoObj.views;
+  document.getElementById('watchDuration').innerText = currentVideoObj.duration;
+  document.getElementById('watchRating').innerText = currentVideoObj.rating;
 
   // Render Tags
   const tagsContainer = document.getElementById('watchTags');
-  tagsContainer.innerHTML = '';
-  const tags = tagsParam.split(',');
-  tags.forEach(t => {
-    const span = document.createElement('a');
-    span.href = `/?q=${encodeURIComponent(t.trim())}`;
-    span.className = 'cat-btn';
-    span.style.padding = '4px 12px';
-    span.style.fontSize = '12px';
-    span.innerText = `#${t.trim()}`;
-    tagsContainer.appendChild(span);
-  });
+  if (tagsContainer) {
+    tagsContainer.innerHTML = '';
+    const tags = Array.isArray(currentVideoObj.tags) ? currentVideoObj.tags : tagsParam.split(',');
+    tags.forEach(t => {
+      const span = document.createElement('a');
+      span.href = `/?q=${encodeURIComponent(t.trim())}`;
+      span.className = 'cat-btn';
+      span.style.padding = '4px 12px';
+      span.style.fontSize = '12px';
+      span.innerText = `#${t.trim()}`;
+      tagsContainer.appendChild(span);
+    });
+  }
 
   // Check Favorite State
   checkFavoriteState();
@@ -268,11 +207,171 @@ function initWatchPage() {
   // Save to Watch History & Preferences
   saveToHistoryAndPrefs(currentVideoObj);
 
-  // Inject Schema.org VideoObject for SEO
+  // Inject Schema.org VideoObject for Google SEO
   injectVideoSchema(currentVideoObj);
 
-  // Load Recommended Sidebar Videos
+  // Load Recommended Sidebar Videos & Similar Videos Grid
   loadRelatedVideos();
+
+  // Setup Sticky Floating Mini PiP Player
+  setupMiniPiP();
+}
+
+let isPiPDisabledManually = false;
+
+function setupMiniPiP() {
+  const wrap = document.getElementById('cinemaWrap');
+  if (!wrap) return;
+
+  window.addEventListener('scroll', () => {
+    if (isPiPDisabledManually) return;
+    const scrollY = window.scrollY || window.pageYOffset;
+    if (scrollY > 500) {
+      wrap.classList.add('mini-pip');
+    } else {
+      wrap.classList.remove('mini-pip');
+    }
+  }, { passive: true });
+}
+
+function closeMiniPiP(e) {
+  if (e) e.stopPropagation();
+  isPiPDisabledManually = true;
+  const wrap = document.getElementById('cinemaWrap');
+  if (wrap) wrap.classList.remove('mini-pip');
+}
+
+function renderVideoPlayer(v) {
+  const iframeEl = document.getElementById('cinemaIframe');
+  const videoEl = document.getElementById('cinemaVideo');
+  const wrapEl = document.getElementById('cinemaWrap');
+
+  const isDirectMp4 = v.direct_video_url || (v.embed_url && v.embed_url.includes('.mp4')) || (v.embed_url && v.embed_url.includes('video-cdn.tik.porn')) || v.is_tiktok;
+
+  if (isDirectMp4) {
+    if (wrapEl && (v.is_tiktok || String(v.id).startsWith('tik_'))) {
+      wrapEl.classList.add('portrait-mode');
+    }
+
+    let streamUrl = v.direct_video_url || (v.embed_url.includes('.mp4') ? v.embed_url : '');
+
+    if (streamUrl) {
+      if (iframeEl) iframeEl.style.display = 'none';
+      if (videoEl) {
+        videoEl.style.display = 'block';
+        videoEl.src = streamUrl;
+        videoEl.play().catch(() => {
+          videoEl.muted = true;
+          videoEl.play().catch(() => {});
+        });
+      }
+    } else if (String(v.id).startsWith('tik_') || v.is_tiktok) {
+      const cleanVidId = String(v.id).replace('tik_', '');
+      fetch(`/api/tiktok/video/${cleanVidId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.direct_video_url) {
+            v.direct_video_url = data.direct_video_url;
+            v.embed_url = data.direct_video_url;
+            if (iframeEl) iframeEl.style.display = 'none';
+            if (videoEl) {
+              videoEl.style.display = 'block';
+              videoEl.src = data.direct_video_url;
+              videoEl.play().catch(() => {
+                videoEl.muted = true;
+                videoEl.play().catch(() => {});
+              });
+            }
+          }
+        })
+        .catch(err => {
+          console.warn('[TikTok Stream Load Error]', err.message);
+        });
+    }
+
+    if (videoEl) {
+      videoEl.onended = () => {
+        const nextVideoCard = document.querySelector('#relatedList .related-item') || document.querySelector('#similarVideosGrid .video-card');
+        if (nextVideoCard) nextVideoCard.click();
+      };
+    }
+  } else {
+    // Normal Iframe Embed (Pornhub, Eporner, xHamster, XVideos, SpankBang, RedTube, etc.)
+    if (wrapEl) wrapEl.classList.remove('portrait-mode');
+
+    let embedUrl = v.embed_url || resolvePlatformEmbedUrl(v.id);
+
+    if (videoEl) {
+      videoEl.pause();
+      videoEl.style.display = 'none';
+    }
+
+    if (iframeEl) {
+      iframeEl.style.display = 'block';
+      iframeEl.src = embedUrl;
+    }
+  }
+}
+
+// Multi-Server Switcher Controller
+function switchVideoServer(serverNum) {
+  currentServerIndex = serverNum;
+
+  // Update button active state
+  document.querySelectorAll('.btn-server-item').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById(`btnServer${serverNum}`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  const iframeEl = document.getElementById('cinemaIframe');
+  const videoEl = document.getElementById('cinemaVideo');
+
+  if (serverNum === 1) {
+    const s1Url = currentVideoObj.embed_url || resolvePlatformEmbedUrl(currentVideoObj.id);
+    if (iframeEl) {
+      iframeEl.style.display = 'block';
+      iframeEl.src = s1Url;
+    }
+    if (videoEl) videoEl.style.display = 'none';
+  } else if (serverNum === 2) {
+    let s2Url = resolvePlatformEmbedUrl(currentVideoObj.id);
+    if (iframeEl) {
+      iframeEl.style.display = 'block';
+      iframeEl.src = s2Url;
+    }
+    if (videoEl) videoEl.style.display = 'none';
+  } else if (serverNum === 3) {
+    if (currentVideoObj.direct_video_url) {
+      if (iframeEl) iframeEl.style.display = 'none';
+      if (videoEl) {
+        videoEl.style.display = 'block';
+        videoEl.src = currentVideoObj.direct_video_url;
+        videoEl.play().catch(() => {});
+      }
+    } else {
+      const embedUrl = currentVideoObj.embed_url || resolvePlatformEmbedUrl(currentVideoObj.id);
+      if (iframeEl) {
+        iframeEl.style.display = 'block';
+        iframeEl.src = embedUrl;
+      }
+    }
+  }
+}
+
+// Reload Current Video Player (Instant Retry)
+function reloadCurrentPlayer() {
+  const iframeEl = document.getElementById('cinemaIframe');
+  const videoEl = document.getElementById('cinemaVideo');
+
+  if (iframeEl && iframeEl.style.display !== 'none') {
+    const currentSrc = iframeEl.src;
+    iframeEl.src = '';
+    setTimeout(() => {
+      iframeEl.src = currentSrc;
+    }, 150);
+  } else if (videoEl && videoEl.style.display !== 'none') {
+    videoEl.load();
+    videoEl.play().catch(() => {});
+  }
 }
 
 // Favorite Bookmarking Engine (LocalStorage)
@@ -283,12 +382,14 @@ function checkFavoriteState() {
   const btn = document.getElementById('btnFavorite');
   const txt = document.getElementById('favText');
 
-  if (isFav) {
-    btn.classList.add('favorite-active');
-    txt.innerText = 'Saved to Favorites';
-  } else {
-    btn.classList.remove('favorite-active');
-    txt.innerText = 'Favorite';
+  if (btn && txt) {
+    if (isFav) {
+      btn.classList.add('favorite-active');
+      txt.innerText = 'Saved in Favorites';
+    } else {
+      btn.classList.remove('favorite-active');
+      txt.innerText = 'Favorite';
+    }
   }
 }
 
@@ -302,7 +403,7 @@ function toggleFavorite() {
     alert('Removed from Favorites');
   } else {
     favorites.unshift(currentVideoObj);
-    alert('⭐ Saved to Favorites! Access it anytime from the Favorites tab.');
+    alert('⭐ Saved to Favorites! Access it anytime from the Favorites page.');
   }
 
   localStorage.setItem('niksex_favorites', JSON.stringify(favorites));
@@ -315,6 +416,34 @@ function getLocalFavorites() {
     return raw ? JSON.parse(raw) : [];
   } catch (e) {
     return [];
+  }
+}
+
+// Like / Dislike Toggles
+function toggleLike(btn) {
+  btn.classList.toggle('active');
+  const countEl = document.getElementById('likeCount');
+  if (countEl) {
+    let num = parseInt(countEl.innerText.replace(/,/g, ''), 10) || 1240;
+    num = btn.classList.contains('active') ? num + 1 : num - 1;
+    countEl.innerText = num.toLocaleString();
+  }
+}
+
+function toggleDislike(btn) {
+  btn.classList.toggle('active');
+}
+
+function copyShareLink() {
+  const url = window.location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      alert('🔗 Video link copied to clipboard!');
+    }).catch(() => {
+      prompt('Copy Video Link:', url);
+    });
+  } else {
+    prompt('Copy Video Link:', url);
   }
 }
 
@@ -378,229 +507,101 @@ function injectVideoSchema(v) {
 async function loadRelatedVideos() {
   const sidebarList = document.getElementById('relatedList');
   const similarGrid = document.getElementById('similarVideosGrid');
-  
-  if (sidebarList) sidebarList.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Loading recommendations...</div>';
-  if (similarGrid) {
-    similarGrid.innerHTML = `
-      <div class="video-card" style="opacity: 0.5;"><div class="thumb-wrap" style="background: #1e1e2d;"></div></div>
-      <div class="video-card" style="opacity: 0.5;"><div class="thumb-wrap" style="background: #1e1e2d;"></div></div>
-      <div class="video-card" style="opacity: 0.5;"><div class="thumb-wrap" style="background: #1e1e2d;"></div></div>
-      <div class="video-card" style="opacity: 0.5;"><div class="thumb-wrap" style="background: #1e1e2d;"></div></div>
-    `;
-  }
+  if (!sidebarList && !similarGrid) return;
 
-  // Determine most relevant query based on current video tags or title
-  let relevantQuery = 'trending';
-  if (currentVideoObj && currentVideoObj.tags && currentVideoObj.tags.length > 0) {
-    const validTags = currentVideoObj.tags.filter(t => t && t.trim() && !['niksex', 'hd', 'popular'].includes(t.toLowerCase().trim()));
-    if (validTags.length > 0) {
-      relevantQuery = validTags[0].trim();
-    }
-  }
-
-  if (relevantQuery === 'trending' && currentVideoObj && currentVideoObj.title) {
-    const words = currentVideoObj.title.split(' ').filter(w => w.length > 3 && !['this', 'make', 'with', 'video'].includes(w.toLowerCase()));
-    if (words.length > 0) relevantQuery = words[0];
-  }
-
-  const tagLabel = document.getElementById('similarTagLabel');
-  if (tagLabel) tagLabel.innerHTML = `Based on: <strong style="color: var(--accent-pink);">#${relevantQuery}</strong>`;
+  const queryTag = (currentVideoObj && currentVideoObj.tags && currentVideoObj.tags[0]) || 'arabic';
+  const similarTagLabel = document.getElementById('similarTagLabel');
+  if (similarTagLabel) similarTagLabel.innerText = `Tag: #${queryTag}`;
 
   try {
-    let videos = [];
-    if (currentVideoObj && (currentVideoObj.is_tiktok || (currentVideoObj.id && currentVideoObj.id.startsWith('tik_')))) {
-      try {
-        const tikRes = await fetch('/api/tiktok?q=trending&page=1');
-        const tikData = await tikRes.json();
-        if (tikData.success && tikData.videos) {
-          videos = tikData.videos;
-        }
-      } catch (e) {}
-    }
+    const res = await fetch(`/api/search?q=${encodeURIComponent(queryTag)}&page=1`);
+    const data = await res.json();
+    const videos = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
 
-    if (videos.length === 0) {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(relevantQuery)}&page=1`);
-      const data = await res.json();
-      videos = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
-    }
+    // Filter out current video
+    const filtered = videos.filter(v => v.id !== currentVideoObj.id);
 
-    // If search didn't return enough videos, fallback to trending
-    if (videos.length < 8) {
-      const fallbackRes = await fetch('/api/videos?category=trending&page=1');
-      const fallbackData = await fallbackRes.json();
-      if (fallbackData.success && fallbackData.videos) {
-        videos = videos.concat(fallbackData.videos);
-      }
-    }
-
-    // Filter out the currently playing video
-    const filteredVideos = videos.filter(v => v.id !== (currentVideoObj ? currentVideoObj.id : ''));
-
-    // 1. Populate Similar Videos Grid Below the Player with In-Feed Ad Insertion
-    if (similarGrid) {
-      if (filteredVideos.length === 0) {
-        similarGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">No similar videos found.</div>';
-      } else {
-        similarGrid.innerHTML = '';
-        filteredVideos.slice(0, 16).forEach((v, idx) => {
-          const card = document.createElement('div');
-          card.className = 'video-card animate-fade';
-          card.onclick = () => {
-            // Intensive under-click popunder
-            const lastPop = parseInt(sessionStorage.getItem('nx_watch_pop_time') || '0', 10);
-            if (Date.now() - lastPop > 45 * 1000) {
-              sessionStorage.setItem('nx_watch_pop_time', Date.now().toString());
-              try { window.open(SMARTLINK_URL, '_blank'); } catch(e) {}
-            }
-
-            const params = new URLSearchParams({
-              id: v.id || '',
-              title: v.title || 'niksex Video Stream',
-              embed: v.embed_url || v.video_url || '',
-              thumb: v.thumbnail || '',
-              duration: v.duration || '10:00',
-              views: v.views || '15K',
-              rating: v.rating || '98%',
-              tags: (v.tags || ['niksex', 'HD']).join(',')
-            });
-            window.location.href = `/watch.html?${params.toString()}`;
-          };
-
-          const previewVideo = v.preview_video || '';
-
-          card.innerHTML = `
-            <div class="thumb-wrap">
-              <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" loading="lazy" onerror="this.src='/images/logo.png'">
-              ${previewVideo ? `<video class="preview-video-el" src="${previewVideo}" muted playsinline loop preload="none"></video>` : ''}
-              <span class="badge-preview-live"><i class="fa fa-play"></i> Preview</span>
-              <span class="badge-hd">1080p HD</span>
-              <span class="badge-duration">${v.duration || '10:00'}</span>
-              <button class="btn-mobile-preview" aria-label="Preview Video"><i class="fa fa-eye"></i> معاينة</button>
-              <div class="preview-progress-bar"><div class="preview-progress-fill"></div></div>
-            </div>
-            <div class="card-details">
-              <h3 class="video-title" style="font-size: 12px; height: 32px;" title="${v.title}">${v.title}</h3>
-              <div class="video-meta" style="font-size: 11px;">
-                <span><i class="fa fa-eye"></i> ${v.views || '15K'}</span>
-                <span class="meta-rating"><i class="fa fa-thumbs-up"></i> ${v.rating || '98%'}</span>
-              </div>
-            </div>
-          `;
-          attachVideoPreviewHandlers(card, v);
-          similarGrid.appendChild(card);
-
-
-          // In-Feed Ad in Similar Videos every 4 videos!
-          if ((idx + 1) % 4 === 0) {
-            const adCard = document.createElement('div');
-            adCard.className = 'in-grid-ad-card animate-fade';
-            adCard.innerHTML = `
-              <div class="ad-badge">SPONSORED / إعلان</div>
-              <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="promo-smartlink-card" style="width: 100%;">
-                <span class="promo-badge-hot"><i class="fa fa-fire"></i> PRIVATE HD SHOW</span>
-                <h4 class="promo-title">🔥 Direct Live HD Video Stream</h4>
-                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Uncensored 4K Instant Access</p>
-                <span class="promo-btn-action"><i class="fa fa-play-circle"></i> Watch Live</span>
-              </a>
-            `;
-            similarGrid.appendChild(adCard);
-          }
-        });
-      }
-    }
-
-    // 2. Populate Right Column Sidebar List with In-Feed Ad Injection
+    // Populate Sidebar
     if (sidebarList) {
-      if (filteredVideos.length === 0) {
-        sidebarList.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">No recommendations.</div>';
-      } else {
-        sidebarList.innerHTML = '';
-        filteredVideos.slice(0, 10).forEach((v, idx) => {
-          const item = document.createElement('div');
-          item.className = 'related-item';
-          item.onclick = () => {
-            const lastPop = parseInt(sessionStorage.getItem('nx_watch_pop_time') || '0', 10);
-            if (Date.now() - lastPop > 45 * 1000) {
-              sessionStorage.setItem('nx_watch_pop_time', Date.now().toString());
-              try { window.open(SMARTLINK_URL, '_blank'); } catch(e) {}
-            }
+      sidebarList.innerHTML = '';
+      filtered.slice(0, 8).forEach(v => {
+        const item = document.createElement('div');
+        item.className = 'related-item';
+        item.onclick = () => {
+          const params = new URLSearchParams({
+            id: v.id || '',
+            title: v.title || '',
+            embed: v.embed_url || v.video_url || '',
+            thumb: v.thumbnail || '',
+            duration: v.duration || '10:00',
+            views: v.views || '15K',
+            rating: v.rating || '97%',
+            tags: (v.tags || []).join(',')
+          });
+          window.location.href = `/watch.html?${params.toString()}`;
+        };
 
-            const params = new URLSearchParams({
-              id: v.id || '',
-              title: v.title || 'niksex Video Stream',
-              embed: v.embed_url || v.video_url || '',
-              thumb: v.thumbnail || '',
-              duration: v.duration || '10:00',
-              views: v.views || '15K',
-              rating: v.rating || '98%',
-              tags: (v.tags || ['niksex', 'HD']).join(',')
-            });
-            window.location.href = `/watch.html?${params.toString()}`;
-          };
-
-          item.innerHTML = `
-            <div class="related-thumb">
-              <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" onerror="this.src='/images/logo.png'">
-              <span class="badge-duration" style="bottom: 4px; right: 4px; font-size: 9px;">${v.duration || '10:00'}</span>
+        item.innerHTML = `
+          <div class="related-thumb">
+            <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" loading="lazy" onerror="this.src='/images/logo.png'">
+            <span class="badge-duration" style="position: absolute; bottom: 4px; right: 4px; font-size: 10px; padding: 2px 6px;">${v.duration || '10:00'}</span>
+          </div>
+          <div class="related-info">
+            <h4 class="related-title" title="${v.title}">${v.title}</h4>
+            <div style="font-size: 11px; color: var(--text-muted); display: flex; gap: 8px;">
+              <span><i class="fa fa-eye"></i> ${v.views || '12K'}</span>
+              <span style="color: var(--accent-pink);"><i class="fa fa-thumbs-up"></i> ${v.rating || '96%'}</span>
             </div>
-            <div class="related-info">
-              <h4 class="related-title" title="${v.title}">${v.title}</h4>
-              <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
-                <span><i class="fa fa-eye"></i> ${v.views || '12K'}</span>
-                <span style="color: #10b981;"><i class="fa fa-thumbs-up"></i> ${v.rating || '97%'}</span>
-              </div>
-            </div>
-          `;
-          sidebarList.appendChild(item);
+          </div>
+        `;
+        sidebarList.appendChild(item);
+      });
+    }
 
-          // In-feed Sidebar Promo every 3 items
-          if ((idx + 1) % 3 === 0) {
-            const promoDiv = document.createElement('div');
-            promoDiv.style.margin = '8px 0';
-            promoDiv.innerHTML = `
-              <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="promo-smartlink-card" style="padding: 10px; min-height: 110px;">
-                <span class="promo-badge-hot" style="font-size: 9px; padding: 2px 6px; margin-bottom: 4px;"><i class="fa fa-star"></i> RECOMMENDED</span>
-                <span style="font-size: 12px; font-weight: 700; color: #fff;">⚡ Download Full Video in 4K</span>
-                <span class="promo-btn-action" style="font-size: 10px; padding: 4px 10px; margin-top: 6px;"><i class="fa fa-download"></i> Fast Download</span>
-              </a>
-            `;
-            sidebarList.appendChild(promoDiv);
-          }
-        });
-      }
+    // Populate Similar Videos Grid
+    if (similarGrid) {
+      similarGrid.innerHTML = '';
+      filtered.slice(0, 12).forEach(v => {
+        const card = document.createElement('div');
+        card.className = 'video-card animate-fade';
+        card.onclick = () => {
+          const params = new URLSearchParams({
+            id: v.id || '',
+            title: v.title || '',
+            embed: v.embed_url || v.video_url || '',
+            thumb: v.thumbnail || '',
+            duration: v.duration || '10:00',
+            views: v.views || '15K',
+            rating: v.rating || '97%',
+            tags: (v.tags || []).join(',')
+          });
+          window.location.href = `/watch.html?${params.toString()}`;
+        };
+
+        card.innerHTML = `
+          <div class="thumb-wrap">
+            <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" loading="lazy" onerror="this.src='/images/logo.png'">
+            <span class="badge-hd">1080p HD</span>
+            <span class="badge-duration">${v.duration || '10:00'}</span>
+          </div>
+          <div class="card-details">
+            <h3 class="video-title" title="${v.title}">${v.title}</h3>
+            <div class="video-meta">
+              <span><i class="fa fa-eye"></i> ${v.views || '15K'}</span>
+              <span class="meta-rating"><i class="fa fa-thumbs-up"></i> ${v.rating || '96%'}</span>
+            </div>
+          </div>
+        `;
+        similarGrid.appendChild(card);
+      });
     }
 
   } catch (err) {
-    if (sidebarList) sidebarList.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Failed to load recommendations.</div>';
-    if (similarGrid) similarGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Failed to load similar videos.</div>';
+    console.warn('[Related Videos Load Error]', err.message);
   }
 }
 
-// User Actions
-function toggleLike(btn) {
-  btn.classList.toggle('active');
-  const countSpan = document.getElementById('likeCount');
-  let count = parseInt(countSpan.innerText.replace(',', ''), 10) || 1240;
-  if (btn.classList.contains('active')) {
-    count++;
-    btn.style.color = '#ff007f';
-  } else {
-    count--;
-    btn.style.color = '#fff';
-  }
-  countSpan.innerText = count.toLocaleString();
-}
-
-function toggleDislike(btn) {
-  btn.classList.toggle('active');
-  btn.style.color = btn.classList.contains('active') ? '#ef4444' : '#fff';
-}
-
-function copyShareLink() {
-  navigator.clipboard.writeText(window.location.href);
-  alert('🔗 Watch link copied to clipboard!');
-}
-
+// Handle Search input on Watch Page
 function handleSearch(e) {
   if (e.key === 'Enter') {
     executeSearch();
@@ -608,8 +609,8 @@ function handleSearch(e) {
 }
 
 function executeSearch() {
-  const q = document.getElementById('searchInput').value.trim();
-  if (q) {
-    window.location.href = `/?q=${encodeURIComponent(q)}`;
+  const query = document.getElementById('searchInput').value.trim();
+  if (query) {
+    window.location.href = `/?q=${encodeURIComponent(query)}`;
   }
 }

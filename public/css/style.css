@@ -1636,32 +1636,436 @@ body.reels-fullscreen-active .filter-bar {
   font-weight: 700;
 }
 
-/* Desktop Floating Controls */
-.tiktok-desktop-controls {
-  position: fixed;
-  right: 30px;
-  top: 50%;
-  transform: translateY(-50%);
+/* ==========================================================================
+   ENTERPRISE TIER-1 STREAMING PLATFORM DESIGN (NIKROLI & CURATED BLOCKS)
+   ========================================================================== */
+
+/* 1. Hero Featured Spotlight Banner */
+.hero-spotlight-section {
+  max-width: 1400px;
+  margin: 16px auto 24px;
+  padding: 0 20px;
+}
+
+.hero-spotlight-card {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  border-radius: 20px;
+  overflow: hidden;
   display: flex;
-  flex-direction: column;
+  align-items: flex-end;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 242, 254, 0.15);
+  background: #0d0d16;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-spotlight-card:hover {
+  transform: scale(1.008);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 0, 127, 0.25);
+  border-color: rgba(255, 0, 127, 0.4);
+}
+
+.hero-spotlight-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.65);
+  transition: transform 0.6s ease;
+}
+
+.hero-spotlight-card:hover .hero-spotlight-bg {
+  transform: scale(1.05);
+}
+
+.hero-spotlight-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(0deg, rgba(7, 7, 11, 0.98) 0%, rgba(7, 7, 11, 0.6) 40%, rgba(7, 7, 11, 0.1) 100%),
+              linear-gradient(90deg, rgba(7, 7, 11, 0.85) 0%, transparent 60%);
+  z-index: 2;
+}
+
+.hero-spotlight-content {
+  position: relative;
+  z-index: 3;
+  padding: 32px 36px;
+  max-width: 750px;
+}
+
+.hero-spotlight-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.badge-spotlight-gold {
+  background: linear-gradient(135deg, #ffd700, #ff8800);
+  color: #000;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-spotlight-4k {
+  background: linear-gradient(135deg, #00f2fe, #ff007f);
+  color: #fff;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.hero-spotlight-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.3;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hero-spotlight-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.hero-spotlight-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-spotlight-play {
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 25px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  border: none;
+  box-shadow: 0 0 20px var(--accent-glow);
+  transition: var(--transition);
+}
+
+.btn-spotlight-play:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 30px var(--accent-glow);
+}
+
+.btn-spotlight-reels {
+  background: rgba(0, 242, 254, 0.15);
+  border: 1px solid #00f2fe;
+  color: #00f2fe;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.btn-spotlight-reels:hover {
+  background: #00f2fe;
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+}
+
+@media (max-width: 768px) {
+  .hero-spotlight-section { padding: 0 12px; margin-top: 10px; margin-bottom: 16px; }
+  .hero-spotlight-card { height: 260px; border-radius: 14px; }
+  .hero-spotlight-content { padding: 16px; max-width: 100%; }
+  .hero-spotlight-title { font-size: 16px; margin-bottom: 8px; }
+  .hero-spotlight-meta { font-size: 11px; margin-bottom: 12px; gap: 10px; }
+  .btn-spotlight-play, .btn-spotlight-reels { padding: 7px 14px; font-size: 12px; }
+}
+
+/* 2. nikroli Horizontal Reels Carousel Strip */
+.nikroli-strip-section {
+  max-width: 1400px;
+  margin: 0 auto 30px;
+  padding: 0 20px;
+}
+
+.nikroli-strip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.nikroli-strip-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nikroli-strip-container {
+  display: flex;
   gap: 14px;
-  z-index: 1000000;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+}
+.nikroli-strip-container::-webkit-scrollbar { display: none; }
+
+.nikroli-strip-card {
+  flex: 0 0 160px;
+  height: 250px;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  scroll-snap-align: start;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #11111c;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  text-decoration: none;
 }
 
-@media (max-width: 900px) {
-  .tiktok-desktop-controls {
-    display: none;
+.nikroli-strip-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  border-color: #00f2fe;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 242, 254, 0.3);
+}
+
+.nikroli-strip-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.nikroli-strip-card:hover img {
+  transform: scale(1.08);
+}
+
+.nikroli-strip-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.92) 100%);
+  z-index: 2;
+}
+
+.nikroli-strip-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 242, 254, 0.5);
+  color: #00f2fe;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+  z-index: 3;
+  backdrop-filter: blur(6px);
+}
+
+.nikroli-strip-play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 242, 254, 0.85);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  opacity: 0;
+  transition: all 0.25s ease;
+  z-index: 3;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
+}
+
+.nikroli-strip-card:hover .nikroli-strip-play-icon {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.nikroli-strip-info {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 3;
+  color: #fff;
+}
+
+.nikroli-strip-info h4 {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+.nikroli-strip-info span {
+  font-size: 10px;
+  color: #00f2fe;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+@media (max-width: 768px) {
+  .nikroli-strip-section { padding: 0 12px; margin-bottom: 20px; }
+  .nikroli-strip-card { flex: 0 0 130px; height: 205px; border-radius: 10px; }
+  .nikroli-strip-title { font-size: 15px; }
+}
+
+/* 3. Picture-in-Picture Sticky Floating Mini Player for Watch Page */
+.cinema-player-wrap.mini-pip {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 340px;
+  height: 195px;
+  z-index: 99999;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 242, 254, 0.35);
+  border: 2px solid var(--accent-pink);
+  animation: pipSlideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pipSlideIn {
+  from { opacity: 0; transform: translateY(40px) scale(0.85); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.cinema-player-wrap.mini-pip iframe,
+.cinema-player-wrap.mini-pip video {
+  width: 100%;
+  height: 100%;
+}
+
+.btn-close-pip {
+  display: none;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #fff;
+  color: #fff;
+  font-size: 12px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100000;
+}
+
+.cinema-player-wrap.mini-pip .btn-close-pip {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .cinema-player-wrap.mini-pip {
+    width: 220px;
+    height: 125px;
+    bottom: 75px;
+    right: 12px;
   }
 }
 
-.desktop-only-inline {
-  display: inline;
+/* 4. Curated Block Sections */
+.curated-block-section {
+  max-width: 1400px;
+  margin: 0 auto 30px;
+  padding: 0 20px;
 }
-@media (max-width: 600px) {
-  .desktop-only-inline {
-    display: none;
-  }
+
+.curated-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+
+.curated-block-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-view-all-pill {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 5px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-view-all-pill:hover {
+  color: #fff;
+  background: rgba(255, 0, 127, 0.2);
+  border-color: var(--accent-pink);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+@media (max-width: 768px) {
+  .curated-block-section { padding: 0 12px; margin-bottom: 20px; }
+  .curated-block-title { font-size: 15px; }
+}
+
 
 
 

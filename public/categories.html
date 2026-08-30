@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>All Adult Video Categories (جميع التصنيفات) - niksex</title>
+  <meta name="description" content="Browse 24+ adult video categories on niksex including Sex Arabic, 4K UHD, Amateur, MILF, Lesbian, Teen, Anal, Blowjob, Hardcore, and more.">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css?v=3.0">
+
+  <!-- Monetization & Popunder Scripts -->
+  <script src="https://pl31054762.profitableratecpmnetwork.com/72/f4/9a/72f49a7889c2432c21f5fdf844a52e5d.js"></script>
+  <script src="https://pl31054764.profitableratecpmnetwork.com/16/4d/5c/164d5cb44941d85d54f598046baf38b5.js"></script>
+
+  <style>
+    .categories-page-container {
+      max-width: 1400px;
+      margin: 20px auto 60px;
+      padding: 0 20px;
+    }
+    .categories-search-filter {
+      max-width: 600px;
+      margin: 0 auto 30px;
+      position: relative;
+    }
+    .categories-search-filter input {
+      width: 100%;
+      background: rgba(22, 22, 34, 0.9);
+      border: 1px solid var(--border-pink);
+      padding: 14px 20px 14px 48px;
+      border-radius: 28px;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+      transition: var(--transition);
+    }
+    .categories-search-filter input:focus {
+      border-color: var(--accent-pink);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .categories-search-filter i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-pink);
+      font-size: 18px;
+    }
+
+    .standalone-categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .category-card-standalone {
+      background: rgba(22, 22, 34, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .category-card-standalone::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent-pink);
+      opacity: 0;
+      transition: var(--transition);
+    }
+    .category-card-standalone:hover {
+      background: rgba(32, 32, 48, 0.9);
+      border-color: var(--border-pink);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+    .category-card-standalone:hover::before {
+      opacity: 1;
+    }
+
+    .cat-icon-wrap {
+      width: 52px;
+      height: 52px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--accent-pink);
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+    .category-card-standalone:hover .cat-icon-wrap {
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .cat-text-info h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .cat-text-info span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .category-card-standalone.special-arabic-card {
+      border-color: rgba(255, 215, 0, 0.4);
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(22, 22, 34, 0.8));
+    }
+    .category-card-standalone.special-arabic-card .cat-icon-wrap {
+      color: #ffd700;
+      border-color: rgba(255, 215, 0, 0.3);
+    }
+
+    .category-card-standalone.special-tiktok-card {
+      border-color: rgba(0, 242, 254, 0.4);
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.08), rgba(22, 22, 34, 0.8));
+    }
+    .category-card-standalone.special-tiktok-card .cat-icon-wrap {
+      color: #00f2fe;
+      border-color: rgba(0, 242, 254, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .categories-page-container { padding: 0 12px; margin-top: 12px; }
+      .standalone-categories-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+      .category-card-standalone { padding: 12px; gap: 10px; flex-direction: column; text-align: center; }
+      .cat-icon-wrap { width: 44px; height: 44px; font-size: 18px; }
+      .cat-text-info h3 { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="brand-logo">
+        <img src="/images/logo.png" alt="niksex Logo">
+      </a>
+
+      <div class="search-box">
+        <input type="text" id="headerSearch" placeholder="Search 4K, Arabic, categories..." onkeypress="handleHeaderSearch(event)">
+        <button class="search-btn" onclick="executeHeaderSearch()" aria-label="Search">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+
+      <div class="nav-actions desktop-only">
+        <a href="/arabic.html" class="btn-pill btn-arabic">
+          <i class="fa fa-star" style="color: #ffd700;"></i> Sex Arabic (عربي)
+        </a>
+        <a href="/nikroli.html" class="btn-pill btn-tiktok" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff;">
+          <i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> nikroli (نكرولي 📱🔞)
+        </a>
+        <a href="/photos.html" class="btn-pill">
+          <i class="fa fa-camera-retro" style="color: #ff007f;"></i> Photos & GIFs
+        </a>
+        <a href="/" class="btn-pill">
+          <i class="fa fa-home"></i> Home
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Categories Main Layout -->
+  <main class="categories-page-container">
+
+    <!-- Top Desktop Leaderboard 728x90 -->
+    <div class="ad-wrapper ad-desktop-only" style="margin-top: 0; margin-bottom: 20px;">
+      <div class="ad-badge">SPONSORED / إعلان</div>
+      <script>
+        atOptions = {
+          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
+    </div>
+
+    <!-- Top Mobile Banner 320x50 -->
+    <div class="ad-wrapper ad-mobile-only" style="margin-top: 0; margin-bottom: 16px;">
+      <div class="ad-badge">SPONSORED / إعلان</div>
+      <script>
+        atOptions = {
+          'key' : '0f2a63fbd6da2fd879750c7de7658080',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
+    </div>
+
+    <div class="section-header" style="justify-content: center; text-align: center; margin-bottom: 20px;">
+      <h1 class="section-title" style="font-size: 24px;">
+        <i class="fa fa-th-large" style="color: var(--accent-pink);"></i>
+        <span>Browse All Adult Video Categories (جميع التصنيفات والأقسام)</span>
+      </h1>
+    </div>
+
+    <!-- Live Category Search Filter -->
+    <div class="categories-search-filter">
+      <i class="fa fa-search"></i>
+      <input type="text" id="categoryFilterInput" placeholder="Filter categories (e.g. Arabic, MILF, 4K, Amateur, Teen)..." oninput="filterCategoriesList(event)">
+    </div>
+
+    <!-- Categories Grid Cards -->
+    <div class="standalone-categories-grid" id="standaloneCategoriesGrid">
+      <!-- Populated dynamically via categories.js -->
+    </div>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav">
+    <a href="/arabic.html" class="bottom-nav-item" style="color: #ffd700;">
+      <i class="fa fa-star"></i>
+      <span>Arabic</span>
+    </a>
+    <a href="/nikroli.html" class="bottom-nav-item" style="color: #00f2fe;">
+      <i class="fa-brands fa-tiktok"></i>
+      <span>nikroli</span>
+    </a>
+    <a href="/photos.html" class="bottom-nav-item" style="color: var(--accent-pink);">
+      <i class="fa fa-images"></i>
+      <span>Photos</span>
+    </a>
+    <a href="/" class="bottom-nav-item">
+      <i class="fa fa-home"></i>
+      <span>Home</span>
+    </a>
+    <a href="/categories.html" class="bottom-nav-item active">
+      <i class="fa fa-th-large"></i>
+      <span>Categories</span>
+    </a>
+  </nav>
+
+  <!-- Footer with Legal Disclaimer & Static Links -->
+  <footer>
+    <img src="/images/logo.png" alt="niksex" class="footer-logo">
+    
+    <div class="footer-links">
+      <a href="/dmca.html">DMCA & Copyright</a>
+      <span>•</span>
+      <a href="/terms.html">Terms of Service</a>
+      <span>•</span>
+      <a href="/privacy.html">Privacy Policy</a>
+      <span>•</span>
+      <a href="/2257.html">18 U.S.C. 2257</a>
+      <span>•</span>
+      <a href="/contact.html">Contact Us / Removal</a>
+    </div>
+
+    <!-- Bottom Desktop Leaderboard 728x90 -->
+    <div class="ad-wrapper ad-desktop-only" style="margin-top: 30px;">
+      <div class="ad-badge">SPONSORED / إعلان</div>
+      <script>
+        atOptions = {
+          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
+    </div>
+
+    <!-- Bottom Mobile Banner 320x50 -->
+    <div class="ad-wrapper ad-mobile-only" style="margin-top: 20px;">
+      <div class="ad-badge">SPONSORED / إعلان</div>
+      <script>
+        atOptions = {
+          'key' : '0f2a63fbd6da2fd879750c7de7658080',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
+    </div>
+
+    <div class="disclaimer-container">
+      <p class="disclaimer-text">
+        <strong>إخلاء مسؤولية قانوني:</strong> موقع <strong>niksex</strong> هو محرك بحث رقمي ووسيط تقني لعرض وتضمين مقاطع الفيديو (Embed Intermediary Interface). موقعنا لا يستضيف ولا يخزن أي ملفات فيديو على خوادمه الخاصة.
+      </p>
+    </div>
+
+    <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 niksex. All rights reserved.</p>
+  </footer>
+
+  <script src="/js/categories.js?v=3.0"></script>
+</body>
+</html>

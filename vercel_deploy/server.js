@@ -290,6 +290,171 @@ app.get('/api/tiktok/video/:id', async (req, res) => {
     }
 });
 
+// 1.45 API: Universal Video Details & Multi-Server Resolver (100% Reliable Playback)
+app.get('/api/video/:id', async (req, res) => {
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ success: false, message: 'Video ID is required.' });
+
+    const cacheKey = `video_meta_${id}`;
+    const cached = getCached(cacheKey);
+    if (cached) return res.json(cached);
+
+    // A. Check persistent CMS videos
+    const persistent = persistentVideos.find(v => v.id === id || v.id === id.replace(/^ep_/, '') || v.id === id.replace(/^ph_/, ''));
+    if (persistent) {
+        const embedUrl = persistent.embed_url || persistent.video_url;
+        const payload = {
+            success: true,
+            video: {
+                ...persistent,
+                embed_url: embedUrl,
+                servers: [
+                    { name: 'Server 1 (Ultra HD Fast Embed)', url: embedUrl, type: 'embed' },
+                    { name: 'Server 2 (Alternative Cloud Player)', url: persistent.video_url || embedUrl, type: 'embed' },
+                    { name: 'Server 3 (VIP 4K High Speed)', url: 'https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab', type: 'vip' }
+                ]
+            }
+        };
+        setCache(cacheKey, payload);
+        return res.json(payload);
+    }
+
+    // B. TikTok Video
+    if (id.startsWith('tik_')) {
+        const cleanId = id.replace('tik_', '');
+        try {
+            const single = await scrapeTikPornSingle(cleanId);
+            if (single && single.success) {
+                const vid = {
+                    id: id,
+                    source: 'tiktok',
+                    title: single.title || 'niksex TikTok 18+ Reel',
+                    thumbnail: single.thumbnail || single.poster || '/images/logo.png',
+                    direct_video_url: single.direct_video_url,
+                    embed_url: single.direct_video_url,
+                    video_url: single.direct_video_url,
+                    duration: '00:30',
+                    views: '25.4K',
+                    rating: '98%',
+                    is_tiktok: true,
+                    servers: [
+                        { name: 'Server 1 (Direct MP4 Stream)', url: single.direct_video_url, type: 'direct_mp4' },
+                        { name: 'Server 2 (VIP 4K Fast Server)', url: 'https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab', type: 'vip' }
+                    ],
+                    tags: ['tiktok', 'shorts', 'reels', 'niksex']
+                };
+                const payload = { success: true, video: vid };
+                setCache(cacheKey, payload);
+                return res.json(payload);
+            }
+        } catch (e) {}
+    }
+
+    // C. Pornhub Video
+    if (id.startsWith('ph_') || id.startsWith('ph')) {
+        const vkey = id.replace(/^ph_?/, '');
+        const embedUrl = `https://www.pornhub.com/embed/${vkey}`;
+        try {
+            const phDetails = await getPornhubDetails(vkey);
+            const vid = {
+                id: id,
+                source: 'pornhub',
+                title: phDetails.title || `Pornhub HD Stream ${vkey}`,
+                thumbnail: phDetails.thumbnail || `https://ci.phncdn.com/videos/${vkey}/original/1.jpg`,
+                embed_url: embedUrl,
+                video_url: embedUrl,
+                duration: phDetails.duration || '12:00',
+                views: phDetails.views || '35,000',
+                rating: (phDetails.rating || '97') + '%',
+                tags: phDetails.tags || ['pornhub', 'trending', 'niksex'],
+                servers: [
+                    { name: 'Server 1 (Pornhub Ultra HD Embed)', url: embedUrl, type: 'embed' },
+                    { name: 'Server 2 (Alternative Cloud Mirror)', url: `https://www.pornhub.com/embed/${vkey}?autoplay=1`, type: 'embed' },
+                    { name: 'Server 3 (VIP 4K High Speed)', url: 'https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab', type: 'vip' }
+                ]
+            };
+            const payload = { success: true, video: vid };
+            setCache(cacheKey, payload);
+            return res.json(payload);
+        } catch (e) {
+            const fallbackPh = {
+                id: id,
+                source: 'pornhub',
+                title: `Pornhub HD Stream ${vkey}`,
+                thumbnail: `https://ci.phncdn.com/videos/${vkey}/original/1.jpg`,
+                embed_url: embedUrl,
+                video_url: embedUrl,
+                duration: '12:00',
+                views: '28,000',
+                rating: '97%',
+                tags: ['pornhub', 'trending', 'niksex'],
+                servers: [
+                    { name: 'Server 1 (Pornhub Ultra HD Embed)', url: embedUrl, type: 'embed' },
+                    { name: 'Server 2 (VIP 4K High Speed)', url: 'https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab', type: 'vip' }
+                ]
+            };
+            return res.json({ success: true, video: fallbackPh });
+        }
+    }
+
+    // D. Eporner Video (Live API Lookup)
+    const epClean = id.replace(/^ep_/, '');
+    try {
+        const epRes = await axios.get(`https://www.eporner.com/api/v2/video/id/?id=${epClean}&thumbsize=big`, { timeout: 4500 });
+        if (epRes.data && epRes.data.id) {
+            const d = epRes.data;
+            const embedUrl = d.embed || `https://www.eporner.com/embed/${d.id}/`;
+            const vid = {
+                id: 'ep_' + d.id,
+                source: 'eporner',
+                title: d.title,
+                thumbnail: (d.default_thumb && d.default_thumb.src) ? d.default_thumb.src : (d.thumbs && d.thumbs[0] ? d.thumbs[0].src : '/images/logo.png'),
+                duration: d.length_min || '12:00',
+                views: d.views ? parseInt(d.views, 10).toLocaleString() : '28,000',
+                rating: (d.rate || '98') + '%',
+                embed_url: embedUrl,
+                video_url: embedUrl,
+                category: (d.keywords && d.keywords.includes('arab')) ? 'sex_arabic' : 'trending',
+                tags: d.keywords ? d.keywords.split(',').map(t => t.trim()) : ['eporner', 'hd', 'niksex'],
+                servers: [
+                    { name: 'Server 1 (Ultra HD Fast Embed)', url: embedUrl, type: 'embed' },
+                    { name: 'Server 2 (Cloud CDN Mirror)', url: `https://www.eporner.com/embed/${d.id}/`, type: 'embed' },
+                    { name: 'Server 3 (VIP 4K High Speed)', url: 'https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab', type: 'vip' }
+                ]
+            };
+            const payload = { success: true, video: vid };
+            setCache(cacheKey, payload);
+            return res.json(payload);
+        }
+    } catch (e) {}
+
+    // E. General Platform Fallback Resolvers (xHamster, XVideos, SpankBang, RedTube)
+    let fallbackEmbed = `https://www.eporner.com/embed/${epClean}/`;
+    if (id.startsWith('xh_')) fallbackEmbed = `https://xhamster.com/xembed.php?video=${id.replace(/^xh_/, '')}`;
+    if (id.startsWith('xv_')) fallbackEmbed = `https://www.xvideos.com/embedframe/${id.replace(/^xv_/, '')}`;
+    if (id.startsWith('sb_')) fallbackEmbed = `https://spankbang.com/${id.replace(/^sb_/, '')}/embed/`;
+    if (id.startsWith('tube_') || id.startsWith('red_')) fallbackEmbed = `https://embed.redtube.com/?id=${id.replace(/^(tube_|red_)/, '')}&autoplay=1`;
+
+    const genericVideo = {
+        id: id,
+        source: 'universal',
+        title: 'HD Video Stream ' + id,
+        thumbnail: '/images/logo.png',
+        embed_url: fallbackEmbed,
+        video_url: fallbackEmbed,
+        duration: '12:00',
+        views: '22,000',
+        rating: '98%',
+        tags: ['HD', 'niksex', 'Trending'],
+        servers: [
+            { name: 'Server 1 (Primary HD Stream)', url: fallbackEmbed, type: 'embed' },
+            { name: 'Server 2 (Alternative Mirror)', url: fallbackEmbed, type: 'embed' },
+            { name: 'Server 3 (VIP 4K High Speed)', url: 'https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab', type: 'vip' }
+        ]
+    };
+    return res.json({ success: true, video: genericVideo });
+});
+
 // 1.5 API: Hot Adult GIFs & Photos Feed (NPNS.fr + Curated + Pornhub)
 const { fetchAdultGifs, CURATED_GIFS } = require('./scrapers/gifs');
 const { fetchPhotosAndGifs, CURATED_MEDIA } = require('./scrapers/photos');
@@ -1394,6 +1559,12 @@ app.get('/sitemap.xml', (req, res) => {
     xml += `  <url><loc>${baseUrl}/privacy.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
     xml += `  <url><loc>${baseUrl}/2257.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
     xml += `  <url><loc>${baseUrl}/contact.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/nikroli.html</loc><changefreq>always</changefreq><priority>1.0</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/arabic.html</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/photos.html</loc><changefreq>daily</changefreq><priority>0.9</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/categories.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/trending.html</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/4k.html</loc><changefreq>daily</changefreq><priority>0.9</priority></url>\n`;
 
     // Category Pages
     categories.forEach(cat => {
@@ -1402,15 +1573,52 @@ app.get('/sitemap.xml', (req, res) => {
 
     // Stored Videos
     persistentVideos.forEach(v => {
-        xml += `  <url><loc>${baseUrl}/watch.html?id=${encodeURIComponent(v.id)}&amp;title=${encodeURIComponent(v.title || 'HD+Video')}</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>\n`;
+        xml += `  <url><loc>${baseUrl}/watch.html?id=${encodeURIComponent(v.id)}&amp;title=${encodeURIComponent(v.title || 'HD+Video')}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`;
     });
 
     xml += `</urlset>`;
     return res.send(xml);
 });
 
+// Standalone Section Pages & Dedicated Clean Routes (نظام صفحات مستقلة بالكامل)
+app.get(['/nikroli', '/nikroli.html', '/scroll', '/scroll.html', '/shorts', '/tiktok', '/reels'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'nikroli.html'));
+});
+
+app.get(['/watch', '/watch.html', '/watch/:id'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'watch.html'));
+});
+
+app.get(['/photos', '/photos.html', '/gifs', '/gifs.html', '/gallery'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'photos.html'));
+});
+
+app.get(['/categories', '/categories.html', '/category'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'categories.html'));
+});
+
+app.get(['/arabic', '/arabic.html', '/sex-arabic', '/sex_arabic'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'arabic.html'));
+});
+
+app.get(['/trending', '/trending.html', '/popular'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'trending.html'));
+});
+
+app.get(['/4k', '/4k.html', '/4k-uhd', '/ultra-hd'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', '4k.html'));
+});
+
+app.get(['/favorites', '/favorites.html', '/bookmarks'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'favorites.html'));
+});
+
+app.get(['/history', '/history.html', '/recent'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'history.html'));
+});
+
 // Admin Routes
-app.get('/admin', (req, res) => {
+app.get(['/admin', '/admin.html'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
@@ -1418,7 +1626,7 @@ app.get('/admincp', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// SPA Fallback to index.html for all frontend routes
+// Static or Clean Routing Fallback
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
