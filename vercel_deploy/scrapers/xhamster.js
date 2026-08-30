@@ -51,6 +51,10 @@ async function searchXhamster(query = '', page = 1) {
             const duration = $el.find('.thumb-image-container__duration, span[data-role="video-duration"], .duration').first().text().trim() || '00:00';
             const views = $el.find('.views, .video-thumb-views').first().text().trim() || '0';
             const rating = $el.find('.rating, .thumb-rating').first().text().trim() || '95%';
+            const previewVideo = $el.attr('data-preview-video')
+                || imgEl.attr('data-preview-video')
+                || imgEl.attr('data-preview')
+                || '';
 
             const embedId = videoId || href.split('/').pop();
 
@@ -59,6 +63,7 @@ async function searchXhamster(query = '', page = 1) {
                 id: embedId,
                 title: title,
                 thumbnail: thumbnail,
+                preview_video: previewVideo,
                 duration: duration,
                 views: views,
                 rating: rating,
@@ -69,6 +74,7 @@ async function searchXhamster(query = '', page = 1) {
                 video_type: 'embed',
                 tags: query ? [query, 'xhamster'] : ['xhamster']
             });
+
         });
 
         return {

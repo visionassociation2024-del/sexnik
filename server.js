@@ -8,6 +8,7 @@ const cheerio = require('cheerio');
 const { searchPornhub, getPornhubDetails } = require('./scrapers/pornhub');
 const { searchXhamster, getXhamsterDetails } = require('./scrapers/xhamster');
 const { scrapeTikPornFeed, scrapeTikPornSingle, scrapeTikPornBatch } = require('./scrapers/tiktok');
+const { fetchEpornerPornstars } = require('./scrapers/eporner_pornstars_scraper');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -738,31 +739,80 @@ const TOP_MODELS = [
     }
 ];
 
-app.get('/api/models', (req, res) => {
-    const { ethnicity = 'all', q = '' } = req.query;
-    let list = [...TOP_MODELS];
+app.get('/api/models', async (req, res) => {
+    const { ethnicity = 'all', q = '', page = 1, limit = 40 } = req.query;
+    let list = [];
 
-    if (ethnicity && ethnicity !== 'all') {
-        list = list.filter(m => m.ethnicity === ethnicity);
+    try {
+        const scraped = await fetchEpornerPornstars(4);
+        if (scraped && scraped.length > 0) {
+            list = [...scraped];
+        } else {
+            list = [...TOP_MODELS];
+        }
+    } catch (e) {
+        list = [...TOP_MODELS];
     }
+
+    // Keyword / Name Filter
     if (q) {
         const term = q.toLowerCase().trim();
-        list = list.filter(m => m.name.toLowerCase().includes(term) || m.tags.some(t => t.includes(term)));
+        list = list.filter(m => m.name.toLowerCase().includes(term) || (m.slug && m.slug.toLowerCase().includes(term)));
     }
+
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 40;
+    const totalCount = list.length;
+    const startIndex = (pageNum - 1) * limitNum;
+    const paginated = list.slice(startIndex, startIndex + limitNum);
 
     return res.json({
         success: true,
-        count: list.length,
-        models: list
+        total: totalCount,
+        count: paginated.length,
+        page: pageNum,
+        totalPages: Math.ceil(totalCount / limitNum),
+        models: paginated
     });
 });
 
 app.get('/api/model/:slug', async (req, res) => {
     const { slug } = req.params;
-    const model = TOP_MODELS.find(m => m.slug === slug || m.id === slug || m.name.toLowerCase().replace(/\s+/g, '-') === slug.toLowerCase());
+    let list = [];
+    try {
+        const scraped = await fetchEpornerPornstars(4);
+        list = (scraped && scraped.length > 0) ? scraped : TOP_MODELS;
+    } catch (e) {
+        list = TOP_MODELS;
+    }
+
+    const cleanSlug = slug.toLowerCase().trim();
+    let model = list.find(m => 
+        (m.slug && m.slug.toLowerCase() === cleanSlug) || 
+        (m.id && m.id.toLowerCase() === cleanSlug) || 
+        (m.name && m.name.toLowerCase().replace(/\s+/g, '-') === cleanSlug) ||
+        (m.name && m.name.toLowerCase() === cleanSlug.replace(/-/g, ' '))
+    );
 
     if (!model) {
-        return res.status(404).json({ success: false, message: 'Model not found' });
+        // Fallback search inside TOP_MODELS
+        model = TOP_MODELS.find(m => m.slug.toLowerCase().includes(cleanSlug) || m.name.toLowerCase().includes(cleanSlug.replace(/-/g, ' ')));
+    }
+
+    if (!model) {
+        // Create generic model entry from slug
+        const formattedName = slug.split('-').slice(0, 2).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+        model = {
+            id: slug,
+            slug: slug,
+            name: formattedName,
+            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80',
+            cover: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80',
+            views: '120M',
+            rating: '98%',
+            videoCount: '150+',
+            bio: `Verified star ${formattedName} streaming in ultra HD.`
+        };
     }
 
     // Fetch videos for this model dynamically

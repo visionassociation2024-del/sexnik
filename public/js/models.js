@@ -19,15 +19,15 @@ async function loadModels(ethnicity = 'all') {
   const countLabel = document.getElementById('modelsCountLabel');
   if (!grid) return;
 
-  grid.innerHTML = getModelsSkeleton(8);
+  grid.innerHTML = getModelsSkeleton(12);
 
   try {
-    const res = await fetch(`/api/models?ethnicity=${encodeURIComponent(ethnicity)}`);
+    const res = await fetch(`/api/models?limit=300&ethnicity=${encodeURIComponent(ethnicity)}`);
     const data = await res.json();
     if (data.success && data.models) {
       allModelsList = data.models;
       renderModelsGrid(allModelsList);
-      if (countLabel) countLabel.innerText = `${allModelsList.length} Verified Stars`;
+      if (countLabel) countLabel.innerText = `${data.total || allModelsList.length} Verified Stars (eporner.com Live Index)`;
     }
   } catch (err) {
     grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ef4444; padding: 50px;">Failed to load models. Please refresh.</div>';
