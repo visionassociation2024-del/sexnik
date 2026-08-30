@@ -555,7 +555,7 @@ app.get('/api/gifs', async (req, res) => {
 
 
 
-// 1.85 TOP MODELS & PORNSTARS DATABASE & API
+// 1.85 TOP MODELS & PORNSTARS DATABASE & API (100% Real Eporner Photoshoot CDN Images)
 const TOP_MODELS = [
     {
         id: 'mia_khalifa',
@@ -564,12 +564,12 @@ const TOP_MODELS = [
         rank: 1,
         nationality: 'Lebanese 🇱🇧',
         ethnicity: 'arabic',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Fl/s7/irh2fr8s7Fl/129764-mia-khalifa-nude_190x152.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Fl/s7/irh2fr8s7Fl/129764-mia-khalifa-nude_880x660.jpg'),
         views: '245M',
         rating: '99%',
         videoCount: '180+',
-        bio: 'The most searched and iconic Middle Eastern superstar in adult history with record-breaking viral streaming numbers.',
+        bio: 'The most searched and iconic superstar in adult history with record-breaking viral streaming numbers.',
         tags: ['arabic', 'lebanese', 'glasses', 'big tits', 'hardcore', 'trending']
     },
     {
@@ -579,8 +579,8 @@ const TOP_MODELS = [
         rank: 2,
         nationality: 'American 🇺🇸',
         ethnicity: 'american',
-        avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/LT/T2/JYYrTpQT2LT/458843-lana-rhoades-enjoying-an-uncut-cock_190x152.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/LT/T2/JYYrTpQT2LT/458843-lana-rhoades-enjoying-an-uncut-cock_880x660.jpg'),
         views: '320M',
         rating: '98%',
         videoCount: '240+',
@@ -594,8 +594,8 @@ const TOP_MODELS = [
         rank: 3,
         nationality: 'American 🇺🇸',
         ethnicity: 'american',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1516726817505-f5ed825624d8?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/wg/Ey/Ul9CvSuEywg/498125-riley-reid-showing-her-asshole_880x660.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/wg/Ey/Ul9CvSuEywg/498125-riley-reid-showing-her-asshole_880x660.jpg'),
         views: '410M',
         rating: '99%',
         videoCount: '520+',
@@ -609,12 +609,12 @@ const TOP_MODELS = [
         rank: 4,
         nationality: 'European 🇪🇺',
         ethnicity: 'european',
-        avatar: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/e7/8a/v0M04rK8ae7/399818-eva-elfie-nude_880x660.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/e7/8a/v0M04rK8ae7/399818-eva-elfie-nude_880x660.jpg'),
         views: '290M',
         rating: '99%',
         videoCount: '190+',
-        bio: 'Global fan favorite and AVN award winner famous for sweet charm, intense enthusiasm, and viral HD clips.',
+        bio: 'Global fan favorite and award winner famous for sweet charm, intense enthusiasm, and viral HD clips.',
         tags: ['teen', 'blonde', 'creampie', 'amateur', 'pov']
     },
     {
@@ -624,8 +624,8 @@ const TOP_MODELS = [
         rank: 5,
         nationality: 'American / Latina 🇺🇸🇧🇷',
         ethnicity: 'latina',
-        avatar: 'https://images.unsplash.com/photo-1524502397800-2eeaad7c3fe5?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/5f/hS/g50mHQChS5f/484639-abella-danger-pussy_880x660.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/5f/hS/g50mHQChS5f/484639-abella-danger-pussy_880x660.jpg'),
         views: '350M',
         rating: '98%',
         videoCount: '480+',
@@ -639,8 +639,8 @@ const TOP_MODELS = [
         rank: 6,
         nationality: 'Australian 🇦🇺',
         ethnicity: 'european',
-        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Vg/8Y/XQ0Pw508YVg/900205-bbc-queen-nude_880x660.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Vg/8Y/XQ0Pw508YVg/900205-bbc-queen-nude_880x660.jpg'),
         views: '275M',
         rating: '98%',
         videoCount: '310+',
@@ -654,8 +654,8 @@ const TOP_MODELS = [
         rank: 7,
         nationality: 'European 🇪🇺',
         ethnicity: 'european',
-        avatar: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/i8/4u/eE7a4s34ui8/502120-sweetie-fox-nude_880x660.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/i8/4u/eE7a4s34ui8/502120-sweetie-fox-nude_880x660.jpg'),
         views: '195M',
         rating: '99%',
         videoCount: '140+',
@@ -669,8 +669,8 @@ const TOP_MODELS = [
         rank: 8,
         nationality: 'American 🇺🇸',
         ethnicity: 'american',
-        avatar: 'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Xk/o9/4b5tNmqo9Xk/486265-kendra-lust-nude_880x660.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Xk/o9/4b5tNmqo9Xk/486265-kendra-lust-nude_880x660.jpg'),
         views: '210M',
         rating: '97%',
         videoCount: '390+',
@@ -684,8 +684,8 @@ const TOP_MODELS = [
         rank: 9,
         nationality: 'American 🇺🇸',
         ethnicity: 'american',
-        avatar: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/ii/7N/njlBOCp7Nii/474382-brandi-love-nude_880x660.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/ii/7N/njlBOCp7Nii/474382-brandi-love-nude_880x660.jpg'),
         views: '260M',
         rating: '98%',
         videoCount: '440+',
@@ -699,8 +699,8 @@ const TOP_MODELS = [
         rank: 10,
         nationality: 'American 🇺🇸',
         ethnicity: 'american',
-        avatar: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/q3/Q7/nS3lD77Q7q3/462615-autumn-falls-nude_880x660.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/q3/Q7/nS3lD77Q7q3/462615-autumn-falls-nude_880x660.jpg'),
         views: '280M',
         rating: '98%',
         videoCount: '210+',
@@ -714,8 +714,8 @@ const TOP_MODELS = [
         rank: 11,
         nationality: 'American / Asian 🇺🇸🇯🇵',
         ethnicity: 'asian',
-        avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Cm/mY/2xbSWTsmYCm/32216333-violet-myers-pic594_880x660.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Cm/mY/2xbSWTsmYCm/32216333-violet-myers-pic594_880x660.jpg'),
         views: '175M',
         rating: '98%',
         videoCount: '160+',
@@ -729,8 +729,8 @@ const TOP_MODELS = [
         rank: 12,
         nationality: 'American / Latina 🇺🇸🇦🇷',
         ethnicity: 'latina',
-        avatar: 'https://images.unsplash.com/photo-1516726817505-f5ed825624d8?auto=format&fit=crop&w=500&q=80',
-        cover: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
+        avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Vl/L3/vTfR46RL3Vl/482701-emily-willis-nude_880x660.jpg'),
+        cover: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Vl/L3/vTfR46RL3Vl/482701-emily-willis-nude_880x660.jpg'),
         views: '295M',
         rating: '99%',
         videoCount: '320+',
@@ -782,46 +782,74 @@ app.get('/api/models', async (req, res) => {
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 30;
 
-    let list = [];
+    let combinedList = [];
+    const seen = new Set();
 
+    // 1. Add Curated Top Stars with Verified Real CDN Photos
+    TOP_MODELS.forEach(m => {
+        const slug = m.slug || m.id;
+        if (!seen.has(slug)) {
+            seen.add(slug);
+            combinedList.push(m);
+        }
+    });
+
+    // 2. Fetch & Append Live Scraped Stars from Eporner
     try {
         if (pageNum > 4) {
-            // Fetch live on-demand page from eporner
             const pageData = await fetchPornstarsByPage(pageNum);
             if (pageData && pageData.length > 0) {
-                list = pageData;
-            } else {
-                const all = await fetchEpornerPornstars(6);
-                list = all;
+                pageData.forEach(m => {
+                    if (!seen.has(m.slug)) {
+                        seen.add(m.slug);
+                        combinedList.push(m);
+                    }
+                });
             }
         } else {
-            const all = await fetchEpornerPornstars(6);
-            list = (all && all.length > 0) ? all : TOP_MODELS;
+            const allScraped = await fetchEpornerPornstars(6);
+            if (allScraped && allScraped.length > 0) {
+                allScraped.forEach(m => {
+                    if (!seen.has(m.slug)) {
+                        seen.add(m.slug);
+                        combinedList.push(m);
+                    }
+                });
+            }
         }
     } catch (e) {
-        list = TOP_MODELS;
+        console.warn('Scraper warning:', e.message);
     }
 
-    // Keyword / Name Filter
+    // 3. Filter by Ethnicity
+    if (ethnicity && ethnicity !== 'all') {
+        combinedList = combinedList.filter(m => m.ethnicity === ethnicity);
+    }
+
+    // 4. Keyword / Name Filter
     if (q) {
         const term = q.toLowerCase().trim();
-        list = list.filter(m => m.name.toLowerCase().includes(term) || (m.slug && m.slug.toLowerCase().includes(term)));
+        combinedList = combinedList.filter(m => 
+            m.name.toLowerCase().includes(term) || 
+            (m.slug && m.slug.toLowerCase().includes(term)) ||
+            (m.tags && m.tags.some(t => t.toLowerCase().includes(term)))
+        );
     }
 
-    let paginated = [];
-    if (pageNum > 4 && list.length <= limitNum) {
-        paginated = list;
-    } else {
-        const startIndex = (pageNum - 1) * limitNum;
-        paginated = list.slice(startIndex, startIndex + limitNum);
-    }
+    // Re-rank for pristine presentation
+    combinedList.forEach((m, idx) => {
+        m.rank = idx + 1;
+    });
+
+    const startIndex = (pageNum - 1) * limitNum;
+    const paginated = combinedList.slice(startIndex, startIndex + limitNum);
 
     return res.json({
         success: true,
-        total: 500, // Large index
+        total: combinedList.length,
         count: paginated.length,
         page: pageNum,
-        hasMore: paginated.length > 0,
+        hasMore: startIndex + limitNum < combinedList.length,
         models: paginated
     });
 });

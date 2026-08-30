@@ -7,7 +7,7 @@ const ALL_CATEGORIES = [
     count: '3,200+ Stars',
     link: '/models.html',
     special: 'models',
-    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80'
+    image: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/LT/T2/JYYrTpQT2LT/458843-lana-rhoades-enjoying-an-uncut-cock_880x660.jpg')
   },
   {
     id: 'sex_arabic',
@@ -16,7 +16,7 @@ const ALL_CATEGORIES = [
     count: '15,400+',
     link: '/arabic.html',
     special: 'arabic',
-    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'
+    image: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Fl/s7/irh2fr8s7Fl/129764-mia-khalifa-nude_880x660.jpg')
   },
   {
     id: 'nikroli',
@@ -25,7 +25,7 @@ const ALL_CATEGORIES = [
     count: '25,800+',
     link: '/nikroli.html',
     special: 'tiktok',
-    image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80'
+    image: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/wg/Ey/Ul9CvSuEywg/498125-riley-reid-showing-her-asshole_880x660.jpg')
   },
   {
     id: 'trending',
