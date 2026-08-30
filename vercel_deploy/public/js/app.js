@@ -71,28 +71,28 @@ let scrollObserver = null;
 
 // Categories Database
 const CATEGORIES_LIST = [
-  { id: 'sex_arabic', title: 'Sex Arabic (عربي)', icon: 'fa-star', special: true, count: '10,000+' },
-  { id: 'tiktok', title: 'TikTok 18+ (تيك توك 📱🔞)', icon: 'fa-brands fa-tiktok', specialTikTok: true, count: '25,000+' },
-  { id: 'trending', title: 'Trending', icon: 'fa-fire', count: '50,000+' },
-  { id: '4k', title: '4K Ultra HD', icon: 'fa-tv', count: '12,500+' },
-  { id: 'amateur', title: 'Amateur (هواة)', icon: 'fa-user', count: '35,000+' },
-  { id: 'milf', title: 'MILF (أمهات)', icon: 'fa-heart', count: '28,000+' },
-  { id: 'lesbian', title: 'Lesbian (سحاقيات)', icon: 'fa-venus-double', count: '19,000+' },
-  { id: 'teen', title: '18+ Teen', icon: 'fa-star-half-alt', count: '22,000+' },
-  { id: 'anal', title: 'Anal (خلفي)', icon: 'fa-circle-notch', count: '18,000+' },
-  { id: 'blowjob', title: 'Blowjob (مص)', icon: 'fa-kiss', count: '25,000+' },
-  { id: 'hardcore', title: 'Hardcore', icon: 'fa-bolt', count: '30,000+' },
-  { id: 'asian', title: 'Asian (آسيوي)', icon: 'fa-globe-asia', count: '16,000+' },
-  { id: 'ebony', title: 'Ebony (سمراء)', icon: 'fa-moon', count: '14,000+' },
-  { id: 'latina', title: 'Latina (لاتيني)', icon: 'fa-sun', count: '17,000+' },
-  { id: 'hentai', title: 'Hentai & Anime', icon: 'fa-dragon', count: '11,000+' },
-  { id: 'vr', title: 'VR 360°', icon: 'fa-vr-cardboard', count: '6,000+' },
-  { id: 'creampie', title: 'Creampie', icon: 'fa-tint', count: '21,000+' },
-  { id: 'threesome', title: 'Threesome', icon: 'fa-users', count: '13,000+' },
-  { id: 'fetish', title: 'Fetish & BDSM', icon: 'fa-mask', count: '9,000+' },
-  { id: 'masturbation', title: 'Solo & Masturbation', icon: 'fa-hand-sparkles', count: '15,000+' },
-  { id: 'big_tits', title: 'Big Tits', icon: 'fa-heartbeat', count: '27,000+' },
-  { id: 'big_ass', title: 'Big Ass', icon: 'fa-ring', count: '24,000+' }
+  { id: 'sex_arabic', title: 'Sex Arabic (Exclusive)', icon: 'fa-star', special: true, count: '15,400+' },
+  { id: 'nikroli', title: 'nikroli Reels (18+ Shorts)', icon: 'fa-brands fa-tiktok', specialTikTok: true, count: '25,800+' },
+  { id: 'trending', title: 'Trending', icon: 'fa-fire', count: '54,200+' },
+  { id: '4k', title: '4K Ultra HD', icon: 'fa-tv', count: '12,900+' },
+  { id: 'amateur', title: 'Amateur Couples', icon: 'fa-user', count: '36,400+' },
+  { id: 'milf', title: 'MILF & Mature', icon: 'fa-heart', count: '29,100+' },
+  { id: 'lesbian', title: 'Lesbian & Girls', icon: 'fa-venus-double', count: '19,800+' },
+  { id: 'teen', title: '18+ Teen Babes', icon: 'fa-star-half-alt', count: '23,400+' },
+  { id: 'anal', title: 'Anal Hardcore', icon: 'fa-circle-notch', count: '18,700+' },
+  { id: 'blowjob', title: 'Blowjob & Deepthroat', icon: 'fa-kiss', count: '26,500+' },
+  { id: 'hardcore', title: 'Hardcore & Rough', icon: 'fa-bolt', count: '31,200+' },
+  { id: 'asian', title: 'Asian & Japanese', icon: 'fa-globe-asia', count: '16,800+' },
+  { id: 'ebony', title: 'Ebony Babes', icon: 'fa-moon', count: '14,900+' },
+  { id: 'latina', title: 'Latina Hotties', icon: 'fa-sun', count: '17,600+' },
+  { id: 'hentai', title: 'Hentai & Anime', icon: 'fa-dragon', count: '11,400+' },
+  { id: 'vr', title: 'VR 360° Porn', icon: 'fa-vr-cardboard', count: '6,800+' },
+  { id: 'creampie', title: 'Creampie Internal', icon: 'fa-tint', count: '21,900+' },
+  { id: 'threesome', title: 'Threesome & Group', icon: 'fa-users', count: '13,500+' },
+  { id: 'fetish', title: 'Fetish & BDSM', icon: 'fa-mask', count: '9,400+' },
+  { id: 'masturbation', title: 'Solo & Masturbation', icon: 'fa-hand-sparkles', count: '15,800+' },
+  { id: 'big_tits', title: 'Big Tits & Boobs', icon: 'fa-heartbeat', count: '28,100+' },
+  { id: 'big_ass', title: 'Big Ass & Booty', icon: 'fa-ring', count: '24,900+' }
 ];
 
 const SEARCH_SUGGESTIONS = [
@@ -710,7 +710,7 @@ function hideTikTokReelsFeed() {
   if (sentinel) sentinel.style.display = 'block';
 }
 
-// Smart Recommendations ("For You / مخصص لك")
+// Smart Recommendations ("For You / Personalized")
 function loadForYouFeed(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
@@ -729,7 +729,7 @@ function loadForYouFeed(btn) {
 
 
   document.getElementById('btnClearHistory').style.display = 'none';
-  document.getElementById('categoryLabel').innerText = 'FOR YOU (مخصص لك)';
+  document.getElementById('categoryLabel').innerText = 'FOR YOU (Personalized)';
   document.getElementById('videoCountLabel').innerText = 'Personalized live stream...';
 
   const topPref = getUserTopPreference();
@@ -748,7 +748,7 @@ function loadForYouFeedMobile(el) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Favorites View (المفضلة)
+// Favorites View (Saved)
 function loadFavoritesView(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
@@ -761,7 +761,7 @@ function loadFavoritesView(btn) {
   isForYouMode = false;
   hasMore = false;
 
-  document.getElementById('categoryLabel').innerText = 'MY FAVORITES (المفضلة)';
+  document.getElementById('categoryLabel').innerText = 'MY FAVORITES (Saved)';
   document.getElementById('btnClearHistory').style.display = 'none';
 
   const favorites = getLocalFavorites();
@@ -804,11 +804,8 @@ function getLocalFavorites() {
   }
 }
 
-// Watch History Browser Storage Engine (سجل المشاهدة)
-function loadWatchHistory(btn) {
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-
+// Watch History Browser Storage Engine
+function loadWatchHistory() {
   hideTikTokReelsFeed();
   isTikTokMode = false;
   isHistoryMode = true;
@@ -817,7 +814,7 @@ function loadWatchHistory(btn) {
   isForYouMode = false;
   hasMore = false;
 
-  document.getElementById('categoryLabel').innerText = 'MY WATCH HISTORY (سجل المشاهدة)';
+  document.getElementById('categoryLabel').innerText = 'MY WATCH HISTORY';
   document.getElementById('btnClearHistory').style.display = 'inline-flex';
 
   const history = getLocalWatchHistory();
@@ -949,34 +946,48 @@ function parseViewsToNumber(viewsStr = '15K') {
   return parseFloat(clean) || 1000;
 }
 
-// Live Search Autocomplete Input Handler
-function handleSearchInput(e) {
+// Live Search Autocomplete with Instant API and Local Suggestions
+let searchDebounceTimer = null;
+async function handleSearchInput(e) {
   const q = e.target.value.trim().toLowerCase();
   const dropdown = document.getElementById('searchAutocomplete');
+  if (!dropdown) return;
 
   if (q.length < 2) {
     dropdown.style.display = 'none';
     return;
   }
 
-  const matches = SEARCH_SUGGESTIONS.filter(s => s.includes(q)).slice(0, 6);
-  if (matches.length > 0) {
-    dropdown.innerHTML = '';
-    matches.forEach(m => {
-      const div = document.createElement('div');
-      div.className = 'autocomplete-item';
-      div.innerHTML = `<i class="fa fa-search" style="color: var(--accent-pink);"></i> <span>${m}</span>`;
-      div.onclick = () => {
-        document.getElementById('searchInput').value = m;
-        dropdown.style.display = 'none';
-        executeSearch();
-      };
-      dropdown.appendChild(div);
-    });
-    dropdown.style.display = 'block';
-  } else {
-    dropdown.style.display = 'none';
-  }
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(async () => {
+    let matches = SEARCH_SUGGESTIONS.filter(s => s.includes(q)).slice(0, 4);
+
+    try {
+      const res = await fetch(`/api/search/suggestions?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      if (data && data.success && data.suggestions && data.suggestions.length > 0) {
+        matches = Array.from(new Set([...matches, ...data.suggestions])).slice(0, 7);
+      }
+    } catch (err) {}
+
+    if (matches.length > 0) {
+      dropdown.innerHTML = '';
+      matches.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'autocomplete-item';
+        div.innerHTML = `<i class="fa fa-search" style="color: var(--accent-pink);"></i> <span>${m}</span>`;
+        div.onclick = () => {
+          document.getElementById('searchInput').value = m;
+          dropdown.style.display = 'none';
+          executeSearch();
+        };
+        dropdown.appendChild(div);
+      });
+      dropdown.style.display = 'block';
+    } else {
+      dropdown.style.display = 'none';
+    }
+  }, 100);
 }
 
 // Mobile bottom navigation handler
@@ -1152,7 +1163,7 @@ function createVideoCardElement(v, isHistory = false) {
       ${isTik ? '<span class="badge-tiktok"><i class="fa-brands fa-tiktok"></i> TikTok 18+</span>' : '<span class="badge-hd">1080p HD</span>'}
       ${isHistory ? '<span class="badge-watched"><i class="fa fa-check"></i> Watched</span>' : ''}
       <span class="badge-duration">${duration}</span>
-      <button class="btn-mobile-preview" aria-label="Preview Video"><i class="fa fa-eye"></i> معاينة</button>
+      <button class="btn-mobile-preview" aria-label="Preview Video"><i class="fa fa-eye"></i> Preview</button>
       <div class="preview-progress-bar"><div class="preview-progress-fill"></div></div>
     </div>
     <div class="card-details">
@@ -1177,7 +1188,7 @@ function createInFeedAdCard() {
   
   if (totalRenderedInFeedCards % 2 === 0) {
     adCard.innerHTML = `
-      <div class="ad-badge">SPONSORED / إعلان</div>
+      <div class="ad-badge">SPONSORED</div>
       <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="promo-smartlink-card" style="width: 100%;">
         <span class="promo-badge-hot"><i class="fa fa-fire"></i> LIVE 18+ STREAM</span>
         <h4 class="promo-title">🔥 Live Sex Cam & HD Private Shows</h4>
@@ -1336,7 +1347,7 @@ function getSkeletonHTML(count = 8) {
   return html;
 }
 
-/* ================= Adult Photos & GIFs (صور ومتحركة 📸🔞) System ================= */
+/* ================= Adult Photos & GIFs Gallery System ================= */
 let isPhotosMode = false;
 let isGifsMode = false;
 
@@ -1359,7 +1370,7 @@ async function loadPhotosView(btn) {
   renderedVideoIds.clear();
 
   const grid = document.getElementById('videosGrid');
-  document.getElementById('categoryLabel').innerHTML = '<i class="fa fa-camera-retro" style="color: var(--accent-pink);"></i> Photos & GIFs Gallery (صور ومتحركة 📸🔞)';
+  document.getElementById('categoryLabel').innerHTML = '<i class="fa fa-camera-retro" style="color: var(--accent-pink);"></i> Photos & GIFs Gallery';
   document.getElementById('videoCountLabel').innerText = 'Loading 150+ HD Photos & GIFs...';
   document.getElementById('btnClearHistory').style.display = 'none';
 

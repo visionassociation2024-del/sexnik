@@ -1,8 +1,8 @@
-// Categories Data with Real High-Definition Category Image Thumbnails
+// Categories Data with Real High-Definition Category Image Thumbnails (100% English)
 const ALL_CATEGORIES = [
   {
     id: 'sex_arabic',
-    title: 'Sex Arabic (عربي)',
+    title: 'Sex Arabic (Exclusive)',
     icon: 'fa-star',
     count: '15,400+',
     link: '/arabic.html',
@@ -11,7 +11,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'nikroli',
-    title: 'nikroli Reels (نكرولي 📱🔞)',
+    title: 'nikroli Reels (18+ Shorts)',
     icon: 'fa-brands fa-tiktok',
     count: '25,800+',
     link: '/nikroli.html',
@@ -20,7 +20,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'trending',
-    title: 'Trending (الشائع 🔥)',
+    title: 'Trending (Top Rated)',
     icon: 'fa-fire',
     count: '54,200+',
     link: '/trending.html',
@@ -28,7 +28,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: '4k',
-    title: '4K Ultra HD (فائق الدقة 📺)',
+    title: '4K Ultra HD (2160p)',
     icon: 'fa-tv',
     count: '12,900+',
     link: '/4k.html',
@@ -36,7 +36,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'photos',
-    title: 'Photos & GIFs (صور ومتحركة 📸)',
+    title: 'Photos & GIFs',
     icon: 'fa-camera-retro',
     count: '18,500+',
     link: '/photos.html',
@@ -44,7 +44,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'amateur',
-    title: 'Amateur (هواة)',
+    title: 'Amateur Couples',
     icon: 'fa-user',
     count: '36,400+',
     link: '/?cat=amateur',
@@ -52,7 +52,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'milf',
-    title: 'MILF (أمهات)',
+    title: 'MILF & Mature',
     icon: 'fa-heart',
     count: '29,100+',
     link: '/?cat=milf',
@@ -60,7 +60,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'lesbian',
-    title: 'Lesbian (سحاقيات)',
+    title: 'Lesbian & Girls',
     icon: 'fa-venus-double',
     count: '19,800+',
     link: '/?cat=lesbian',
@@ -68,7 +68,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'teen',
-    title: '18+ Teen (مراهقات)',
+    title: '18+ Teen Babes',
     icon: 'fa-star-half-alt',
     count: '23,400+',
     link: '/?cat=teen',
@@ -76,7 +76,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'anal',
-    title: 'Anal (خلفي)',
+    title: 'Anal Hardcore',
     icon: 'fa-circle-notch',
     count: '18,700+',
     link: '/?cat=anal',
@@ -84,7 +84,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'blowjob',
-    title: 'Blowjob (مص)',
+    title: 'Blowjob & Deepthroat',
     icon: 'fa-kiss',
     count: '26,500+',
     link: '/?cat=blowjob',
@@ -92,7 +92,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'hardcore',
-    title: 'Hardcore (عنيف)',
+    title: 'Hardcore & Rough',
     icon: 'fa-bolt',
     count: '31,200+',
     link: '/?cat=hardcore',
@@ -100,7 +100,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'asian',
-    title: 'Asian (آسيوي)',
+    title: 'Asian & Japanese',
     icon: 'fa-globe-asia',
     count: '16,800+',
     link: '/?cat=asian',
@@ -108,7 +108,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'ebony',
-    title: 'Ebony (سمراء)',
+    title: 'Ebony Babes',
     icon: 'fa-moon',
     count: '14,900+',
     link: '/?cat=ebony',
@@ -116,7 +116,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'latina',
-    title: 'Latina (لاتيني)',
+    title: 'Latina Hotties',
     icon: 'fa-sun',
     count: '17,600+',
     link: '/?cat=latina',
@@ -124,7 +124,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'hentai',
-    title: 'Hentai & Anime (أنمي)',
+    title: 'Hentai & 3D Anime',
     icon: 'fa-dragon',
     count: '11,400+',
     link: '/?cat=hentai',
@@ -132,7 +132,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'vr',
-    title: 'VR 360° (واقع افتراضي)',
+    title: 'VR 360° Porn',
     icon: 'fa-vr-cardboard',
     count: '6,800+',
     link: '/?cat=vr',
@@ -140,7 +140,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'creampie',
-    title: 'Creampie (داخلي)',
+    title: 'Creampie Internal',
     icon: 'fa-tint',
     count: '21,900+',
     link: '/?cat=creampie',
@@ -148,7 +148,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'threesome',
-    title: 'Threesome (ثلاثي)',
+    title: 'Threesome & Group',
     icon: 'fa-users',
     count: '13,500+',
     link: '/?cat=threesome',
@@ -156,7 +156,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'fetish',
-    title: 'Fetish & BDSM (فيتيش)',
+    title: 'Fetish & BDSM',
     icon: 'fa-mask',
     count: '9,400+',
     link: '/?cat=fetish',
@@ -164,7 +164,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'masturbation',
-    title: 'Solo & Masturbation (استمناء)',
+    title: 'Solo & Masturbation',
     icon: 'fa-hand-sparkles',
     count: '15,800+',
     link: '/?cat=masturbation',
@@ -172,7 +172,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'big_tits',
-    title: 'Big Tits (أثداء كبيرة)',
+    title: 'Big Tits & Boobs',
     icon: 'fa-heartbeat',
     count: '28,100+',
     link: '/?cat=big_tits',
@@ -180,7 +180,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'big_ass',
-    title: 'Big Ass (مؤخرات كبيرة)',
+    title: 'Big Ass & Booty',
     icon: 'fa-ring',
     count: '24,900+',
     link: '/?cat=big_ass',
@@ -188,7 +188,7 @@ const ALL_CATEGORIES = [
   },
   {
     id: 'squirt',
-    title: 'Squirting (قذف)',
+    title: 'Squirting Orgasm',
     icon: 'fa-water',
     count: '10,700+',
     link: '/?cat=squirt',

@@ -554,6 +554,24 @@ app.get('/api/gifs', async (req, res) => {
 
 
 
+// 1.9 API: Instant Search Autocomplete Suggestions
+app.get('/api/search/suggestions', (req, res) => {
+    const { q = '' } = req.query;
+    const term = q.toLowerCase().trim();
+    if (!term) return res.json({ success: true, suggestions: [] });
+
+    const POPULAR_KEYWORDS = [
+        'arabic', 'egyptian', 'moroccan', 'lebanese', 'syrian', 'iraqi', 'gulf',
+        '4k ultra hd', 'amateur couple', 'milf stepmom', 'lesbian massage', 'big ass', 'big tits',
+        'creampie', 'anal hardcore', 'blowjob deepthroat', 'japanese uncensored', 'vr 360',
+        'teen 18', 'ebony beauty', 'latina hot', 'threesome fff', 'hentai anime', 'squirt orgasm',
+        'nikroli viral reels', 'hardcore rough', 'massage oil', 'pov homemade', 'babysitter', 'cheating wife'
+    ];
+
+    const matches = POPULAR_KEYWORDS.filter(k => k.includes(term)).slice(0, 8);
+    return res.json({ success: true, suggestions: matches });
+});
+
 // 2. API: Fast Search across sources
 app.get('/api/search', async (req, res) => {
     const { q = 'hd', page = 1 } = req.query;
