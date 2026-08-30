@@ -63,12 +63,16 @@ async function fetchPornstarsByPage(page = 1) {
           const estRating = `${Math.floor(Math.random() * 5 + 95)}%`;
           const estVideos = `${Math.floor(Math.random() * 400 + 60)}+`;
 
+          const rawCover = imgSrc.replace(/_190x152\.jpg$/, '_880x660.jpg');
+
           results.push({
             id: slug,
             slug: slug,
             name: cleanName,
-            avatar: imgSrc,
-            cover: imgSrc.replace(/_190x152\.jpg$/, '_880x660.jpg'),
+            avatar: `/api/proxy/image?url=${encodeURIComponent(imgSrc)}`,
+            cover: `/api/proxy/image?url=${encodeURIComponent(rawCover)}`,
+            rawAvatar: imgSrc,
+            rawCover: rawCover,
             sourceUrl: `https://www.eporner.com${href}`,
             rank: (pageNum - 1) * 60 + results.length + 1,
             views: estViews,

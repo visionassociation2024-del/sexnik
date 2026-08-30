@@ -739,6 +739,44 @@ const TOP_MODELS = [
     }
 ];
 
+// 1.84 High-Performance Image Proxy & In-Memory Streamer
+app.get('/api/proxy/image', async (req, res) => {
+    const { url } = req.query;
+    if (!url || !url.startsWith('http')) {
+        return res.status(400).send('Invalid image URL');
+    }
+
+    try {
+        const cacheKey = `img_${url}`;
+        const cachedImg = getCached(cacheKey);
+        if (cachedImg) {
+            res.setHeader('Content-Type', cachedImg.contentType || 'image/jpeg');
+            res.setHeader('Cache-Control', 'public, max-age=604800');
+            return res.send(cachedImg.buffer);
+        }
+
+        const response = await axios.get(url, {
+            responseType: 'arraybuffer',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+            },
+            timeout: 8000
+        });
+
+        const contentType = response.headers['content-type'] || 'image/jpeg';
+        const buffer = Buffer.from(response.data);
+
+        setCache(cacheKey, { buffer, contentType });
+
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Cache-Control', 'public, max-age=604800');
+        return res.send(buffer);
+    } catch (err) {
+        return res.redirect(url);
+    }
+});
+
 app.get('/api/models', async (req, res) => {
     const { ethnicity = 'all', q = '', page = 1, limit = 30 } = req.query;
     const pageNum = parseInt(page, 10) || 1;
