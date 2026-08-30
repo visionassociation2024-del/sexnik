@@ -8,7 +8,7 @@ const cheerio = require('cheerio');
 const { searchPornhub, getPornhubDetails } = require('./scrapers/pornhub');
 const { searchXhamster, getXhamsterDetails } = require('./scrapers/xhamster');
 const { scrapeTikPornFeed, scrapeTikPornSingle, scrapeTikPornBatch } = require('./scrapers/tiktok');
-const { fetchEpornerPornstars } = require('./scrapers/eporner_pornstars_scraper');
+const { fetchEpornerPornstars, fetchPornstarsByPage } = require('./scrapers/eporner_pornstars_scraper');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -740,18 +740,28 @@ const TOP_MODELS = [
 ];
 
 app.get('/api/models', async (req, res) => {
-    const { ethnicity = 'all', q = '', page = 1, limit = 40 } = req.query;
+    const { ethnicity = 'all', q = '', page = 1, limit = 30 } = req.query;
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 30;
+
     let list = [];
 
     try {
-        const scraped = await fetchEpornerPornstars(4);
-        if (scraped && scraped.length > 0) {
-            list = [...scraped];
+        if (pageNum > 4) {
+            // Fetch live on-demand page from eporner
+            const pageData = await fetchPornstarsByPage(pageNum);
+            if (pageData && pageData.length > 0) {
+                list = pageData;
+            } else {
+                const all = await fetchEpornerPornstars(6);
+                list = all;
+            }
         } else {
-            list = [...TOP_MODELS];
+            const all = await fetchEpornerPornstars(6);
+            list = (all && all.length > 0) ? all : TOP_MODELS;
         }
     } catch (e) {
-        list = [...TOP_MODELS];
+        list = TOP_MODELS;
     }
 
     // Keyword / Name Filter
@@ -760,18 +770,20 @@ app.get('/api/models', async (req, res) => {
         list = list.filter(m => m.name.toLowerCase().includes(term) || (m.slug && m.slug.toLowerCase().includes(term)));
     }
 
-    const pageNum = parseInt(page, 10) || 1;
-    const limitNum = parseInt(limit, 10) || 40;
-    const totalCount = list.length;
-    const startIndex = (pageNum - 1) * limitNum;
-    const paginated = list.slice(startIndex, startIndex + limitNum);
+    let paginated = [];
+    if (pageNum > 4 && list.length <= limitNum) {
+        paginated = list;
+    } else {
+        const startIndex = (pageNum - 1) * limitNum;
+        paginated = list.slice(startIndex, startIndex + limitNum);
+    }
 
     return res.json({
         success: true,
-        total: totalCount,
+        total: 500, // Large index
         count: paginated.length,
         page: pageNum,
-        totalPages: Math.ceil(totalCount / limitNum),
+        hasMore: paginated.length > 0,
         models: paginated
     });
 });
@@ -1914,6 +1926,10 @@ app.get(['/history', '/history.html', '/recent'], (req, res) => {
 
 app.get(['/models', '/models.html', '/pornstars', '/pornstars.html', '/stars', '/stars.html'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'models.html'));
+});
+
+app.get(['/model/:slug', '/pornstar/:slug', '/star/:slug', '/model.html', '/model'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'model.html'));
 });
 
 // Admin Routes

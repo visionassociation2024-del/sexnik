@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="referrer" content="no-referrer">
   <title>Top Pornstars & Adult Models Index - niksex</title>
   <meta name="description" content="Browse profiles, videos, bios, and rankings of the world's most famous verified adult models and pornstars on niksex.">
   <meta name="keywords" content="pornstars, adult models, mia khalifa, lana rhoades, riley reid, eva elfie, abella danger, angela white, sweetie fox, kendra lust, brandi love, niksex">
@@ -539,41 +540,16 @@
     <!-- Models Grid -->
     <div class="models-grid" id="modelsGrid"></div>
 
-  </main>
-
-  <!-- Interactive Model Profile Modal / Video Showcase -->
-  <div class="model-profile-modal" id="modelProfileModal" onclick="closeModelProfileModal(event)">
-    <div class="model-profile-dialog" onclick="event.stopPropagation()">
-      <button class="btn-close-profile-modal" onclick="closeModelProfileModal()">&times;</button>
-      
-      <div class="profile-hero-header">
-        <img src="/images/logo.png" alt="Cover" class="profile-cover-img" id="profileCoverImg">
-        <div class="profile-header-gradient"></div>
-      </div>
-
-      <div class="profile-avatar-row">
-        <img src="/images/logo.png" alt="Avatar" class="profile-avatar-img" id="profileAvatarImg">
-        <div class="profile-title-area">
-          <h2 id="profileName">Model Name</h2>
-          <p id="profileNationality">Nationality &bull; Rank #1</p>
-        </div>
-      </div>
-
-      <div class="profile-bio-box">
-        <p id="profileBioText">Biography loading...</p>
-      </div>
-
-      <div class="profile-videos-section">
-        <h3 style="font-size: 16px; color: #fff; display: flex; align-items: center; gap: 8px;">
-          <i class="fa fa-film" style="color: var(--accent-pink);"></i> Free Video Streams with <span id="profileVideosStarName" style="color: #ffd700;">Star</span>
-        </h3>
-        
-        <div class="profile-videos-grid" id="profileVideosGrid">
-          <!-- Populated dynamically via models.js -->
-        </div>
-      </div>
+    <!-- Infinite Scroll Loader -->
+    <div id="modelsLoader" class="infinite-loader" style="display: none; padding: 25px; text-align: center;">
+      <div class="spinner-neon"></div>
+      <span style="margin-top: 10px; display: block; color: var(--text-muted); font-size: 13px;">Loading more verified models...</span>
     </div>
-  </div>
+
+    <!-- Sentinel Element for Infinite Scroll -->
+    <div id="modelsSentinel" style="height: 50px; width: 100%;"></div>
+
+  </main>
 
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-nav">
