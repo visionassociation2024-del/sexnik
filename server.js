@@ -554,6 +554,232 @@ app.get('/api/gifs', async (req, res) => {
 
 
 
+// 1.85 TOP MODELS & PORNSTARS DATABASE & API
+const TOP_MODELS = [
+    {
+        id: 'mia_khalifa',
+        name: 'Mia Khalifa',
+        slug: 'mia-khalifa',
+        rank: 1,
+        nationality: 'Lebanese 🇱🇧',
+        ethnicity: 'arabic',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80',
+        views: '245M',
+        rating: '99%',
+        videoCount: '180+',
+        bio: 'The most searched and iconic Middle Eastern superstar in adult history with record-breaking viral streaming numbers.',
+        tags: ['arabic', 'lebanese', 'glasses', 'big tits', 'hardcore', 'trending']
+    },
+    {
+        id: 'lana_rhoades',
+        name: 'Lana Rhoades',
+        slug: 'lana-rhoades',
+        rank: 2,
+        nationality: 'American 🇺🇸',
+        ethnicity: 'american',
+        avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80',
+        views: '320M',
+        rating: '98%',
+        videoCount: '240+',
+        bio: 'Sensational top-ranked American performer known for breathtaking beauty, intense chemistry, and blockbuster scenes.',
+        tags: ['teen', 'blowjob', 'creampie', 'hardcore', '4k']
+    },
+    {
+        id: 'riley_reid',
+        name: 'Riley Reid',
+        slug: 'riley-reid',
+        rank: 3,
+        nationality: 'American 🇺🇸',
+        ethnicity: 'american',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1516726817505-f5ed825624d8?auto=format&fit=crop&w=1200&q=80',
+        views: '410M',
+        rating: '99%',
+        videoCount: '520+',
+        bio: 'Multi-award winning superstar and fan-favorite legend of modern adult streaming.',
+        tags: ['anal', 'amateur', 'hardcore', 'threesome', 'blowjob']
+    },
+    {
+        id: 'eva_elfie',
+        name: 'Eva Elfie',
+        slug: 'eva-elfie',
+        rank: 4,
+        nationality: 'European 🇪🇺',
+        ethnicity: 'european',
+        avatar: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1200&q=80',
+        views: '290M',
+        rating: '99%',
+        videoCount: '190+',
+        bio: 'Global fan favorite and AVN award winner famous for sweet charm, intense enthusiasm, and viral HD clips.',
+        tags: ['teen', 'blonde', 'creampie', 'amateur', 'pov']
+    },
+    {
+        id: 'abella_danger',
+        name: 'Abella Danger',
+        slug: 'abella-danger',
+        rank: 5,
+        nationality: 'American / Latina 🇺🇸🇧🇷',
+        ethnicity: 'latina',
+        avatar: 'https://images.unsplash.com/photo-1524502397800-2eeaad7c3fe5?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1200&q=80',
+        views: '350M',
+        rating: '98%',
+        videoCount: '480+',
+        bio: 'Wild, energetic, and one of the highest-rated Latina performers in history with explosive performances.',
+        tags: ['latina', 'big ass', 'anal', 'hardcore', 'squirt']
+    },
+    {
+        id: 'angela_white',
+        name: 'Angela White',
+        slug: 'angela-white',
+        rank: 6,
+        nationality: 'Australian 🇦🇺',
+        ethnicity: 'european',
+        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=1200&q=80',
+        views: '275M',
+        rating: '98%',
+        videoCount: '310+',
+        bio: 'Award-winning performer and director with iconic curves, renowned for supreme passion and luxury 4K studio productions.',
+        tags: ['big tits', 'milf', 'squirt', 'hardcore', '4k']
+    },
+    {
+        id: 'sweetie_fox',
+        name: 'Sweetie Fox',
+        slug: 'sweetie-fox',
+        rank: 7,
+        nationality: 'European 🇪🇺',
+        ethnicity: 'european',
+        avatar: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80',
+        views: '195M',
+        rating: '99%',
+        videoCount: '140+',
+        bio: 'The biggest cosplay and cosplay-themed viral adult creator with millions of diehard fans worldwide.',
+        tags: ['cosplay', 'teen', 'amateur', 'creampie', 'nikroli']
+    },
+    {
+        id: 'kendra_lust',
+        name: 'Kendra Lust',
+        slug: 'kendra-lust',
+        rank: 8,
+        nationality: 'American 🇺🇸',
+        ethnicity: 'american',
+        avatar: 'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=1200&q=80',
+        views: '210M',
+        rating: '97%',
+        videoCount: '390+',
+        bio: 'Reigning queen of the MILF genre, delivering premier performance, athletic physique, and unmatched charisma.',
+        tags: ['milf', 'big tits', 'hardcore', 'blowjob', 'cougar']
+    },
+    {
+        id: 'brandi_love',
+        name: 'Brandi Love',
+        slug: 'brandi-love',
+        rank: 9,
+        nationality: 'American 🇺🇸',
+        ethnicity: 'american',
+        avatar: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80',
+        views: '260M',
+        rating: '98%',
+        videoCount: '440+',
+        bio: 'Legendary blond MILF icon celebrated for intense roleplay, deepthroats, and glamorous full-length scenes.',
+        tags: ['milf', 'blonde', 'stepmom', 'hardcore', 'anal']
+    },
+    {
+        id: 'autumn_falls',
+        name: 'Autumn Falls',
+        slug: 'autumn-falls',
+        rank: 10,
+        nationality: 'American 🇺🇸',
+        ethnicity: 'american',
+        avatar: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=1200&q=80',
+        views: '280M',
+        rating: '98%',
+        videoCount: '210+',
+        bio: 'One of the most naturally endowed and adored superstars with unmatched natural beauty and viral fan base.',
+        tags: ['big tits', 'brunette', 'creampie', 'blowjob', 'pov']
+    },
+    {
+        id: 'violet_myers',
+        name: 'Violet Myers',
+        slug: 'violet-myers',
+        rank: 11,
+        nationality: 'American / Asian 🇺🇸🇯🇵',
+        ethnicity: 'asian',
+        avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&w=1200&q=80',
+        views: '175M',
+        rating: '98%',
+        videoCount: '160+',
+        bio: 'Super charismatic anime-loving star known for vibrant personality, stunning curves, and passionate scenes.',
+        tags: ['asian', 'big ass', 'cosplay', 'creampie', 'hardcore']
+    },
+    {
+        id: 'emily_willis',
+        name: 'Emily Willis',
+        slug: 'emily-willis',
+        rank: 12,
+        nationality: 'American / Latina 🇺🇸🇦🇷',
+        ethnicity: 'latina',
+        avatar: 'https://images.unsplash.com/photo-1516726817505-f5ed825624d8?auto=format&fit=crop&w=500&q=80',
+        cover: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
+        views: '295M',
+        rating: '99%',
+        videoCount: '320+',
+        bio: 'Incredible performer with breathtaking grace, intense energy, and dozens of top industry awards.',
+        tags: ['latina', 'teen', 'anal', 'hardcore', 'lesbian']
+    }
+];
+
+app.get('/api/models', (req, res) => {
+    const { ethnicity = 'all', q = '' } = req.query;
+    let list = [...TOP_MODELS];
+
+    if (ethnicity && ethnicity !== 'all') {
+        list = list.filter(m => m.ethnicity === ethnicity);
+    }
+    if (q) {
+        const term = q.toLowerCase().trim();
+        list = list.filter(m => m.name.toLowerCase().includes(term) || m.tags.some(t => t.includes(term)));
+    }
+
+    return res.json({
+        success: true,
+        count: list.length,
+        models: list
+    });
+});
+
+app.get('/api/model/:slug', async (req, res) => {
+    const { slug } = req.params;
+    const model = TOP_MODELS.find(m => m.slug === slug || m.id === slug || m.name.toLowerCase().replace(/\s+/g, '-') === slug.toLowerCase());
+
+    if (!model) {
+        return res.status(404).json({ success: false, message: 'Model not found' });
+    }
+
+    // Fetch videos for this model dynamically
+    const query = model.name;
+    let videos = [];
+    try {
+        const searchRes = await fetchOpenTubeVideos(query, 1);
+        videos = searchRes || [];
+    } catch (e) {}
+
+    return res.json({
+        success: true,
+        model: model,
+        videos: videos
+    });
+});
+
 // 1.9 API: Instant Search Autocomplete Suggestions
 app.get('/api/search/suggestions', (req, res) => {
     const { q = '' } = req.query;
@@ -1583,6 +1809,7 @@ app.get('/sitemap.xml', (req, res) => {
     xml += `  <url><loc>${baseUrl}/categories.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>\n`;
     xml += `  <url><loc>${baseUrl}/trending.html</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>\n`;
     xml += `  <url><loc>${baseUrl}/4k.html</loc><changefreq>daily</changefreq><priority>0.9</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/models.html</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n`;
 
     // Category Pages
     categories.forEach(cat => {
@@ -1633,6 +1860,10 @@ app.get(['/favorites', '/favorites.html', '/bookmarks'], (req, res) => {
 
 app.get(['/history', '/history.html', '/recent'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'history.html'));
+});
+
+app.get(['/models', '/models.html', '/pornstars', '/pornstars.html', '/stars', '/stars.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'models.html'));
 });
 
 // Admin Routes

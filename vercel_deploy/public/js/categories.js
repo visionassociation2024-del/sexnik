@@ -1,6 +1,15 @@
 // Categories Data with Real High-Definition Category Image Thumbnails (100% English)
 const ALL_CATEGORIES = [
   {
+    id: 'models',
+    title: 'Top Pornstars & Models',
+    icon: 'fa-crown',
+    count: '3,200+ Stars',
+    link: '/models.html',
+    special: 'models',
+    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80'
+  },
+  {
     id: 'sex_arabic',
     title: 'Sex Arabic (Exclusive)',
     icon: 'fa-star',
@@ -16,7 +25,7 @@ const ALL_CATEGORIES = [
     count: '25,800+',
     link: '/nikroli.html',
     special: 'tiktok',
-    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80'
+    image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'trending',
@@ -214,7 +223,7 @@ function renderCategoriesGrid(list) {
   list.forEach(c => {
     const card = document.createElement('a');
     card.href = c.link;
-    card.className = `category-card-standalone ${c.special === 'arabic' ? 'special-arabic-card' : (c.special === 'tiktok' ? 'special-tiktok-card' : '')}`;
+    card.className = `category-card-standalone ${c.special === 'models' ? 'special-models-card' : (c.special === 'arabic' ? 'special-arabic-card' : (c.special === 'tiktok' ? 'special-tiktok-card' : ''))}`;
 
     const fallbackImg = '/images/logo.png';
     const imgSrc = c.image || fallbackImg;

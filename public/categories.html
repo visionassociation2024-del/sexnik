@@ -133,6 +133,20 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
+    .category-card-standalone.special-models-card {
+      border-color: rgba(255, 215, 0, 0.6);
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 0, 127, 0.15));
+    }
+    .category-card-standalone.special-models-card:hover {
+      border-color: #ffd700;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+    }
+    .category-card-standalone.special-models-card .cat-text-info span {
+      color: #ffd700;
+      border-color: rgba(255, 215, 0, 0.5);
+      background: rgba(0, 0, 0, 0.8);
+    }
+
     .category-card-standalone.special-arabic-card {
       border-color: rgba(255, 215, 0, 0.4);
     }
@@ -179,6 +193,9 @@
       </div>
 
       <div class="nav-actions desktop-only">
+        <a href="/models.html" class="btn-pill" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 0, 127, 0.3)); border-color: #ffd700; color: #ffd700; font-weight: 800;">
+          <i class="fa fa-star" style="color: #ffd700;"></i> Top Stars
+        </a>
         <a href="/arabic.html" class="btn-pill btn-arabic">
           <i class="fa fa-star" style="color: #ffd700;"></i> Arabic Exclusives
         </a>
@@ -250,8 +267,12 @@
 
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-nav">
-    <a href="/arabic.html" class="bottom-nav-item" style="color: #ffd700;">
+    <a href="/models.html" class="bottom-nav-item" style="color: #ffd700;">
       <i class="fa fa-star"></i>
+      <span>Stars</span>
+    </a>
+    <a href="/arabic.html" class="bottom-nav-item" style="color: #ffd700;">
+      <i class="fa fa-globe"></i>
       <span>Arabic</span>
     </a>
     <a href="/nikroli.html" class="bottom-nav-item" style="color: #00f2fe;">
