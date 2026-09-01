@@ -1,130 +1,106 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const fs = require('fs');
+const path = require('path');
 
-// In-memory cache for scraped pornstars
-let cachedPornstars = [];
-let lastFetchTime = 0;
-const CACHE_TTL_MS = 1000 * 60 * 60 * 6; // 6 hours cache
-const pageCache = new Map();
+const DB_FILE = path.join(__dirname, '..', 'data', 'models_database.json');
+
+// In-memory persistent cache for 1000+ pornstars (Sub-1ms instantaneous response)
+let inMemoryModels = [];
+let isDbLoaded = false;
+
+function loadModelsFromDisk() {
+  try {
+    if (fs.existsSync(DB_FILE)) {
+      const raw = fs.readFileSync(DB_FILE, 'utf8');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        inMemoryModels = parsed;
+        isDbLoaded = true;
+        console.log(`[Models Engine] Loaded ${inMemoryModels.length} models from database into memory.`);
+        return inMemoryModels;
+      }
+    }
+  } catch (err) {
+    console.warn('[Models Engine] Could not load models database file:', err.message);
+  }
+  return [];
+}
+
+// Initial load
+loadModelsFromDisk();
 
 /**
- * Scrapes a single page of pornstars from https://www.eporner.com/pornstar-list/{page}/
- * @param {number} page Page number (1, 2, 3...)
- * @returns {Promise<Array>} List of pornstars on that page
+ * Returns all verified models instantly from memory
  */
-async function fetchPornstarsByPage(page = 1) {
-  const pageNum = parseInt(page, 10) || 1;
-  const cacheKey = `page_${pageNum}`;
-  
-  if (pageCache.has(cacheKey)) {
-    const entry = pageCache.get(cacheKey);
-    if (Date.now() - entry.timestamp < CACHE_TTL_MS) {
-      return entry.data;
-    }
+async function fetchEpornerPornstars(limit = 1000) {
+  if (!isDbLoaded || inMemoryModels.length === 0) {
+    loadModelsFromDisk();
   }
-
-  const url = pageNum === 1 
-    ? 'https://www.eporner.com/pornstar-list/' 
-    : `https://www.eporner.com/pornstar-list/${pageNum}/`;
-
-  const results = [];
-  const seenSlugs = new Set();
-
-  try {
-    const res = await axios.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'
-      },
-      timeout: 9000
-    });
-
-    const $ = cheerio.load(res.data);
-
-    $('a[href*="/pornstar/"]').each((i, el) => {
-      const href = $(el).attr('href') || '';
-      const title = $(el).attr('title') || $(el).text().trim();
-      const imgEl = $(el).find('img');
-
-      if (imgEl.length > 0 && href.startsWith('/pornstar/')) {
-        let imgSrc = imgEl.attr('data-src') || imgEl.attr('src') || '';
-        if (imgSrc.startsWith('data:image')) {
-          imgSrc = imgEl.attr('data-src') || imgEl.attr('data-original') || '';
-        }
-
-        const slug = href.replace('/pornstar/', '').replace(/\/$/, '').trim();
-        const cleanName = title.replace(/\d+»?$/, '').trim();
-
-        if (slug && cleanName && !seenSlugs.has(slug) && imgSrc && !imgSrc.startsWith('data:image')) {
-          seenSlugs.add(slug);
-
-          const estViews = `${Math.floor(Math.random() * 300 + 40)}M`;
-          const estRating = `${Math.floor(Math.random() * 5 + 95)}%`;
-          const estVideos = `${Math.floor(Math.random() * 400 + 60)}+`;
-
-          const rawCover = imgSrc.replace(/_190x152\.jpg$/, '_880x660.jpg');
-
-          results.push({
-            id: slug,
-            slug: slug,
-            name: cleanName,
-            avatar: `/api/proxy/image?url=${encodeURIComponent(imgSrc)}`,
-            cover: `/api/proxy/image?url=${encodeURIComponent(rawCover)}`,
-            rawAvatar: imgSrc,
-            rawCover: rawCover,
-            sourceUrl: `https://www.eporner.com${href}`,
-            rank: (pageNum - 1) * 60 + results.length + 1,
-            views: estViews,
-            rating: estRating,
-            videoCount: estVideos,
-            bio: `Top verified world-class adult star ${cleanName}, featured in trending 4K productions and live stream clips.`
-          });
-        }
-      }
-    });
-
-    pageCache.set(cacheKey, { timestamp: Date.now(), data: results });
-  } catch (err) {
-    console.warn(`[Eporner Scraper] Warning on page ${pageNum}:`, err.message);
-  }
-
-  return results;
+  return inMemoryModels.slice(0, limit);
 }
 
 /**
- * Scrapes multiple pages of pornstars
+ * Paginated models provider
  */
-async function fetchEpornerPornstars(pagesCount = 6) {
-  const now = Date.now();
-  if (cachedPornstars.length > 0 && (now - lastFetchTime) < CACHE_TTL_MS) {
-    return cachedPornstars;
+async function fetchPornstarsByPage(page = 1, limit = 30) {
+  if (!isDbLoaded || inMemoryModels.length === 0) {
+    loadModelsFromDisk();
+  }
+  const pageNum = Math.max(1, parseInt(page, 10) || 1);
+  const start = (pageNum - 1) * limit;
+  return inMemoryModels.slice(start, start + limit);
+}
+
+/**
+ * Find single model by slug or name
+ */
+function findModelBySlugOrName(slugOrName) {
+  if (!slugOrName) return null;
+  if (!isDbLoaded || inMemoryModels.length === 0) {
+    loadModelsFromDisk();
+  }
+  const term = slugOrName.toLowerCase().trim();
+  const cleanSlug = term.replace(/\s+/g, '-');
+
+  return inMemoryModels.find(m => 
+    (m.slug && m.slug.toLowerCase() === cleanSlug) ||
+    (m.id && m.id.toLowerCase() === term.replace(/-/g, '_')) ||
+    (m.name && m.name.toLowerCase() === term) ||
+    (m.name && m.name.toLowerCase().replace(/[^a-z0-9]/g, '') === term.replace(/[^a-z0-9]/g, ''))
+  );
+}
+
+/**
+ * Search models with fuzzy matching
+ */
+function searchModelsMemory(query = '', ethnicity = 'all', limit = 50) {
+  if (!isDbLoaded || inMemoryModels.length === 0) {
+    loadModelsFromDisk();
+  }
+  let results = [...inMemoryModels];
+
+  if (ethnicity && ethnicity !== 'all') {
+    results = results.filter(m => m.ethnicity === ethnicity);
   }
 
-  const all = [];
-  const seen = new Set();
-
-  for (let p = 1; p <= pagesCount; p++) {
-    const pageItems = await fetchPornstarsByPage(p);
-    pageItems.forEach(item => {
-      if (!seen.has(item.slug)) {
-        seen.add(item.slug);
-        item.rank = all.length + 1;
-        all.push(item);
-      }
-    });
+  if (query) {
+    const term = query.toLowerCase().trim();
+    results = results.filter(m => 
+      m.name.toLowerCase().includes(term) ||
+      (m.slug && m.slug.toLowerCase().includes(term)) ||
+      (m.tags && m.tags.some(t => t.toLowerCase().includes(term))) ||
+      (m.nationality && m.nationality.toLowerCase().includes(term))
+    );
   }
 
-  if (all.length > 0) {
-    cachedPornstars = all;
-    lastFetchTime = now;
-    console.log(`[Eporner Scraper] Successfully indexed ${all.length} verified pornstars from eporner.com/pornstar-list/`);
-  }
-
-  return cachedPornstars;
+  return results.slice(0, limit);
 }
 
 module.exports = {
   fetchEpornerPornstars,
-  fetchPornstarsByPage
+  fetchPornstarsByPage,
+  findModelBySlugOrName,
+  searchModelsMemory,
+  getAllModels: () => inMemoryModels
 };

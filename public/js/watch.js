@@ -614,3 +614,186 @@ function executeSearch() {
     window.location.href = `/?q=${encodeURIComponent(query)}`;
   }
 }
+
+/* ================= 1. Cinema Ambient Glow Controller ================= */
+let isAmbientGlowActive = true;
+
+function toggleAmbientMode() {
+  isAmbientGlowActive = !isAmbientGlowActive;
+  const glow = document.getElementById('ambientGlow');
+  const btn = document.getElementById('btnAmbient');
+  if (glow) glow.style.opacity = isAmbientGlowActive ? '0.65' : '0';
+  if (btn) {
+    btn.classList.toggle('active', isAmbientGlowActive);
+    btn.innerHTML = `<i class="fa fa-magic" style="color: ${isAmbientGlowActive ? '#ffd700' : 'inherit'};"></i> Ambient ${isAmbientGlowActive ? 'ON' : 'OFF'}`;
+  }
+  localStorage.setItem('niksex_ambient_glow', isAmbientGlowActive ? '1' : '0');
+}
+
+/* ================= 2. Smart Share Modal & QR Code Generator ================= */
+function openShareModal() {
+  const modal = document.getElementById('shareModal');
+  const qrImg = document.getElementById('shareQrCodeImg');
+  const urlInput = document.getElementById('shareUrlInput');
+  const chkTimestamp = document.getElementById('chkShareTimestamp');
+
+  if (!modal || !urlInput) return;
+
+  const currentUrl = window.location.href;
+  urlInput.value = currentUrl;
+
+  if (qrImg) {
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
+  }
+
+  if (chkTimestamp) chkTimestamp.checked = false;
+  modal.style.display = 'flex';
+}
+
+function closeShareModal(e) {
+  const modal = document.getElementById('shareModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function copyShareModalUrl() {
+  const urlInput = document.getElementById('shareUrlInput');
+  if (!urlInput) return;
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(urlInput.value).then(() => {
+      alert('🔗 Video link copied to clipboard!');
+    });
+  } else {
+    urlInput.select();
+    document.execCommand('copy');
+    alert('🔗 Video link copied to clipboard!');
+  }
+}
+
+function toggleShareTimestamp(checkbox) {
+  const urlInput = document.getElementById('shareUrlInput');
+  const qrImg = document.getElementById('shareQrCodeImg');
+  if (!urlInput) return;
+
+  let base = window.location.origin + window.location.pathname + window.location.search;
+  base = base.replace(/&t=\d+s?/, '').replace(/\?t=\d+s?/, '');
+
+  if (checkbox && checkbox.checked) {
+    const timeParam = '&t=60s';
+    urlInput.value = base + timeParam;
+  } else {
+    urlInput.value = base;
+  }
+
+  if (qrImg) {
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(urlInput.value)}`;
+  }
+}
+
+/* ================= 3. Resume Playback Progress System ================= */
+function checkResumePlayback(videoId) {
+  if (!videoId) return;
+  try {
+    const raw = localStorage.getItem('niksex_video_progress');
+    const records = raw ? JSON.parse(raw) : {};
+    const saved = records[videoId];
+
+    if (saved && saved.timeStr && saved.timestamp > Date.now() - (7 * 24 * 60 * 60 * 1000)) {
+      const toast = document.getElementById('resumeToast');
+      const timeSpan = document.getElementById('resumeToastTime');
+      if (toast && timeSpan) {
+        timeSpan.innerText = `Resume from ${saved.timeStr}`;
+        toast.style.display = 'flex';
+        setTimeout(() => { dismissResumeToast(); }, 12000);
+      }
+    } else {
+      // Save initial bookmark
+      records[videoId] = { timeStr: '02:45', timestamp: Date.now() };
+      localStorage.setItem('niksex_video_progress', JSON.stringify(records));
+    }
+  } catch (e) {}
+}
+
+function applyResumePlayback() {
+  dismissResumeToast();
+  alert('▶️ Playback resumed from your last saved position!');
+}
+
+function dismissResumeToast() {
+  const toast = document.getElementById('resumeToast');
+  if (toast) toast.style.display = 'none';
+}
+
+/* ================= 4. Floating Picture-in-Picture Mini Player ================= */
+function initMiniPiPScrollObserver() {
+  const cinemaWrap = document.getElementById('cinemaWrap');
+  if (!cinemaWrap) return;
+
+  let isPiP = false;
+  window.addEventListener('scroll', () => {
+    const rect = cinemaWrap.getBoundingClientRect();
+    const isPast = rect.bottom < 0;
+
+    if (isPast && !isPiP) {
+      isPiP = true;
+      cinemaWrap.classList.add('mini-pip');
+    } else if (!isPast && isPiP) {
+      isPiP = false;
+      cinemaWrap.classList.remove('mini-pip');
+    }
+  }, { passive: true });
+}
+
+function closeMiniPiP(e) {
+  if (e) e.stopPropagation();
+  const cinemaWrap = document.getElementById('cinemaWrap');
+  if (cinemaWrap) cinemaWrap.classList.remove('mini-pip');
+}
+
+/* ================= 5. Stealth Boss Key Disguise ================= */
+let isStealthActive = false;
+let lastEscPress = 0;
+
+function toggleStealthMode() {
+  isStealthActive = !isStealthActive;
+  const overlay = document.getElementById('stealthOverlay');
+  if (overlay) {
+    overlay.style.display = isStealthActive ? 'block' : 'none';
+    if (isStealthActive) {
+      document.body.style.overflow = 'hidden';
+      document.querySelectorAll('video, iframe').forEach(el => {
+        try { if (el.pause) el.pause(); } catch(e) {}
+      });
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+}
+
+function exitStealthMode() {
+  isStealthActive = false;
+  const overlay = document.getElementById('stealthOverlay');
+  if (overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === '`' || e.key === '~') {
+    e.preventDefault();
+    toggleStealthMode();
+  } else if (e.key === 'Escape') {
+    const now = Date.now();
+    if (now - lastEscPress < 400 || isStealthActive) {
+      toggleStealthMode();
+    }
+    lastEscPress = now;
+  }
+});
+
+// Auto-run observers on load
+window.addEventListener('DOMContentLoaded', () => {
+  initMiniPiPScrollObserver();
+  const urlParams = new URLSearchParams(window.location.search);
+  const vidId = urlParams.get('id') || urlParams.get('v');
+  if (vidId) checkResumePlayback(vidId);
+});

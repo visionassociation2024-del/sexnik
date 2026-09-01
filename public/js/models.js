@@ -1,13 +1,17 @@
-// Top Pornstars & Models Infinite Scroll Engine
+// 1,000+ Top Pornstars & Models Infinite Indexing Engine
 let modelsPage = 1;
 let isModelsLoading = false;
 let hasMoreModels = true;
 let currentEthnicity = 'all';
+let currentLetter = 'all';
+let currentSort = 'rank';
 let searchQuery = '';
+let isFollowedOnly = false;
 let allLoadedModels = [];
 const seenModelSlugs = new Set();
 
 document.addEventListener('DOMContentLoaded', () => {
+  updateFollowedBadge();
   initModelsInfiniteScroll();
   loadModelsBatch(true);
 
@@ -19,16 +23,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+function updateFollowedBadge() {
+  const badge = document.getElementById('followedCountBadge');
+  if (badge) {
+    const followed = getFollowedModels();
+    badge.innerText = followed.length;
+  }
+}
+
 function initModelsInfiniteScroll() {
   const sentinel = document.getElementById('modelsSentinel');
   if (!sentinel) return;
 
   const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isModelsLoading && hasMoreModels && !searchQuery) {
+    if (entries[0].isIntersecting && !isModelsLoading && hasMoreModels && !isFollowedOnly) {
       loadModelsBatch(false);
     }
   }, {
-    rootMargin: '400px'
+    rootMargin: '500px'
   });
 
   observer.observe(sentinel);
@@ -53,8 +65,28 @@ async function loadModelsBatch(isInitial = false) {
     if (loader) loader.style.display = 'block';
   }
 
+  // If user selected "Followed Only" filter
+  if (isFollowedOnly) {
+    const followedIds = getFollowedModels();
+    if (followedIds.length === 0) {
+      if (grid) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+            <i class="fa fa-heart fa-3x" style="color: #ff007f; margin-bottom: 14px; opacity: 0.7;"></i>
+            <h3 style="color: #fff; margin-bottom: 6px;">No Followed Stars Yet</h3>
+            <p style="font-size: 13px;">Click the heart icon on any model card to follow them and save them here!</p>
+          </div>
+        `;
+      }
+      if (countLabel) countLabel.innerText = '0 Followed Stars';
+      isModelsLoading = false;
+      if (loader) loader.style.display = 'none';
+      return;
+    }
+  }
+
   try {
-    const url = `/api/models?page=${modelsPage}&limit=30&ethnicity=${encodeURIComponent(currentEthnicity)}&q=${encodeURIComponent(searchQuery)}`;
+    const url = `/api/models?page=${modelsPage}&limit=36&ethnicity=${encodeURIComponent(currentEthnicity)}&letter=${encodeURIComponent(currentLetter)}&sort=${encodeURIComponent(currentSort)}&q=${encodeURIComponent(searchQuery)}`;
     const res = await fetch(url);
     const data = await res.json();
 
@@ -63,9 +95,15 @@ async function loadModelsBatch(isInitial = false) {
     }
 
     if (data.success && data.models && data.models.length > 0) {
-      const newModels = [];
+      let modelsToRender = data.models;
 
-      data.models.forEach(m => {
+      if (isFollowedOnly) {
+        const followedIds = getFollowedModels();
+        modelsToRender = modelsToRender.filter(m => followedIds.includes(m.id || m.slug));
+      }
+
+      const newModels = [];
+      modelsToRender.forEach(m => {
         const slugKey = m.slug || m.id;
         if (!seenModelSlugs.has(slugKey)) {
           seenModelSlugs.add(slugKey);
@@ -77,15 +115,18 @@ async function loadModelsBatch(isInitial = false) {
       appendModelsToGrid(newModels);
 
       if (countLabel) {
-        countLabel.innerText = `${allLoadedModels.length}+ Verified Stars Loaded`;
+        countLabel.innerText = `Showing ${allLoadedModels.length} of ${data.total || 1033} Verified Stars`;
       }
 
       modelsPage++;
-      hasMoreModels = data.hasMore !== false;
+      hasMoreModels = data.hasMore !== false && !isFollowedOnly;
     } else {
       hasMoreModels = false;
       if (isInitial && grid) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">No models found matching your criteria.</div>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">No models found matching your filters.</div>';
+      }
+      if (countLabel && isInitial) {
+        countLabel.innerText = '0 Stars Found';
       }
     }
   } catch (err) {
@@ -111,9 +152,11 @@ function appendModelsToGrid(list) {
     card.className = 'model-card animate-fade';
     card.onclick = () => openModelProfile(m.slug || m.id);
 
+    const avatarUrl = m.avatar || '/images/logo.png';
+
     card.innerHTML = `
       <div class="model-card-cover-wrap">
-        <img src="${m.avatar || '/images/logo.png'}" alt="${m.name}" class="model-card-img" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='/images/logo.png'">
+        <img src="${avatarUrl}" alt="${m.name}" class="model-card-img" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='/images/logo.png'">
         <div class="model-card-gradient"></div>
         <div class="model-rank-badge">
           <i class="fa fa-crown"></i> Rank #${m.rank}
@@ -149,26 +192,64 @@ function appendModelsToGrid(list) {
   });
 }
 
+let searchDebounce = null;
 function filterModelsList(e) {
   searchQuery = e.target.value.trim();
+  const clearBtn = document.getElementById('clearModelSearchBtn');
+  if (clearBtn) clearBtn.style.display = searchQuery ? 'block' : 'none';
+
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => {
+    isFollowedOnly = false;
+    loadModelsBatch(true);
+  }, 200);
+}
+
+function clearModelSearch() {
+  const input = document.getElementById('modelFilterInput');
+  if (input) input.value = '';
+  searchQuery = '';
+  const clearBtn = document.getElementById('clearModelSearchBtn');
+  if (clearBtn) clearBtn.style.display = 'none';
   loadModelsBatch(true);
 }
 
 function switchModelEthnicity(eth, btn) {
+  isFollowedOnly = false;
   document.querySelectorAll('.btn-model-filter').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   const titleEl = document.getElementById('modelsSectionTitle');
-  if (titleEl) titleEl.innerText = `Verified Stars (${btn.innerText.trim()})`;
+  if (titleEl) titleEl.innerText = `Verified Performers (${btn.innerText.trim()})`;
   currentEthnicity = eth;
   loadModelsBatch(true);
 }
 
-// Navigate to Standalone Dedicated Model Profile Page
+function switchAlphabet(letter, btn) {
+  isFollowedOnly = false;
+  document.querySelectorAll('.btn-alphabet').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  currentLetter = letter;
+  loadModelsBatch(true);
+}
+
+function changeModelSort(sortVal) {
+  currentSort = sortVal;
+  loadModelsBatch(true);
+}
+
+function filterFollowedOnly(btn) {
+  isFollowedOnly = true;
+  document.querySelectorAll('.btn-model-filter').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const titleEl = document.getElementById('modelsSectionTitle');
+  if (titleEl) titleEl.innerText = 'My Followed Superstars';
+  loadModelsBatch(true);
+}
+
 function openModelProfile(slug) {
   window.location.href = `/model.html?star=${encodeURIComponent(slug)}`;
 }
 
-// Follow / Bookmark Model Storage
 function getFollowedModels() {
   try {
     const raw = localStorage.getItem('niksex_followed_models');
@@ -195,6 +276,7 @@ function toggleFollowModel(modelId, e, btn) {
     }
   }
   localStorage.setItem('niksex_followed_models', JSON.stringify(followed));
+  updateFollowedBadge();
 }
 
 function handleModelSearch(e) {
@@ -206,15 +288,15 @@ function executeModelSearch() {
   if (q) window.location.href = `/?q=${encodeURIComponent(q)}`;
 }
 
-function getModelsSkeleton(count = 8) {
+function getModelsSkeleton(count = 12) {
   let html = '';
   for (let i = 0; i < count; i++) {
     html += `
       <div class="model-card" style="opacity: 0.5;">
         <div class="model-card-cover-wrap" style="background: #1e1e2d;"></div>
         <div class="model-card-body">
-          <div style="height: 16px; background: #28283c; border-radius: 4px; margin-bottom: 8px;"></div>
-          <div style="height: 10px; width: 50%; background: #28283c; border-radius: 4px;"></div>
+          <div style="height: 18px; background: #28283c; border-radius: 4px; margin-bottom: 8px;"></div>
+          <div style="height: 12px; width: 60%; background: #28283c; border-radius: 4px;"></div>
         </div>
       </div>
     `;

@@ -204,13 +204,13 @@
       </a>
 
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search Arabic, 4K, models, categories..." oninput="handleSearchInput(event)" onkeypress="handleSearch(event)" autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Search 1000+ stars, Arabic, 4K, categories..." onfocus="handleSearchFocus()" oninput="handleSearchInput(event)" onkeypress="handleSearch(event)" autocomplete="off">
         <button class="search-btn" onclick="executeSearch()" aria-label="Search">
           <i class="fa fa-search"></i>
         </button>
 
         <!-- Live Autocomplete Box -->
-        <div class="autocomplete-dropdown" id="searchAutocomplete"></div>
+        <div class="autocomplete-dropdown predictive-search-popup" id="searchAutocomplete"></div>
       </div>
 
       <div class="nav-actions desktop-only">
@@ -615,6 +615,24 @@
     <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 niksex. All rights reserved.</p>
   </footer>
 
-  <script src="/js/app.js?v=5.0"></script>
+  <!-- Stealth Panic Key Overlay (Boss Disguise Mode) -->
+  <div id="stealthOverlay" class="stealth-overlay">
+    <div class="stealth-google-wrap">
+      <div class="stealth-google-logo">
+        <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+      </div>
+      <input type="text" class="stealth-search-input" placeholder="Search Google or type a URL" readonly onclick="exitStealthMode()">
+      <div class="stealth-exit-hint">
+        <span>⚡ Stealth Mode Active • Press <strong>Esc</strong> or <strong>`</strong> or click anywhere to exit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Stealth / Panic Button -->
+  <button id="btnPanicKey" onclick="toggleStealthMode()" title="Panic / Boss Key (Esc or `)" style="position: fixed; bottom: 85px; right: 20px; z-index: 999; background: rgba(22, 22, 34, 0.85); border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; backdrop-filter: blur(10px); transition: var(--transition);">
+    <i class="fa fa-shield-alt" style="color: var(--accent-pink);"></i> <span>Quick Hide</span>
+  </button>
+
+  <script src="/js/app.js?v=6.0"></script>
 </body>
 </html>

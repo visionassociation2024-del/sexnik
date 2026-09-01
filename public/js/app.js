@@ -946,48 +946,174 @@ function parseViewsToNumber(viewsStr = '15K') {
   return parseFloat(clean) || 1000;
 }
 
-// Live Search Autocomplete with Instant API and Local Suggestions
+// Search History Helpers
+function getSearchHistory() {
+  try {
+    const raw = localStorage.getItem('niksex_search_history');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveSearchHistory(term) {
+  if (!term || term.length < 2) return;
+  try {
+    let hist = getSearchHistory();
+    hist = hist.filter(item => item.toLowerCase() !== term.toLowerCase());
+    hist.unshift(term);
+    if (hist.length > 8) hist = hist.slice(0, 8);
+    localStorage.setItem('niksex_search_history', JSON.stringify(hist));
+  } catch (e) {}
+}
+
+function clearSearchHistory() {
+  localStorage.removeItem('niksex_search_history');
+  const dropdown = document.getElementById('searchAutocomplete');
+  if (dropdown) dropdown.style.display = 'none';
+}
+
+// Live Predictive Search Autocomplete with Live Models, Video Thumbs & Suggestions
 let searchDebounceTimer = null;
+
+function handleSearchFocus() {
+  const input = document.getElementById('searchInput');
+  const dropdown = document.getElementById('searchAutocomplete');
+  if (!input || !dropdown) return;
+
+  const q = input.value.trim().toLowerCase();
+  if (!q) {
+    const history = getSearchHistory();
+    if (history.length > 0) {
+      dropdown.className = 'autocomplete-dropdown predictive-search-popup';
+      dropdown.innerHTML = `
+        <div class="search-popup-header">
+          <span><i class="fa fa-history" style="color: var(--accent-pink);"></i> Recent Searches</span>
+          <button class="search-history-clear-btn" onclick="clearSearchHistory()"><i class="fa fa-trash"></i> Clear</button>
+        </div>
+        <div class="search-tags-row">
+          ${history.map(item => `
+            <span class="search-tag-chip" onclick="selectSearchTag('${item.replace(/'/g, "\\'")}')">
+              <i class="fa fa-search" style="font-size: 10px; color: var(--accent-pink);"></i> ${item}
+            </span>
+          `).join('')}
+        </div>
+      `;
+      dropdown.style.display = 'block';
+    }
+  } else {
+    handleSearchInput({ target: input });
+  }
+}
+
 async function handleSearchInput(e) {
   const q = e.target.value.trim().toLowerCase();
   const dropdown = document.getElementById('searchAutocomplete');
   if (!dropdown) return;
 
   if (q.length < 2) {
-    dropdown.style.display = 'none';
+    handleSearchFocus();
     return;
   }
 
   clearTimeout(searchDebounceTimer);
   searchDebounceTimer = setTimeout(async () => {
-    let matches = SEARCH_SUGGESTIONS.filter(s => s.includes(q)).slice(0, 4);
-
     try {
-      const res = await fetch(`/api/search/suggestions?q=${encodeURIComponent(q)}`);
+      const res = await fetch(`/api/search/live?q=${encodeURIComponent(q)}`);
       const data = await res.json();
-      if (data && data.success && data.suggestions && data.suggestions.length > 0) {
-        matches = Array.from(new Set([...matches, ...data.suggestions])).slice(0, 7);
-      }
-    } catch (err) {}
 
-    if (matches.length > 0) {
-      dropdown.innerHTML = '';
-      matches.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'autocomplete-item';
-        div.innerHTML = `<i class="fa fa-search" style="color: var(--accent-pink);"></i> <span>${m}</span>`;
-        div.onclick = () => {
-          document.getElementById('searchInput').value = m;
-          dropdown.style.display = 'none';
-          executeSearch();
-        };
-        dropdown.appendChild(div);
-      });
+      if (!data.success) {
+        dropdown.style.display = 'none';
+        return;
+      }
+
+      const models = data.models || [];
+      const videos = data.videos || [];
+      const suggestions = data.suggestions || [];
+
+      if (models.length === 0 && videos.length === 0 && suggestions.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+
+      dropdown.className = 'autocomplete-dropdown predictive-search-popup';
+      let html = '';
+
+      // 1. Matching Verified Models
+      if (models.length > 0) {
+        html += `
+          <div class="search-popup-header">
+            <span><i class="fa fa-crown" style="color: #ffd700;"></i> Verified Stars & Models</span>
+            <a href="/models.html" style="color: var(--accent-pink); font-size: 11px;">View all 1,000+ &raquo;</a>
+          </div>
+          <div class="search-stars-grid">
+            ${models.map(m => `
+              <div class="search-star-item" onclick="window.location.href='/model.html?star=${encodeURIComponent(m.slug || m.id)}'">
+                <img src="${m.avatar || '/images/logo.png'}" alt="${m.name}" class="search-star-avatar" referrerpolicy="no-referrer" onerror="this.src='/images/logo.png'">
+                <div class="search-star-details">
+                  <h5>${m.name}</h5>
+                  <span><i class="fa fa-crown"></i> #${m.rank || 1}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      // 2. Matching Video Previews
+      if (videos.length > 0) {
+        html += `
+          <div class="search-popup-header">
+            <span><i class="fa fa-film" style="color: #00f2fe;"></i> Matching Video Previews</span>
+          </div>
+          <div class="search-videos-list">
+            ${videos.map(v => `
+              <div class="search-video-item" onclick="navigateToWatchPage(${JSON.stringify(v).replace(/"/g, '&quot;')})">
+                <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" class="search-video-thumb" referrerpolicy="no-referrer" onerror="this.src='/images/logo.png'">
+                <div class="search-video-info">
+                  <div class="search-video-title">${v.title}</div>
+                  <div class="search-video-meta">
+                    <span><i class="fa fa-clock"></i> ${v.duration || '10:00'}</span>
+                    <span><i class="fa fa-eye"></i> ${v.views || '20K'}</span>
+                    <span style="color: #ffd700;"><i class="fa fa-star"></i> ${v.rating || '98%'}</span>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      // 3. Matching Keywords & Trending Tags
+      if (suggestions.length > 0) {
+        html += `
+          <div class="search-popup-header">
+            <span><i class="fa fa-fire" style="color: var(--accent-pink);"></i> Trending Keywords</span>
+          </div>
+          <div class="search-tags-row">
+            ${suggestions.map(s => `
+              <span class="search-tag-chip" onclick="selectSearchTag('${s.replace(/'/g, "\\'")}')">
+                <i class="fa fa-search" style="font-size: 10px; color: var(--accent-pink);"></i> ${s}
+              </span>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      dropdown.innerHTML = html;
       dropdown.style.display = 'block';
-    } else {
+    } catch (err) {
       dropdown.style.display = 'none';
     }
-  }, 100);
+  }, 120);
+}
+
+function selectSearchTag(tag) {
+  const input = document.getElementById('searchInput');
+  if (input) input.value = tag;
+  const dropdown = document.getElementById('searchAutocomplete');
+  if (dropdown) dropdown.style.display = 'none';
+  executeSearch();
 }
 
 // Mobile bottom navigation handler
@@ -1303,6 +1429,7 @@ async function executeSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if (!query) return;
 
+  saveSearchHistory(query);
   const dropdown = document.getElementById('searchAutocomplete');
   if (dropdown) dropdown.style.display = 'none';
 
@@ -1478,5 +1605,47 @@ function closeGifModal(e) {
   if (mediaWrap) mediaWrap.innerHTML = '';
   document.body.style.overflow = '';
 }
+
+/* ================= Stealth Panic Boss Key Handler ================= */
+let isStealthActive = false;
+let lastEscPress = 0;
+
+function toggleStealthMode() {
+  isStealthActive = !isStealthActive;
+  const overlay = document.getElementById('stealthOverlay');
+  if (overlay) {
+    overlay.style.display = isStealthActive ? 'block' : 'none';
+    if (isStealthActive) {
+      document.body.style.overflow = 'hidden';
+      document.querySelectorAll('video, iframe').forEach(el => {
+        try {
+          if (el.pause) el.pause();
+        } catch(e) {}
+      });
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+}
+
+function exitStealthMode() {
+  isStealthActive = false;
+  const overlay = document.getElementById('stealthOverlay');
+  if (overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === '`' || e.key === '~') {
+    e.preventDefault();
+    toggleStealthMode();
+  } else if (e.key === 'Escape') {
+    const now = Date.now();
+    if (now - lastEscPress < 400 || isStealthActive) {
+      toggleStealthMode();
+    }
+    lastEscPress = now;
+  }
+});
 
 

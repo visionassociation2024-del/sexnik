@@ -110,33 +110,98 @@
       box-shadow: 0 0 12px var(--accent-glow);
     }
 
-    /* Search Filter Input */
+    /* Alphabet A-Z Jump Bar */
+    .models-alphabet-bar {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 20px;
+      padding: 6px 0;
+    }
+    .models-alphabet-bar::-webkit-scrollbar { display: none; }
+    .btn-alphabet {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      min-width: 32px;
+      height: 32px;
+      padding: 0 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      text-transform: uppercase;
+    }
+    .btn-alphabet:hover, .btn-alphabet.active {
+      background: var(--accent-pink);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    /* Toolbar Layout */
+    .models-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
     .models-search-box {
       position: relative;
-      max-width: 500px;
-      margin: 0 auto 25px;
+      flex: 1;
+      max-width: 480px;
     }
     .models-search-box input {
       width: 100%;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
       border-radius: 30px;
-      padding: 12px 20px 12px 48px;
+      padding: 11px 40px 11px 44px;
       color: #fff;
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
       transition: var(--transition);
     }
     .models-search-box input:focus {
       border-color: var(--accent-pink);
-      box-shadow: 0 0 18px var(--accent-glow);
+      box-shadow: 0 0 16px var(--accent-glow);
     }
     .models-search-box i {
       position: absolute;
-      left: 18px;
+      left: 16px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--accent-pink);
+    }
+    .models-sort-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .models-sort-wrapper select {
+      background: rgba(22, 22, 34, 0.95);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .models-sort-wrapper select:focus {
+      border-color: var(--accent-pink);
     }
 
     /* Models Cards Grid */
@@ -514,18 +579,65 @@
 
     <!-- Filter by Ethnicity Tabs -->
     <div class="models-filter-bar">
-      <button class="btn-model-filter active" onclick="switchModelEthnicity('all', this)"><i class="fa fa-star" style="color: #ffd700;"></i> All Top Stars</button>
+      <button class="btn-model-filter active" onclick="switchModelEthnicity('all', this)"><i class="fa fa-star" style="color: #ffd700;"></i> All 1,000+ Stars</button>
       <button class="btn-model-filter" onclick="switchModelEthnicity('arabic', this)">🇱🇧 Arabic & Middle Eastern</button>
       <button class="btn-model-filter" onclick="switchModelEthnicity('american', this)">🇺🇸 American Stars</button>
       <button class="btn-model-filter" onclick="switchModelEthnicity('european', this)">🇪🇺 European Beauties</button>
       <button class="btn-model-filter" onclick="switchModelEthnicity('latina', this)">🇧🇷 Latina Hotties</button>
       <button class="btn-model-filter" onclick="switchModelEthnicity('asian', this)">🇯🇵 Asian & Japanese</button>
+      <button class="btn-model-filter" onclick="switchModelEthnicity('ebony', this)">🖤 Ebony Queens</button>
+      <button class="btn-model-filter" onclick="filterFollowedOnly(this)" style="background: rgba(255, 0, 127, 0.15); border-color: var(--border-pink); color: #ff007f;"><i class="fa fa-heart"></i> My Followed Stars (<span id="followedCountBadge">0</span>)</button>
     </div>
 
-    <!-- Live Search Box -->
-    <div class="models-search-box">
-      <i class="fa fa-search"></i>
-      <input type="text" id="modelFilterInput" placeholder="Filter models by name (e.g. Mia, Lana, Riley, Eva)..." oninput="filterModelsList(event)">
+    <!-- Alphabet A-Z Jump Bar -->
+    <div class="models-alphabet-bar" id="alphabetBar">
+      <button class="btn-alphabet active" onclick="switchAlphabet('all', this)">ALL</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('a', this)">A</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('b', this)">B</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('c', this)">C</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('d', this)">D</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('e', this)">E</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('f', this)">F</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('g', this)">G</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('h', this)">H</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('i', this)">I</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('j', this)">J</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('k', this)">K</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('l', this)">L</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('m', this)">M</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('n', this)">N</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('o', this)">O</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('p', this)">P</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('q', this)">Q</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('r', this)">R</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('s', this)">S</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('t', this)">T</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('u', this)">U</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('v', this)">V</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('w', this)">W</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('x', this)">X</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('y', this)">Y</button>
+      <button class="btn-alphabet" onclick="switchAlphabet('z', this)">Z</button>
+    </div>
+
+    <!-- Toolbar: Live Search & Sort Select -->
+    <div class="models-toolbar">
+      <div class="models-search-box">
+        <i class="fa fa-search"></i>
+        <input type="text" id="modelFilterInput" placeholder="Instant search 1,000+ stars (Mia, Lana, Riley, Eva)..." oninput="filterModelsList(event)">
+        <button id="clearModelSearchBtn" onclick="clearModelSearch()" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; display: none;"><i class="fa fa-times-circle"></i></button>
+      </div>
+
+      <div class="models-sort-wrapper">
+        <label for="modelSortSelect"><i class="fa fa-sort-amount-down" style="color: var(--accent-pink);"></i> Sort by:</label>
+        <select id="modelSortSelect" onchange="changeModelSort(this.value)">
+          <option value="rank">👑 World Rank #</option>
+          <option value="views">👁️ Most Viewed</option>
+          <option value="videos">🎬 Most Videos</option>
+          <option value="rating">⭐ Highest Rated</option>
+          <option value="alpha">🔤 Alphabetical (A-Z)</option>
+        </select>
+      </div>
     </div>
 
     <!-- Section Header & Count -->

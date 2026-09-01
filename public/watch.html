@@ -386,11 +386,16 @@
       <!-- Main Video Column -->
       <div class="watch-main-col">
         
-        <!-- 16:9 / 9:16 Cinema Video Player (Unrestricted Embed & HTML5 Native Stream) -->
-        <div class="cinema-player-wrap" id="cinemaWrap">
-          <button class="btn-close-pip" id="btnClosePiP" onclick="closeMiniPiP(event)" title="Close Mini Player">&times;</button>
-          <iframe id="cinemaIframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
-          <video id="cinemaVideo" controls autoplay playsinline loop style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; object-fit: contain; background:#000;"></video>
+        <!-- Ambient Cinema Glow Layer -->
+        <div style="position: relative; width: 100%;">
+          <div class="ambient-glow-wrapper" id="ambientGlow"></div>
+          
+          <!-- 16:9 / 9:16 Cinema Video Player (Unrestricted Embed & HTML5 Native Stream) -->
+          <div class="cinema-player-wrap" id="cinemaWrap">
+            <button class="btn-close-pip" id="btnClosePiP" onclick="closeMiniPiP(event)" title="Close Mini Player">&times;</button>
+            <iframe id="cinemaIframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <video id="cinemaVideo" controls autoplay playsinline loop style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; object-fit: contain; background:#000;"></video>
+          </div>
         </div>
 
         <!-- Multi-Server Selector Card (100% Reliable Switching) -->
@@ -448,10 +453,11 @@
                 <i class="fa fa-download" style="color: #0b0b12;"></i> VIP Download HD
               </a>
               <button class="btn-vote" id="btnFavorite" onclick="toggleFavorite()"><i class="fa fa-heart"></i> <span id="favText">Favorite</span></button>
+              <button class="btn-vote" id="btnAmbient" onclick="toggleAmbientMode()"><i class="fa fa-magic" style="color: #ffd700;"></i> Ambient Glow</button>
               <button class="btn-vote" id="btnTheater" onclick="toggleTheaterMode()"><i class="fa fa-lightbulb"></i> Lights Off</button>
               <button class="btn-vote" onclick="toggleLike(this)"><i class="fa fa-thumbs-up"></i> <span id="likeCount">1,240</span></button>
               <button class="btn-vote" onclick="toggleDislike(this)"><i class="fa fa-thumbs-down"></i></button>
-              <button class="btn-vote" onclick="copyShareLink()"><i class="fa fa-share-alt"></i> Share</button>
+              <button class="btn-vote" onclick="openShareModal()"><i class="fa fa-share-alt"></i> Share & QR</button>
             </div>
           </div>
 
@@ -669,8 +675,53 @@
         };
       </script>
     </div>
+  <!-- Smart Share Modal with Live QR Code -->
+  <div id="shareModal" class="share-modal-overlay" onclick="closeShareModal(event)">
+    <div class="share-modal-dialog" onclick="event.stopPropagation()">
+      <div class="share-modal-title">
+        <i class="fa fa-share-alt" style="color: var(--accent-pink);"></i>
+        <span>Share Video Stream</span>
+        <button onclick="closeShareModal()" style="margin-left:auto; background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">&times;</button>
+      </div>
+      <div class="share-qr-section">
+        <img id="shareQrCodeImg" class="share-qr-img" src="" alt="QR Code">
+        <span style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">📲 Scan with phone camera to watch instantly on mobile!</span>
+      </div>
+      <div class="share-link-row">
+        <input type="text" id="shareUrlInput" readonly>
+        <button class="btn-pill" onclick="copyShareModalUrl()"><i class="fa fa-copy"></i> Copy</button>
+      </div>
+      <div style="font-size: 12px; color: #ccc; display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+        <input type="checkbox" id="chkShareTimestamp" onchange="toggleShareTimestamp(this)">
+        <label for="chkShareTimestamp">Start from current playback timestamp (?t=...)</label>
+      </div>
+    </div>
   </div>
 
-  <script src="/js/watch.js?v=3.0"></script>
+  <!-- Resume Playback Toast -->
+  <div id="resumeToast" class="resume-playback-toast">
+    <i class="fa fa-history" style="color: var(--accent-pink); font-size: 20px;"></i>
+    <div style="font-size: 12px;">
+      <strong style="color: #fff; display: block;">Resume Playback?</strong>
+      <span id="resumeToastTime" style="color: var(--text-muted);">Continue where you left off</span>
+    </div>
+    <button class="btn-resume-action" onclick="applyResumePlayback()">Resume</button>
+    <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px; margin-left: 4px;" onclick="dismissResumeToast()">&times;</button>
+  </div>
+
+  <!-- Stealth Panic Key Overlay (Boss Disguise Mode) -->
+  <div id="stealthOverlay" class="stealth-overlay">
+    <div class="stealth-google-wrap">
+      <div class="stealth-google-logo">
+        <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+      </div>
+      <input type="text" class="stealth-search-input" placeholder="Search Google or type a URL" readonly onclick="exitStealthMode()">
+      <div class="stealth-exit-hint">
+        <span>⚡ Stealth Mode Active • Press <strong>Esc</strong> or <strong>`</strong> or click anywhere to exit</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/watch.js?v=6.0"></script>
 </body>
 </html>
