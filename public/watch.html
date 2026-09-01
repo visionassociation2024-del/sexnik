@@ -461,6 +461,33 @@
             </div>
           </div>
 
+          <!-- Like/Dislike Ratio Bar (Pornhub Signature Style) -->
+          <div class="vote-ratio-bar-wrap">
+            <div class="vote-ratio-bar-fill" id="voteRatioFill" style="width: 97%;"></div>
+          </div>
+
+          <!-- Verified Creator & Star Profile Card (Pornhub Inspired) -->
+          <div class="watch-channel-card">
+            <div class="watch-channel-avatar-wrap">
+              <img src="/images/logo.png" alt="Channel Avatar" id="watchChannelAvatar" class="watch-channel-avatar" onerror="this.src='/images/logo.png'">
+            </div>
+            <div class="watch-channel-info">
+              <div class="watch-channel-name-row">
+                <h3 id="watchChannelName">Verified Producer</h3>
+                <span class="badge-verified-model"><i class="fa fa-circle-check"></i> Verified</span>
+                <span class="badge-rank-star" id="watchChannelRank"><i class="fa fa-crown"></i> Star</span>
+              </div>
+              <div class="watch-channel-meta">
+                <span id="watchChannelSubs"><i class="fa fa-users"></i> 142K Followers</span>
+                <span>•</span>
+                <span id="watchChannelVideos"><i class="fa fa-film"></i> 150+ Videos</span>
+              </div>
+            </div>
+            <button class="btn-channel-subscribe" id="btnSubscribe" onclick="toggleChannelSubscribe(this)">
+              <i class="fa fa-plus"></i> <span>Follow Star</span>
+            </button>
+          </div>
+
           <!-- Tags Cloud -->
           <div style="margin-top: 15px;">
             <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Categories & Tags:</h4>

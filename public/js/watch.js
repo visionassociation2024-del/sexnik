@@ -185,11 +185,36 @@ async function initWatchPage() {
   document.getElementById('watchDuration').innerText = currentVideoObj.duration;
   document.getElementById('watchRating').innerText = currentVideoObj.rating;
 
+  // Update Pornhub-style Vote Ratio Bar
+  const voteRatioFill = document.getElementById('voteRatioFill');
+  if (voteRatioFill) {
+    const rawRating = parseInt((currentVideoObj.rating || '96').replace(/[^0-9]/g, ''), 10) || 96;
+    voteRatioFill.style.width = `${rawRating}%`;
+  }
+
+  // Populate Creator Channel Profile Card (Pornhub Inspired)
+  const channelNameEl = document.getElementById('watchChannelName');
+  const channelAvatarEl = document.getElementById('watchChannelAvatar');
+  const channelRankEl = document.getElementById('watchChannelRank');
+  const channelSubsEl = document.getElementById('watchChannelSubs');
+
+  const tags = Array.isArray(currentVideoObj.tags) ? currentVideoObj.tags : (tagsParam ? tagsParam.split(',') : []);
+  const mainTag = (tags && tags[0]) ? tags[0].trim() : 'Official Partner';
+
+  if (channelNameEl) {
+    channelNameEl.innerText = currentVideoObj.author || (mainTag.charAt(0).toUpperCase() + mainTag.slice(1)) + ' Studio';
+  }
+  if (channelAvatarEl) {
+    channelAvatarEl.src = currentVideoObj.thumbnail || '/images/logo.png';
+  }
+  if (channelSubsEl) {
+    channelSubsEl.innerHTML = `<i class="fa fa-users"></i> ${Math.floor(Math.random() * 80 + 120)}K Followers`;
+  }
+
   // Render Tags
   const tagsContainer = document.getElementById('watchTags');
   if (tagsContainer) {
     tagsContainer.innerHTML = '';
-    const tags = Array.isArray(currentVideoObj.tags) ? currentVideoObj.tags : tagsParam.split(',');
     tags.forEach(t => {
       const span = document.createElement('a');
       span.href = `/?q=${encodeURIComponent(t.trim())}`;
@@ -789,6 +814,22 @@ document.addEventListener('keydown', (e) => {
     lastEscPress = now;
   }
 });
+
+/* ================= Channel Subscribe Toggle (Pornhub Style) ================= */
+let isSubscribedToCurrentChannel = false;
+function toggleChannelSubscribe(btn) {
+  isSubscribedToCurrentChannel = !isSubscribedToCurrentChannel;
+  if (!btn) btn = document.getElementById('btnSubscribe');
+  if (btn) {
+    btn.classList.toggle('subscribed', isSubscribedToCurrentChannel);
+    if (isSubscribedToCurrentChannel) {
+      btn.innerHTML = '<i class="fa fa-check"></i> <span>Following</span>';
+      alert('🌟 You are now following this Star / Channel!');
+    } else {
+      btn.innerHTML = '<i class="fa fa-plus"></i> <span>Follow Star</span>';
+    }
+  }
+}
 
 // Auto-run observers on load
 window.addEventListener('DOMContentLoaded', () => {

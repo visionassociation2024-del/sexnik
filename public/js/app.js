@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSpotlightHero();
   initNikroliStrip();
   initArabicCuratedBlock();
+  initHomeStarsCarousel();
   initRandomCategoryImages();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -241,6 +242,44 @@ async function initArabicCuratedBlock() {
     }
   } catch (e) {
     container.innerHTML = '<div style="grid-column: 1/-1; color: #ef4444; text-align: center; padding: 20px;">Failed to load Arabic section.</div>';
+  }
+}
+
+// 3.5 Initialize Top Verified Pornstars & Models Carousel (Pornhub Signature Feature)
+async function initHomeStarsCarousel() {
+  const container = document.getElementById('homeStarsCarouselStrip');
+  if (!container) return;
+
+  try {
+    const res = await fetch('/api/models?limit=16&sort=rank');
+    const data = await res.json();
+    const models = (data.success && data.models && data.models.length > 0) ? data.models : [];
+
+    if (models.length === 0) {
+      container.innerHTML = '<div style="padding: 15px; color: var(--text-muted);">No stars found.</div>';
+      return;
+    }
+
+    container.innerHTML = '';
+    models.forEach(m => {
+      const card = document.createElement('a');
+      card.href = `/model.html?star=${encodeURIComponent(m.slug || m.id)}`;
+      card.className = 'star-strip-card animate-fade';
+
+      const avatar = m.avatar ? (m.avatar.startsWith('http') ? `/api/proxy/image?url=${encodeURIComponent(m.avatar)}` : m.avatar) : '/images/logo.png';
+
+      card.innerHTML = `
+        <div class="star-strip-avatar-wrap">
+          <img src="${avatar}" alt="${m.name}" class="star-strip-avatar" loading="lazy" onerror="this.src='/images/logo.png'">
+          <span class="star-strip-rank-badge">#${m.rank || 1}</span>
+        </div>
+        <h4 class="star-strip-name" title="${m.name}">${m.name}</h4>
+        <span class="star-strip-videos"><i class="fa fa-film"></i> ${m.videoCount || m.videos || '50+'} vids</span>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    container.innerHTML = '<div style="padding: 15px; color: #ef4444;">Failed to load top stars.</div>';
   }
 }
 
@@ -1323,6 +1362,7 @@ function createVideoCardElement(v, isHistory = false) {
   const views = v.views || '15.2K';
   const rating = v.rating || '96%';
   const previewVideo = v.preview_video || v.direct_video_url || '';
+  const channelName = (v.tags && v.tags[0]) ? v.tags[0] : (v.category ? v.category : 'Verified Channel');
 
   card.innerHTML = `
     <div class="thumb-wrap">
@@ -1332,13 +1372,18 @@ function createVideoCardElement(v, isHistory = false) {
       ${isTik ? '<span class="badge-tiktok"><i class="fa-brands fa-tiktok"></i> TikTok 18+</span>' : '<span class="badge-hd">1080p HD</span>'}
       ${isHistory ? '<span class="badge-watched"><i class="fa fa-check"></i> Watched</span>' : ''}
       <span class="badge-duration">${duration}</span>
+      <button class="btn-card-quick-fav" onclick="quickFavoriteCard(event, ${JSON.stringify(v).replace(/"/g, '&quot;')})" title="Add to Favorites"><i class="fa fa-heart"></i></button>
       <button class="btn-mobile-preview" aria-label="Preview Video"><i class="fa fa-eye"></i> Preview</button>
       <div class="preview-progress-bar"><div class="preview-progress-fill"></div></div>
     </div>
     <div class="card-details">
       <h3 class="video-title" title="${title}">${title}</h3>
+      <div class="card-channel-row">
+        <i class="fa fa-circle-check"></i>
+        <span>${channelName}</span>
+      </div>
       <div class="video-meta">
-        <span><i class="fa fa-eye"></i> ${views}</span>
+        <span class="video-meta-views"><i class="fa fa-eye"></i> ${views}</span>
         <span class="meta-rating"><i class="${isTik ? 'fa fa-heart' : 'fa fa-thumbs-up'}" style="${isTik ? 'color: #ff007f;' : ''}"></i> ${isTik ? (v.likes || '1.5K') : rating}</span>
       </div>
     </div>
@@ -1346,6 +1391,22 @@ function createVideoCardElement(v, isHistory = false) {
 
   attachVideoPreviewHandlers(card, v);
   return card;
+}
+
+function quickFavoriteCard(e, videoObj) {
+  if (e) e.stopPropagation();
+  try {
+    let favs = JSON.parse(localStorage.getItem('niksex_favorites') || '[]');
+    const exists = favs.some(f => f.id === videoObj.id || f.title === videoObj.title);
+    if (exists) {
+      favs = favs.filter(f => f.id !== videoObj.id && f.title !== videoObj.title);
+      alert('Removed from favorites!');
+    } else {
+      favs.unshift(videoObj);
+      alert('❤️ Saved to your Favorites!');
+    }
+    localStorage.setItem('niksex_favorites', JSON.stringify(favs));
+  } catch (err) {}
 }
 
 
