@@ -39,6 +39,103 @@ app.use((req, res, next) => {
     res.setHeader('Expires', '0');
     next();
 });
+
+// Middleware: Geo-blocking for Saudi Arabia (KSA / SA)
+app.use((req, res, next) => {
+    const country = (
+        req.headers['cf-ipcountry'] || 
+        req.headers['x-vercel-ip-country'] || 
+        req.headers['x-country-code'] || 
+        req.headers['x-geoip-country'] || 
+        req.query.country_test ||
+        ''
+    ).toUpperCase().trim();
+
+    if (country === 'SA') {
+        return res.status(451).send(`
+            <!DOCTYPE html>
+            <html lang="ar" dir="rtl">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>عذراً، الخدمة غير متوفرة في منطقتك الجغرافية | وقاية برو</title>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+                <style>
+                    body {
+                        background-color: #0a0a10;
+                        color: #f8fafc;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        min-height: 100vh;
+                        margin: 0;
+                        padding: 20px;
+                        box-sizing: border-box;
+                    }
+                    .block-card {
+                        background: rgba(22, 22, 34, 0.95);
+                        border: 1px solid rgba(239, 68, 68, 0.4);
+                        border-radius: 24px;
+                        padding: 45px 35px;
+                        max-width: 560px;
+                        text-align: center;
+                        box-shadow: 0 25px 60px rgba(0,0,0,0.85), 0 0 35px rgba(239, 68, 68, 0.2);
+                        backdrop-filter: blur(16px);
+                    }
+                    .icon {
+                        font-size: 58px;
+                        color: #ef4444;
+                        margin-bottom: 20px;
+                    }
+                    h1 {
+                        font-size: 23px;
+                        font-weight: 800;
+                        margin-bottom: 12px;
+                        color: #fff;
+                    }
+                    .law-badge {
+                        background: rgba(239, 68, 68, 0.15);
+                        color: #ef4444;
+                        border: 1px solid rgba(239, 68, 68, 0.35);
+                        padding: 6px 16px;
+                        border-radius: 20px;
+                        font-size: 12px;
+                        font-weight: 700;
+                        display: inline-block;
+                        margin-bottom: 18px;
+                    }
+                    p {
+                        color: #94a3b8;
+                        font-size: 14px;
+                        line-height: 1.7;
+                        margin-bottom: 20px;
+                    }
+                    .brand-tag {
+                        color: #ff007f;
+                        font-weight: 700;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="block-card">
+                    <div class="icon"><i class="fa fa-ban"></i></div>
+                    <h1>عذراً، هذا الموقع محجوب في منطقتك</h1>
+                    <span class="law-badge"><i class="fa fa-shield-alt"></i> امتثالاً للأنظمة واللوائح المحلية (KSA Restricted)</span>
+                    <p>
+                        تم حظر إمكانية الوصول إلى منصة <span class="brand-tag">وقاية برو (Weqaya Pro)</span> من داخل المملكة العربية السعودية التزاماً بالأنظمة والتشريعات المحلية لتنظيم المحتوى الرقمي.
+                    </p>
+                    <p style="font-size: 12.5px; color: #64748b; margin-bottom: 0;">
+                        Access to <strong>Weqaya Pro</strong> is restricted in Saudi Arabia in compliance with local communications and content regulatory standards.
+                    </p>
+                </div>
+            </body>
+            </html>
+        `);
+    }
+    next();
+});
+
 app.use(express.static(path.join(__dirname, 'public'), { etag: false, maxAge: 0 }));
 
 // Admin Authentication Middleware
@@ -1909,11 +2006,11 @@ function loadSettings() {
         }
     } catch (e) {}
     return {
-        site_name: 'niksex',
-        site_title: 'niksex - WATCH • EXPLORE • ENJOY | Next-Gen Video Streaming',
-        meta_description: 'Watch high-definition videos with ultra-fast streaming, Sex Arabic collection, categories, smart personalization, and infinite scrolling on niksex.',
-        meta_keywords: 'niksex, adult streaming, sex arabic, 4k uhd, hd videos, video search engine',
-        footer_copyright: '© 2026 niksex. All rights reserved.',
+        site_name: 'وقاية برو - Weqaya Pro',
+        site_title: 'وقاية برو - Weqaya Pro | محرك وفهرس بث مقاطع الفيديو والترفيه للكبار 4K',
+        meta_description: 'منصة وقاية برو (Weqaya Pro) - محرك بحث سحابي وبث فائق السرعة لمقاطع الفيديو الحصرية بجودة 4K و HD، مع تصنيفات النجوم والمؤديات وبث مباشر آمن.',
+        meta_keywords: 'وقاية برو, Weqaya Pro, weqaya, adult streaming, sex arabic, 4k uhd, hd videos, video search engine',
+        footer_copyright: '© 2026 وقاية برو (Weqaya Pro). All rights reserved.',
         anti_redirect_enabled: true,
         default_category: 'trending',
         cache_ttl_minutes: 15

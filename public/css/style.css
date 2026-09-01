@@ -2773,6 +2773,152 @@ footer {
   color: var(--text-muted);
 }
 
+/* ================= 14. 18+ Age Verification & Acceptance Gate (وقاية برو) ================= */
+.age-gate-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 4, 8, 0.96);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  z-index: 9999999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.age-gate-card {
+  background: linear-gradient(180deg, rgba(24, 24, 38, 0.98) 0%, rgba(14, 14, 24, 0.98) 100%);
+  border: 1.5px solid rgba(255, 0, 127, 0.35);
+  border-radius: 24px;
+  max-width: 520px;
+  width: 100%;
+  padding: 35px 30px;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 45px rgba(255, 0, 127, 0.2);
+  position: relative;
+  animation: modalPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.age-gate-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
+}
+
+.age-gate-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 12px;
+  line-height: 1.35;
+}
+
+.age-gate-title span {
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.age-gate-desc {
+  font-size: 13.5px;
+  color: #cbd5e1;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  text-align: right;
+  direction: rtl;
+}
+
+.age-gate-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-age-accept {
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+  color: #fff;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(255, 0, 127, 0.4);
+  transition: var(--transition);
+}
+
+.btn-age-accept:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(255, 0, 127, 0.65);
+}
+
+.btn-age-reject {
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-age-reject:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* About Weqaya Pro Section Card */
+.weqaya-about-card {
+  background: linear-gradient(180deg, rgba(22, 22, 34, 0.85) 0%, rgba(14, 14, 22, 0.85) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 28px 24px;
+  margin: 30px auto;
+  max-width: 1100px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+}
+
+.weqaya-about-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.weqaya-about-header h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.weqaya-about-body {
+  font-size: 13.5px;
+  color: #94a3b8;
+  line-height: 1.8;
+  text-align: right;
+  direction: rtl;
+}
+
 
 
 
