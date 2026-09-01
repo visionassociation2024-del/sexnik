@@ -1039,12 +1039,12 @@ async function handleSearchInput(e) {
       dropdown.className = 'autocomplete-dropdown predictive-search-popup';
       let html = '';
 
-      // 1. Matching Verified Models
+      // 1. Matching Verified Models / Stars
       if (models.length > 0) {
         html += `
           <div class="search-popup-header">
             <span><i class="fa fa-crown" style="color: #ffd700;"></i> Verified Stars & Models</span>
-            <a href="/models.html" style="color: var(--accent-pink); font-size: 11px;">View all 1,000+ &raquo;</a>
+            <a href="/models.html" style="color: var(--accent-pink); font-size: 11px;">Browse all 1,000+ &raquo;</a>
           </div>
           <div class="search-stars-grid">
             ${models.map(m => `
@@ -1053,6 +1053,7 @@ async function handleSearchInput(e) {
                 <div class="search-star-details">
                   <h5>${m.name}</h5>
                   <span><i class="fa fa-crown"></i> #${m.rank || 1}</span>
+                  ${m.videos ? `<span style="color: var(--text-muted); font-size: 9px;"><i class="fa fa-film"></i> ${m.videos} videos</span>` : ''}
                 </div>
               </div>
             `).join('')}
@@ -1064,18 +1065,22 @@ async function handleSearchInput(e) {
       if (videos.length > 0) {
         html += `
           <div class="search-popup-header">
-            <span><i class="fa fa-film" style="color: #00f2fe;"></i> Matching Video Previews</span>
+            <span><i class="fa fa-play-circle" style="color: #00f2fe;"></i> Video Results</span>
+            <span style="font-size: 10px; color: var(--text-muted);">${videos.length} found</span>
           </div>
           <div class="search-videos-list">
             ${videos.map(v => `
               <div class="search-video-item" onclick="navigateToWatchPage(${JSON.stringify(v).replace(/"/g, '&quot;')})">
-                <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" class="search-video-thumb" referrerpolicy="no-referrer" onerror="this.src='/images/logo.png'">
+                <div style="position: relative; flex-shrink: 0;">
+                  <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" class="search-video-thumb" referrerpolicy="no-referrer" onerror="this.src='/images/logo.png'">
+                  <span style="position: absolute; bottom: 3px; right: 4px; background: rgba(0,0,0,0.85); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px;">${v.duration || '10:00'}</span>
+                </div>
                 <div class="search-video-info">
                   <div class="search-video-title">${v.title}</div>
                   <div class="search-video-meta">
-                    <span><i class="fa fa-clock"></i> ${v.duration || '10:00'}</span>
                     <span><i class="fa fa-eye"></i> ${v.views || '20K'}</span>
-                    <span style="color: #ffd700;"><i class="fa fa-star"></i> ${v.rating || '98%'}</span>
+                    <span style="color: #22c55e;"><i class="fa fa-thumbs-up"></i> ${v.rating || '98%'}</span>
+                    <span style="color: #00f2fe;"><i class="fa fa-tv"></i> HD</span>
                   </div>
                 </div>
               </div>
@@ -1088,17 +1093,25 @@ async function handleSearchInput(e) {
       if (suggestions.length > 0) {
         html += `
           <div class="search-popup-header">
-            <span><i class="fa fa-fire" style="color: var(--accent-pink);"></i> Trending Keywords</span>
+            <span><i class="fa fa-tags" style="color: var(--accent-purple);"></i> Related Keywords</span>
           </div>
           <div class="search-tags-row">
             ${suggestions.map(s => `
               <span class="search-tag-chip" onclick="selectSearchTag('${s.replace(/'/g, "\\'")}')">
-                <i class="fa fa-search" style="font-size: 10px; color: var(--accent-pink);"></i> ${s}
+                <i class="fa fa-search" style="font-size: 9px; color: var(--accent-pink);"></i> ${s}
               </span>
             `).join('')}
           </div>
         `;
       }
+
+      // Search footer
+      html += `
+        <div style="padding: 8px 16px; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 10px; color: var(--text-muted);"><i class="fa fa-keyboard" style="margin-right: 4px;"></i> Press <strong style="color: #fff;">Enter</strong> to search all results</span>
+          <span style="font-size: 10px; color: var(--text-muted);"><i class="fa fa-bolt" style="color: var(--accent-pink);"></i> Instant Results</span>
+        </div>
+      `;
 
       dropdown.innerHTML = html;
       dropdown.style.display = 'block';
@@ -1115,6 +1128,15 @@ function selectSearchTag(tag) {
   if (dropdown) dropdown.style.display = 'none';
   executeSearch();
 }
+
+// Close search dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const searchBox = document.querySelector('.search-box');
+  const dropdown = document.getElementById('searchAutocomplete');
+  if (dropdown && searchBox && !searchBox.contains(e.target)) {
+    dropdown.style.display = 'none';
+  }
+});
 
 // Mobile bottom navigation handler
 function mobileNav(category, el) {
