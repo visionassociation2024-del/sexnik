@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSpotlightHero();
   initNikroliStrip();
   initArabicCuratedBlock();
+  initRandomCategoryImages();
 
   const urlParams = new URLSearchParams(window.location.search);
   const q = urlParams.get('q');
@@ -241,6 +242,26 @@ async function initArabicCuratedBlock() {
   } catch (e) {
     container.innerHTML = '<div style="grid-column: 1/-1; color: #ef4444; text-align: center; padding: 20px;">Failed to load Arabic section.</div>';
   }
+}
+
+// 4. Dynamically populate category matrix backgrounds with random model photos
+async function initRandomCategoryImages() {
+  const images = document.querySelectorAll('.cat-matrix-bg');
+  if (images.length === 0) return;
+
+  try {
+    const res = await fetch(`/api/models/random?count=${images.length}`);
+    const data = await res.json();
+    if (data.success && data.models && data.models.length > 0) {
+      images.forEach((img, idx) => {
+        const model = data.models[idx % data.models.length];
+        if (model && (model.cover || model.avatar)) {
+          const coverUrl = model.cover || model.avatar;
+          img.src = coverUrl.startsWith('http') ? `/api/proxy/image?url=${encodeURIComponent(coverUrl)}` : coverUrl;
+        }
+      });
+    }
+  } catch (e) {}
 }
 
 // Dedicated Standalone Page Routing Functions

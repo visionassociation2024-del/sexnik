@@ -844,6 +844,30 @@ app.get('/api/models', async (req, res) => {
     });
 });
 
+// Random Models API (for category card backgrounds)
+app.get('/api/models/random', (req, res) => {
+    const count = Math.min(50, Math.max(1, parseInt(req.query.count, 10) || 25));
+    const all = (typeof getAllModels === 'function' && getAllModels().length > 0)
+        ? getAllModels()
+        : [];
+
+    if (all.length === 0) {
+        return res.json({ success: false, models: [] });
+    }
+
+    // Fisher-Yates shuffle a copy, then take first N
+    const shuffled = [...all].sort(() => Math.random() - 0.5);
+    const picked = shuffled.slice(0, count).map(m => ({
+        name: m.name,
+        slug: m.slug,
+        avatar: m.avatar,
+        cover: m.cover,
+        rank: m.rank
+    }));
+
+    return res.json({ success: true, count: picked.length, models: picked });
+});
+
 // Single Model Profile API
 app.get('/api/model/:slug', async (req, res) => {
     const { slug } = req.params;
