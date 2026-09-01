@@ -2097,179 +2097,28 @@ body.reels-fullscreen-active .filter-bar {
   scrollbar-width: thin;
 }
 
-.search-popup-header {
-  padding: 10px 16px;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.search-stars-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 8px;
-  padding: 10px 14px;
-}
-
-.search-star-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.search-star-item:hover {
-  background: rgba(255, 0, 127, 0.2);
-  border-color: var(--accent-pink);
-  transform: translateY(-2px);
-}
-
-.search-star-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1.5px solid #ffd700;
-  flex-shrink: 0;
-}
-
-.search-star-details h5 {
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 80px;
-}
-
-.search-star-details span {
-  font-size: 10px;
-  color: #ffd700;
-  display: block;
-}
-
-.search-videos-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.search-video-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.search-video-item:hover {
-  background: rgba(255, 0, 127, 0.15);
-}
-
-.search-video-thumb {
-  width: 65px;
-  height: 38px;
-  border-radius: 6px;
-  object-fit: cover;
-  flex-shrink: 0;
-  background: #000;
-}
-
-.search-video-info {
-  flex: 1;
-  overflow: hidden;
-}
-
-.search-video-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.search-video-meta {
-  font-size: 10px;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 2px;
-}
-
-.search-tags-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 10px 14px;
-}
-
-.search-tag-chip {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  cursor: pointer;
-  transition: var(--transition);
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.search-tag-chip:hover {
-  background: var(--accent-pink);
-  border-color: transparent;
-  color: #fff;
-}
-
-.search-history-clear-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 10px;
-  cursor: pointer;
-}
-.search-history-clear-btn:hover { color: #ef4444; }
-
 /* ================= 6. Cinema Ambient Glow ================= */
 .ambient-glow-wrapper {
   position: absolute;
-  top: -15px;
-  left: -15px;
-  right: -15px;
-  bottom: -15px;
-  filter: blur(45px);
-  opacity: 0.65;
-  z-index: 1;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  filter: blur(55px);
+  opacity: 0.6;
+  z-index: 0;
   pointer-events: none;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.6s ease;
   border-radius: 24px;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 0, 127, 0.6), rgba(157, 78, 221, 0.4), transparent 70%);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 0, 127, 0.5), rgba(157, 78, 221, 0.35), transparent 70%);
 }
 
 /* ================= 7. Smart Share & QR Code Modal ================= */
 .share-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(14px);
   z-index: 10000;
   display: none;
   align-items: center;
@@ -2278,13 +2127,15 @@ body.reels-fullscreen-active .filter-bar {
 }
 
 .share-modal-dialog {
-  background: #12121c;
-  border: 1px solid var(--border-pink);
+  background: linear-gradient(180deg, #14141f 0%, #0e0e18 100%);
+  border: 1px solid rgba(255, 0, 127, 0.2);
   border-radius: 20px;
   max-width: 480px;
   width: 100%;
-  padding: 24px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 30px var(--accent-glow);
+  padding: 28px;
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.9),
+    0 0 40px rgba(255, 0, 127, 0.12);
   position: relative;
   animation: modalPopIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -2298,30 +2149,31 @@ body.reels-fullscreen-active .filter-bar {
   font-size: 18px;
   font-weight: 800;
   color: #fff;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .share-qr-section {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 20px;
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .share-qr-img {
-  width: 140px;
-  height: 140px;
-  border-radius: 8px;
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
   background: #fff;
-  padding: 6px;
+  padding: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .share-link-row {
@@ -2332,13 +2184,19 @@ body.reels-fullscreen-active .filter-bar {
 
 .share-link-row input {
   flex: 1;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--border-color);
-  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 11px 14px;
   border-radius: 10px;
   color: #fff;
   font-size: 12px;
+  font-family: 'Outfit', 'Inter', monospace;
   outline: none;
+  transition: var(--transition);
+}
+
+.share-link-row input:focus {
+  border-color: var(--accent-pink);
 }
 
 /* ================= 8. Stealth Panic Key (Boss Disguise Overlay) ================= */
@@ -2382,6 +2240,7 @@ body.reels-fullscreen-active .filter-bar {
   padding: 12px 20px;
   font-size: 15px;
   outline: none;
+  cursor: pointer;
 }
 
 .stealth-exit-hint {
@@ -2395,17 +2254,19 @@ body.reels-fullscreen-active .filter-bar {
   position: fixed;
   bottom: 24px;
   left: 24px;
-  background: rgba(22, 22, 34, 0.96);
-  border: 1px solid var(--border-pink);
+  background: linear-gradient(135deg, rgba(22, 22, 34, 0.98), rgba(14, 14, 24, 0.98));
+  border: 1px solid rgba(255, 0, 127, 0.2);
   border-radius: 14px;
   padding: 14px 18px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px var(--accent-glow);
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(255, 0, 127, 0.1);
   z-index: 9999;
   display: none;
   align-items: center;
   gap: 14px;
-  backdrop-filter: blur(12px);
-  animation: slideInToast 0.3s ease;
+  backdrop-filter: blur(14px);
+  animation: slideInToast 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes slideInToast {
@@ -2414,20 +2275,217 @@ body.reels-fullscreen-active .filter-bar {
 }
 
 .btn-resume-action {
-  background: var(--accent-pink);
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
   color: #fff;
   border: none;
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(255, 0, 127, 0.3);
 }
 
 .btn-resume-action:hover {
-  background: #ff2a9d;
-  box-shadow: 0 0 10px var(--accent-glow);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 0, 127, 0.5);
+}
+
+/* ================= 10. Mini PiP (Picture-in-Picture) Player ================= */
+.cinema-player-wrap.mini-pip {
+  position: fixed !important;
+  bottom: 80px;
+  right: 20px;
+  width: 340px;
+  height: 192px;
+  padding-top: 0 !important;
+  z-index: 8000;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid var(--accent-pink);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px var(--accent-glow);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: pipSlideIn 0.35s ease;
+}
+
+.cinema-player-wrap.mini-pip iframe,
+.cinema-player-wrap.mini-pip video {
+  position: static !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.cinema-player-wrap.mini-pip .btn-close-pip {
+  display: flex !important;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+@keyframes pipSlideIn {
+  from { transform: translateY(30px) scale(0.9); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .cinema-player-wrap.mini-pip {
+    width: 260px;
+    height: 146px;
+    bottom: 70px;
+    right: 10px;
+  }
+}
+
+/* ================= 11. Global Polish & Micro-Interactions ================= */
+
+/* Smooth page load animation */
+@keyframes pageLoad {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+body { animation: pageLoad 0.4s ease; }
+
+/* Enhanced section headers */
+.section-header {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.section-title {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+/* Better video card details spacing */
+.card-details {
+  padding: 12px 14px 14px;
+}
+
+.video-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: -0.1px;
+}
+
+/* Refined video grid gap & card borders */
+.videos-grid {
+  gap: 16px;
+}
+
+.video-card {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.video-card:hover {
+  border-color: rgba(255, 0, 127, 0.25);
+}
+
+.thumb-wrap {
+  border-radius: 14px 14px 0 0;
+}
+
+/* Smoother category pills */
+.cat-btn {
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 22px;
+  font-size: 12.5px;
+  letter-spacing: 0.1px;
+}
+
+/* Better footer spacing */
+footer {
+  margin-top: 20px;
+  padding: 35px 20px 50px;
+  background: rgba(10, 10, 15, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Refined disclaimer */
+.disclaimer-container {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  padding: 18px 24px;
+}
+
+/* Better ad wrapper blending */
+.ad-wrapper, .ad-banner-container {
+  border-radius: 14px;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Scrollbar polish for entire page */
+::-webkit-scrollbar { width: 7px; }
+::-webkit-scrollbar-track { background: var(--bg-main); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 0, 127, 0.3), rgba(157, 78, 221, 0.3));
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--accent-pink), var(--accent-purple));
+}
+
+/* Selection color */
+::selection {
+  background: rgba(255, 0, 127, 0.3);
+  color: #fff;
+}
+
+/* Focus ring for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--accent-pink);
+  outline-offset: 2px;
+}
+
+/* Enhanced mobile bottom nav */
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    height: 62px;
+    background: rgba(10, 10, 15, 0.97);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  }
+  .bottom-nav-item {
+    font-size: 10px;
+    gap: 4px;
+  }
+  .bottom-nav-item i { font-size: 17px; }
+}
+
+/* Pulse animation utility */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Shimmer loading placeholder */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-loader {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
 }
 
 
