@@ -2919,6 +2919,354 @@ footer {
   direction: rtl;
 }
 
+/* ================= 15. wi9ayah.pro (Sexamore-Inspired Magenta Layout) ================= */
+.sexamore-top-header {
+  background: linear-gradient(90deg, #6a0d42 0%, #880e4f 35%, #ad1457 70%, #880e4f 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 18px;
+  position: sticky;
+  top: 0;
+  z-index: 1200;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.sexamore-top-nav {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.sexamore-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.sexamore-brand img {
+  height: 38px;
+  width: auto;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+}
+
+.sexamore-top-icons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+}
+
+.sexamore-icon-badge {
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.sexamore-icon-badge:hover {
+  color: #ffd700;
+  transform: scale(1.1);
+}
+.sexamore-icon-badge .badge-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #000;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 8px;
+  border: 1px solid #ffd700;
+}
+
+.sexamore-top-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sexamore-top-link {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.sexamore-top-link:hover, .sexamore-top-link.active {
+  background: rgba(0, 0, 0, 0.25);
+  color: #ffd700;
+}
+
+/* VIP Gold Announcement Banner */
+.sexamore-vip-banner {
+  background: linear-gradient(90deg, #d35400 0%, #e67e22 30%, #f39c12 70%, #f1c40f 100%);
+  color: #0b0b12;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 13px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.sexamore-vip-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sexamore-vip-banner-content i {
+  font-size: 20px;
+  color: #6a0d42;
+}
+
+.btn-sexamore-vip {
+  background: #0b0b12;
+  color: #ffd700;
+  border: 1px solid #ffd700;
+  padding: 5px 16px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-sexamore-vip:hover {
+  background: #ffd700;
+  color: #0b0b12;
+  transform: scale(1.04);
+}
+
+/* 2-Column Layout Wrap */
+.sexamore-layout-wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+@media (max-width: 900px) {
+  .sexamore-layout-wrap {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+}
+
+/* Left Sidebar */
+.sexamore-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sexamore-user-card {
+  background: #151522;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sexamore-user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: #252538;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #ad1457;
+  border: 1px solid rgba(255, 0, 127, 0.3);
+  flex-shrink: 0;
+}
+
+.sexamore-user-info h4 {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.sexamore-user-info span {
+  font-size: 11px;
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sexamore-vip-status-card {
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px dashed rgba(255, 215, 0, 0.4);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffd700;
+}
+
+.sexamore-menu {
+  background: #151522;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sexamore-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: var(--transition);
+}
+
+.sexamore-menu-item i {
+  font-size: 15px;
+  width: 18px;
+  text-align: center;
+  color: #ad1457;
+}
+
+.sexamore-menu-item:hover, .sexamore-menu-item.active {
+  background: rgba(173, 20, 87, 0.25);
+  color: #fff;
+  border-left: 3px solid #ff007f;
+}
+.sexamore-menu-item:hover i, .sexamore-menu-item.active i {
+  color: #ff007f;
+}
+
+/* Sexamore Section Panels */
+.sexamore-section-panel {
+  background: #151522;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 22px;
+}
+
+.sexamore-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sexamore-panel-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-sexamore-more {
+  background: #ad1457;
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.btn-sexamore-more:hover {
+  background: #ff007f;
+  transform: translateY(-1px);
+}
+
+/* Square Profile Avatar Card Grid (Screenshot Style) */
+.sexamore-stars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.sexamore-star-card {
+  background: #1b1b28;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+.sexamore-star-card:hover {
+  border-color: #ff007f;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+}
+
+.sexamore-star-thumb-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; /* 1:1 square */
+  background: #090910;
+}
+
+.sexamore-star-thumb-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sexamore-star-meta {
+  padding: 8px;
+  font-size: 11.5px;
+}
+.sexamore-star-name {
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.dot-online {
+  width: 7px;
+  height: 7px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 6px #22c55e;
+  flex-shrink: 0;
+}
+
 
 
 

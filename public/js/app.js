@@ -107,8 +107,9 @@ let currentSpotlightVideo = null;
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
   initSpotlightHero();
-  initNikroliStrip();
+  initReelsStrip();
   initArabicCuratedBlock();
+  initActiveStarsGrid();
   initHomeStarsCarousel();
   initRandomCategoryImages();
 
@@ -119,10 +120,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const fav = urlParams.get('fav');
 
   if (q) {
-    document.getElementById('searchInput').value = q;
+    const sInput = document.getElementById('searchInput') || document.getElementById('headerSearch');
+    if (sInput) sInput.value = q;
     executeSearch();
-  } else if (cat === 'tiktok' || cat === 'nikroli') {
-    loadNikroliView();
+  } else if (cat === 'reels' || cat === 'shorts') {
+    loadReelsView();
   } else if (cat) {
     resetAndLoadCategory(cat);
   } else if (hist) {
@@ -179,9 +181,9 @@ function playSpotlightVideo(e) {
   }
 }
 
-// 2. Initialize nikroli Viral Reels Strip
-async function initNikroliStrip() {
-  const container = document.getElementById('nikroliStripContainer');
+// 2. Initialize Weqaya Reels Strip (Replacing nikroli & tiktok)
+async function initReelsStrip() {
+  const container = document.getElementById('reelsStripContainer') || document.getElementById('nikroliStripContainer');
   if (!container) return;
 
   try {
@@ -190,24 +192,24 @@ async function initNikroliStrip() {
     const reels = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
 
     if (reels.length === 0) {
-      container.innerHTML = '<div style="padding: 20px; color: var(--text-muted);">nikroli reels streaming soon...</div>';
+      container.innerHTML = '<div style="padding: 20px; color: var(--text-muted);">Reels streaming soon...</div>';
       return;
     }
 
     container.innerHTML = '';
     reels.slice(0, 14).forEach(r => {
       const card = document.createElement('a');
-      card.href = '/nikroli.html';
+      card.href = '/reels.html';
       card.className = 'nikroli-strip-card';
 
       const thumb = r.poster || r.thumbnail || '/images/logo.png';
-      const title = r.title || 'nikroli 18+ Viral Reel';
+      const title = r.title || 'وقاية ريلز 18+ Shorts';
       const likes = r.likes || '3.2K';
 
       card.innerHTML = `
         <img src="${thumb}" alt="${title}" loading="lazy" onerror="this.src='/images/logo.png'">
         <div class="nikroli-strip-gradient"></div>
-        <span class="nikroli-strip-badge"><i class="fa-brands fa-tiktok"></i> nikroli</span>
+        <span class="nikroli-strip-badge" style="background: linear-gradient(135deg, #ff007f, #9d4edd);"><i class="fa fa-clapperboard"></i> ريلز</span>
         <div class="nikroli-strip-play-icon"><i class="fa fa-play"></i></div>
         <div class="nikroli-strip-info">
           <h4>${title}</h4>
@@ -217,8 +219,55 @@ async function initNikroliStrip() {
       container.appendChild(card);
     });
   } catch (e) {
-    container.innerHTML = '<div style="padding: 20px; color: #ef4444;">Failed to load nikroli reels.</div>';
+    container.innerHTML = '<div style="padding: 20px; color: #ef4444;">Failed to load reels.</div>';
   }
+}
+
+// Initialize Active Stars Grid (Screenshot Style with Green Online Dot)
+async function initActiveStarsGrid() {
+  const container = document.getElementById('activeStarsGrid');
+  if (!container) return;
+
+  try {
+    const res = await fetch('/api/models?limit=12&sort=views');
+    const data = await res.json();
+    const models = (data.success && data.models && data.models.length > 0) ? data.models : [];
+
+    if (models.length === 0) {
+      container.innerHTML = '<div style="padding: 15px; color: var(--text-muted);">No models available.</div>';
+      return;
+    }
+
+    container.innerHTML = '';
+    models.forEach(m => {
+      const card = document.createElement('a');
+      card.href = `/model.html?star=${encodeURIComponent(m.slug || m.id)}`;
+      card.className = 'sexamore-star-card animate-fade';
+
+      const avatar = m.avatar ? (m.avatar.startsWith('http') ? `/api/proxy/image?url=${encodeURIComponent(m.avatar)}` : m.avatar) : '/images/logo.png';
+      const city = m.nationality || 'Verified Star';
+
+      card.innerHTML = `
+        <div class="sexamore-star-thumb-wrap">
+          <img src="${avatar}" alt="${m.name}" loading="lazy" onerror="this.src='/images/logo.png'">
+        </div>
+        <div class="sexamore-star-meta">
+          <div class="sexamore-star-name">
+            <span class="dot-online" title="متصل الآن Online"></span>
+            <span title="${m.name}">${m.name}</span>
+          </div>
+          <span style="font-size: 10px; color: #94a3b8; margin-top: 2px; display: block;">${city}</span>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    container.innerHTML = '<div style="padding: 15px; color: #ef4444;">Failed to load active stars.</div>';
+  }
+}
+
+function loadReelsView() {
+  window.location.href = '/reels.html';
 }
 
 // 3. Initialize Sex Arabic Curated Block
