@@ -1,67 +1,65 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>دليل وقاية برو للصحة الجنسية والوقاية من الأمراض (Safe Sex & STD Guide) - وقاية برو</title>
-  <meta name="description" content="دليل وقاية برو الشامل للتوعية بالصحة الجنسية، ممارسة الجنس الآمن، والوقاية من الأمراض المنقولة جنسياً (STDs/STIs)، الفحص الدوري، واستخدام وسائل الحماية.">
-  <meta name="keywords" content="وقاية برو, صحة جنسية, وقاية من الامراض المنقولة جنسيا, الجنس الامن, الفحص الدوري, safe sex, STD prevention, STI guide">
+  <title>Sexual Health & STD Prevention Guide — wi9ayah.pro</title>
+  <meta name="description" content="Comprehensive sexual health and STD/STI prevention guide on wi9ayah.pro. Learn about safe sex practices, barrier protection, HIV PrEP/PEP, HPV vaccines, and routine confidential testing.">
+  <meta name="keywords" content="wi9ayah.pro, safe sex, sexual health, STD prevention, STI awareness, condom safety, HIV prep, regular screening">
   <link rel="icon" type="image/png" href="/images/logo.png">
-  <link rel="canonical" href="https://weqayapro.com/health.html">
+  <link rel="canonical" href="https://wi9ayah.pro/health.html">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=8.0">
+  <link rel="stylesheet" href="/css/style.css?v=10.0">
   <script src="/js/weqaya_guard.js?v=1.0"></script>
 
   <style>
     .health-page-container {
-      max-width: 1200px;
-      margin: 20px auto 60px;
+      max-width: 1100px;
+      margin: 30px auto 60px;
       padding: 0 20px;
     }
 
     .health-hero-banner {
-      background: linear-gradient(135deg, rgba(255, 0, 127, 0.2) 0%, rgba(157, 78, 221, 0.25) 50%, rgba(14, 14, 24, 0.95) 100%);
-      border: 1.5px solid rgba(255, 0, 127, 0.3);
-      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(255, 0, 127, 0.15) 0%, rgba(157, 78, 221, 0.15) 50%, rgba(14, 14, 24, 0.95) 100%);
+      border: 1px solid rgba(255, 0, 127, 0.25);
+      border-radius: 20px;
       padding: 40px 30px;
       text-align: center;
       margin-bottom: 35px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 0, 127, 0.15);
-      position: relative;
-      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
     }
 
     .health-hero-icon {
-      width: 70px;
-      height: 70px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+      font-size: 28px;
       color: #fff;
       margin-bottom: 16px;
       box-shadow: 0 0 25px var(--accent-glow);
     }
 
     .health-hero-title {
-      font-size: 26px;
-      font-weight: 900;
+      font-size: 28px;
+      font-weight: 800;
       color: #fff;
       margin-bottom: 12px;
+      letter-spacing: -0.5px;
     }
 
     .health-hero-subtitle {
       font-size: 15px;
       color: #cbd5e1;
-      max-width: 780px;
+      max-width: 720px;
       margin: 0 auto;
       line-height: 1.7;
     }
 
-    /* Health Cards Grid */
     .health-cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -72,18 +70,17 @@
     .health-card {
       background: rgba(22, 22, 34, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
+      border-radius: 16px;
       padding: 24px;
       transition: var(--transition);
       display: flex;
       flex-direction: column;
-      backdrop-filter: blur(10px);
     }
 
     .health-card:hover {
       transform: translateY(-4px);
       border-color: var(--accent-pink);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 0, 127, 0.2);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 0, 127, 0.15);
     }
 
     .health-card-header {
@@ -94,16 +91,16 @@
     }
 
     .health-card-icon {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       border-radius: 12px;
-      background: rgba(255, 0, 127, 0.15);
+      background: rgba(255, 0, 127, 0.12);
       border: 1px solid rgba(255, 0, 127, 0.3);
       color: var(--accent-pink);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 20px;
       flex-shrink: 0;
     }
 
@@ -122,18 +119,17 @@
 
     .health-card-body ul {
       margin: 10px 0 0;
-      padding-right: 20px;
+      padding-left: 20px;
     }
 
     .health-card-body li {
       margin-bottom: 8px;
     }
 
-    /* Accordion FAQ */
     .faq-section {
       background: rgba(18, 18, 28, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
+      border-radius: 18px;
       padding: 30px 24px;
       margin-bottom: 40px;
     }
@@ -193,29 +189,29 @@
   <header class="navbar">
     <div class="nav-container">
       <a href="/" class="brand-logo">
-        <img src="/images/logo.png" alt="وقاية برو Logo">
+        <img src="/images/logo.png" alt="wi9ayah.pro Logo">
       </a>
 
       <div class="search-box">
-        <input type="text" id="headerSearch" placeholder="ابحث عن النجوم، التصنيفات، أو مقاطع الفيديو..." onkeypress="handleHeaderSearch(event)">
+        <input type="text" id="headerSearch" placeholder="Search 1,000+ stars, Arabic, 4K, or health topics..." onkeypress="handleHeaderSearch(event)">
         <button class="search-btn" onclick="executeHeaderSearch()" aria-label="Search"><i class="fa fa-search"></i></button>
       </div>
 
       <div class="nav-actions desktop-only">
         <a href="/health.html" class="btn-pill" style="background: linear-gradient(135deg, rgba(255, 0, 127, 0.25), rgba(157, 78, 221, 0.25)); border-color: var(--accent-pink); color: #fff;">
-          <i class="fa fa-shield-heart" style="color: var(--accent-pink);"></i> الصحة والوقاية
+          <i class="fa fa-shield-heart" style="color: var(--accent-pink);"></i> Health & Safety
         </a>
         <a href="/models.html" class="btn-pill">
-          <i class="fa fa-crown" style="color: #ffd700;"></i> النجوم
+          <i class="fa fa-crown" style="color: #ffd700;"></i> Top Stars
         </a>
         <a href="/arabic.html" class="btn-pill btn-arabic">
-          <i class="fa fa-star" style="color: #ffd700;"></i> المقاطع العربية
+          <i class="fa fa-star" style="color: #ffd700;"></i> Arabic Exclusives
         </a>
         <a href="/reels.html" class="btn-pill" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(255, 0, 127, 0.25)); border-color: #00f2fe; color: #fff;">
-          <i class="fa fa-clapperboard" style="color: #00f2fe;"></i> ريلز (+18)
+          <i class="fa fa-clapperboard" style="color: #00f2fe;"></i> Reels (+18)
         </a>
         <a href="/categories.html" class="btn-pill">
-          <i class="fa fa-th-large"></i> الفئات
+          <i class="fa fa-th-large"></i> Categories
         </a>
       </div>
     </div>
@@ -228,9 +224,9 @@
       <div class="health-hero-icon">
         <i class="fa fa-shield-heart"></i>
       </div>
-      <h1 class="health-hero-title">مركز وقاية برو للتوعية بالصحة الجنسية والحماية</h1>
+      <h1 class="health-hero-title">Sexual Health & STD Prevention Center</h1>
       <p class="health-hero-subtitle">
-        تؤمن <strong>وقاية برو (Weqaya Pro)</strong> بأن المتعة والترفيه للبالغين يجب أن يقترنا دائماً بالوعي الصحي والمعرفة الشاملة بأسس الجنس الآمن، والوقاية من الأمراض المنقولة جنسياً (STDs/STIs)، والفحص الطبي الدوري.
+        At <strong>wi9ayah.pro</strong>, we believe adult entertainment should always be accompanied by responsible sexual health awareness, safe sex education, and reliable guidance on STD/STI prevention.
       </p>
     </div>
 
@@ -242,16 +238,16 @@
         <div class="health-card-header">
           <div class="health-card-icon"><i class="fa fa-shield-virus"></i></div>
           <div>
-            <h3>أساسيات الجنس الآمن</h3>
-            <span style="font-size: 11.5px; color: var(--accent-pink);">الحماية المتبادلة</span>
+            <h3>Safe Sex Fundamentals</h3>
+            <span style="font-size: 11.5px; color: var(--accent-pink);">Barrier Protection</span>
           </div>
         </div>
         <div class="health-card-body">
-          <p>استخدام وسائل الحماية العازلة بشكل صحيح يقلل من خطر الإصابة بالأمراض المنقولة جنسياً بنسبة تزيد عن 98%:</p>
+          <p>Proper and consistent barrier methods reduce the transmission risk of most sexually transmitted infections by over 98%:</p>
           <ul>
-            <li><strong>الواقي الذكري والأنثوي (Condoms):</strong> خط الدفاع الأول والأكثر فاعلية ضد العدوى.</li>
-            <li><strong>المزلقات ذات الأساس المائي (Water-based):</strong> تقلل الاحتكاك وتمنع تمزق الواقيات.</li>
-            <li><strong>التحقق من تاريخ الصلاحية:</strong> والتخزين في مكان جاف وبارد بعيداً عن الحرارة المباشرة.</li>
+            <li><strong>Male & Female Condoms:</strong> The frontline defense against fluid-transmitted infections.</li>
+            <li><strong>Water-Based Lubricants:</strong> Minimize friction and prevent condom breakage or slippage.</li>
+            <li><strong>Expiration & Storage:</strong> Always verify expiration dates and store in a cool, dry place away from direct heat.</li>
           </ul>
         </div>
       </div>
@@ -259,18 +255,18 @@
       <!-- Card 2: STDs Prevention -->
       <div class="health-card">
         <div class="health-card-header">
-          <div class="health-card-icon" style="background: rgba(0, 242, 254, 0.15); border-color: #00f2fe; color: #00f2fe;"><i class="fa fa-heart-pulse"></i></div>
+          <div class="health-card-icon" style="background: rgba(0, 242, 254, 0.12); border-color: #00f2fe; color: #00f2fe;"><i class="fa fa-heart-pulse"></i></div>
           <div>
-            <h3>الوقاية من الأمراض المنقولة (STDs/STIs)</h3>
-            <span style="font-size: 11.5px; color: #00f2fe;">المعرفة والوقاية</span>
+            <h3>STD & STI Prevention</h3>
+            <span style="font-size: 11.5px; color: #00f2fe;">Awareness & Medicine</span>
           </div>
         </div>
         <div class="health-card-body">
-          <p>العديد من الأمراض المنقولة جنسياً قد لا تظهر لها أعراض واضحة في البداية، لذا فإن التوعية هي مفتاح الحماية:</p>
+          <p>Many sexually transmitted infections are asymptomatic initially. Awareness and modern medicine are critical:</p>
           <ul>
-            <li><strong>فيروس نقص المناعة (HIV):</strong> تتوفر علاجات وقائية فعالة مثل PrEP (قبل التعرض) و PEP (بعد التعرض خلال 72 ساعة).</li>
-            <li><strong>فيروس الورم الحليمي (HPV):</strong> تتوفر له لقاحات آمنة ومعتمدة عالمياً تحمي من السلالات الخطرة.</li>
-            <li><strong>العدوى البكتيرية (كلاميديا، سيلان، زهري):</strong> قابلة للشفاء التام بالمضادات الحيوية عند الكشف المبكر.</li>
+            <li><strong>HIV Protection (PrEP & PEP):</strong> PrEP provides daily pre-exposure prevention; PEP is emergency treatment within 72 hours of potential exposure.</li>
+            <li><strong>HPV Vaccines:</strong> Safe, globally approved vaccines protecting against high-risk strains.</li>
+            <li><strong>Bacterial Infections:</strong> Chlamydia, Gonorrhea, and Syphilis are completely curable with early antibiotics.</li>
           </ul>
         </div>
       </div>
@@ -278,18 +274,18 @@
       <!-- Card 3: Regular Screening -->
       <div class="health-card">
         <div class="health-card-header">
-          <div class="health-card-icon" style="background: rgba(255, 215, 0, 0.15); border-color: #ffd700; color: #ffd700;"><i class="fa fa-user-doctor"></i></div>
+          <div class="health-card-icon" style="background: rgba(255, 215, 0, 0.12); border-color: #ffd700; color: #ffd700;"><i class="fa fa-user-doctor"></i></div>
           <div>
-            <h3>أهمية الفحص الطبي الدوري</h3>
-            <span style="font-size: 11.5px; color: #ffd700;">الكشف المبكر</span>
+            <h3>Routine Medical Screening</h3>
+            <span style="font-size: 11.5px; color: #ffd700;">Early Detection</span>
           </div>
         </div>
         <div class="health-card-body">
-          <p>إجراء الفحوصات الروتينية مسؤولية شخصية تضمن سلامتك وسلامة شريكك:</p>
+          <p>Regular check-ups are an essential self-care habit that protects you and your partners:</p>
           <ul>
-            <li><strong>فحص دوري كل 3 إلى 6 أشهر:</strong> للأفراد النشطين جنسياً أو عند تغيير الشريك.</li>
-            <li><strong>فحوصات الدم والمسحات:</strong> سريعة، دقيقة، ومتوفرة في العيادات والمراكز الصحية بسرية تامة.</li>
-            <li><strong>التواصل الصريح:</strong> الحديث المنفتح مع الشريك حول تاريخ الفحوصات يعزز الأمان والثقة.</li>
+            <li><strong>Screening Every 3–6 Months:</strong> Recommended for sexually active adults or when changing partners.</li>
+            <li><strong>Confidential Testing:</strong> Rapid blood tests and swabs are available confidentially at clinics worldwide.</li>
+            <li><strong>Open Communication:</strong> Honest dialogue about testing history fosters mutual trust and safety.</li>
           </ul>
         </div>
       </div>
@@ -300,36 +296,36 @@
     <div class="faq-section">
       <h2 class="faq-section-title">
         <i class="fa fa-circle-question" style="color: var(--accent-pink);"></i>
-        <span>الأسئلة الشائعة حول الصحة الجنسية والوقاية</span>
+        <span>Frequently Asked Questions</span>
       </h2>
 
       <div class="faq-item active">
         <div class="faq-question" onclick="toggleFaq(this)">
-          <span>ما هي أكثر الطرق فعالية لتجنب انتقال الأمراض الجنسية؟</span>
+          <span>What is the most reliable way to avoid sexually transmitted infections?</span>
           <i class="fa fa-chevron-down"></i>
         </div>
         <div class="faq-answer">
-          الاستخدام المنتظم والصحيح للواقيات الذكرية أو الأنثوية في كل علاقة جنسية، بالإضافة إلى تلقي اللقاحات المتاحة (مثل لقاح HPV والتهاب الكبد B)، وإجراء الفحوصات الدورية المنتظمة.
+          Consistent and correct use of condoms during every sexual encounter, getting vaccinated for HPV and Hepatitis B, and undergoing routine laboratory screenings.
         </div>
       </div>
 
       <div class="faq-item">
         <div class="faq-question" onclick="toggleFaq(this)">
-          <span>هل يمكن الإصابة بعدوى جنسية دون ظهور أي أعراض؟</span>
+          <span>Can someone have an STD without any visible symptoms?</span>
           <i class="fa fa-chevron-down"></i>
         </div>
         <div class="faq-answer">
-          نعم، نسبة كبيرة من الإصابات (مثل الكلاميديا وفيروس الورم الحليمي وفي مراحل مبكرة من فيروس نقص المناعة) تكون صامتة وبدون أعراض ظاهرة، مما يجعل الفحص المخبري الدوري هو الوسيلة الوحيدة المؤكدة للاطمئنان.
+          Yes. A significant percentage of infections (including Chlamydia, early HIV, and HPV) produce no noticeable early symptoms. Regular lab testing is the only definitive way to confirm status.
         </div>
       </div>
 
       <div class="faq-item">
         <div class="faq-question" onclick="toggleFaq(this)">
-          <span>ماذا أفعل إذا شككت في التعرض لعدوى جنسية؟</span>
+          <span>What should I do if I suspect recent exposure to an infection?</span>
           <i class="fa fa-chevron-down"></i>
         </div>
         <div class="faq-answer">
-          يجب استشارة طبيب مختص فوراً. إذا كان هناك اشتباه في التعرض لفيروس HIV خلال الساعات الأخيرة، يمكن تناول علاج PEP الوقائي خلال 72 ساعة كحد أقصى لمنع استقرار الفيروس.
+          Consult a healthcare provider immediately. If there is concern regarding HIV exposure within the last 72 hours, emergency Post-Exposure Prophylaxis (PEP) can prevent infection when started promptly.
         </div>
       </div>
     </div>
@@ -340,32 +336,32 @@
   <nav class="mobile-bottom-nav">
     <a href="/models.html" class="bottom-nav-item" style="color: #ffd700;">
       <i class="fa fa-crown"></i>
-      <span>النجوم</span>
+      <span>Stars</span>
     </a>
     <a href="/arabic.html" class="bottom-nav-item" style="color: #ffd700;">
       <i class="fa fa-star"></i>
-      <span>عربي</span>
+      <span>Arabic</span>
     </a>
     <a href="/reels.html" class="bottom-nav-item" style="color: #00f2fe;">
       <i class="fa fa-clapperboard"></i>
-      <span>ريلز</span>
+      <span>Reels</span>
     </a>
     <a href="/health.html" class="bottom-nav-item active" style="color: var(--accent-pink);">
       <i class="fa fa-shield-heart"></i>
-      <span>الوقاية</span>
+      <span>Health</span>
     </a>
     <a href="/" class="bottom-nav-item">
       <i class="fa fa-home"></i>
-      <span>الرئيسية</span>
+      <span>Home</span>
     </a>
   </nav>
 
   <!-- Footer -->
   <footer>
-    <img src="/images/logo.png" alt="وقاية برو - Weqaya Pro" class="footer-logo">
+    <img src="/images/logo.png" alt="wi9ayah.pro Logo" class="footer-logo">
     
     <div class="footer-links">
-      <a href="/health.html">الصحة والوقاية</a>
+      <a href="/health.html">Health & Safety</a>
       <span>•</span>
       <a href="/dmca.html">DMCA & Copyright</a>
       <span>•</span>
@@ -380,11 +376,11 @@
 
     <div class="disclaimer-container">
       <p class="disclaimer-text">
-        <strong>إخلاء مسؤولية صحي وتوعوي:</strong> المعلومات الواردة في هذا القسم مخصصة للأغراض التثقيفية والتوعوية العامة ولا تُعد بديلاً عن الاستشارة الطبية المتخصصة أو التشخيص السريري من قبل الأطباء ومراكز الرعاية الصحية المعتمدة.
+        <strong>Health Disclaimer:</strong> The educational materials provided here are for general informational purposes only and do not constitute professional medical advice, clinical diagnosis, or treatment. Consult qualified healthcare professionals for medical guidance.
       </p>
     </div>
 
-    <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 وقاية برو (Weqaya Pro). All rights reserved.</p>
+    <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 wi9ayah.pro. All rights reserved.</p>
   </footer>
 
   <script>
