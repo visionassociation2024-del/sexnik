@@ -1,414 +1,139 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sex Arabic Exclusives (4K UHD) — wi9ayah.pro</title>
-  <meta name="description" content="Watch thousands of Arabic exclusive videos, regional performer collections, and trending adult clips in 4K and Full HD on wi9ayah.pro.">
-  <meta name="keywords" content="wi9ayah.pro, arabic porn, arabic sex videos, egyptian, moroccan, lebanese, 4k adult videos">
+  <meta name="referrer" content="no-referrer">
+  <title>Exclusives & Middle East Stream Pins — Wi9ayah Pro</title>
+  <meta name="description" content="Discover exclusive regional streams, verified performers, and HD collections on Wi9ayah Pro.">
   <link rel="icon" type="image/png" href="/images/logo.png">
-  <link rel="canonical" href="https://wi9ayah.pro/arabic.html">
 
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=10.0">
-  <script src="/js/weqaya_guard.js?v=1.0"></script>
+  <link rel="stylesheet" href="/css/design-system.css?v=2.0">
+  <link rel="stylesheet" href="/css/style.css?v=2.0">
 
-  <!-- Monetization & Popunder Scripts -->
+  <!-- Monetization Scripts -->
   <script src="https://pl31054762.profitableratecpmnetwork.com/72/f4/9a/72f49a7889c2432c21f5fdf844a52e5d.js"></script>
-  <script src="https://pl31054764.profitableratecpmnetwork.com/16/4d/5c/164d5cb44941d85d54f598046baf38b5.js"></script>
-
-  <style>
-    .arabic-page-container {
-      max-width: 1400px;
-      margin: 20px auto 60px;
-      padding: 0 20px;
-    }
-
-    /* Arabic Country Sub-filters */
-    .arabic-countries-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      margin-bottom: 20px;
-      padding-bottom: 6px;
-    }
-    .arabic-countries-bar::-webkit-scrollbar { display: none; }
-    .btn-arabic-country {
-      background: rgba(255, 215, 0, 0.08);
-      border: 1px solid rgba(255, 215, 0, 0.3);
-      color: #ffd700;
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-arabic-country:hover, .btn-arabic-country.active {
-      background: linear-gradient(135deg, #ffd700, #ff8800);
-      color: #000;
-      border-color: transparent;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-    }
-
-    .arabic-hero-banner {
-      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 0, 127, 0.1));
-      border: 1px solid rgba(255, 215, 0, 0.3);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .arabic-hero-text h1 {
-      font-size: 24px;
-      font-weight: 800;
-      color: #ffd700;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .arabic-hero-text p {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    @media (max-width: 768px) {
-      .arabic-page-container { padding: 0 12px; margin-top: 12px; }
-      .arabic-hero-banner { padding: 16px; }
-      .arabic-hero-text h1 { font-size: 18px; }
-    }
-  </style>
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <header class="navbar">
-    <div class="nav-container">
-      <a href="/" class="brand-logo">
-        <img src="/images/logo.png" alt="وقاية برو Logo">
+  <div class="site-wrapper">
+    <!-- Top Sticky Navigation Bar -->
+    <header class="primary-nav">
+      <div class="nav-container">
+        <a href="/" class="brand-link">
+          <div class="brand-p-badge">W</div>
+          <span class="brand-text">Wi9ayah<span style="color: var(--color-ink);">.pro</span></span>
+        </a>
+
+        <div class="nav-search-wrapper">
+          <i class="fa fa-search search-bar-icon"></i>
+          <input type="text" id="globalSearchInput" class="search-bar" placeholder="Search exclusive pins..." onkeydown="if(event.key==='Enter') executeSearch()">
+          <div class="autocomplete-dropdown" id="searchAutocompleteDropdown"></div>
+        </div>
+
+        <div class="nav-actions-cluster desktop-only">
+          <a href="/" class="nav-link-item">
+            <i class="fa fa-compass"></i> Explore
+          </a>
+          <a href="/models.html" class="nav-link-item">
+            <i class="fa fa-crown" style="color: #ffd700;"></i> Stars
+          </a>
+          <a href="/arabic.html" class="nav-link-item active">
+            <i class="fa fa-star" style="color: #ffd700;"></i> Exclusives
+          </a>
+          <a href="/health.html" class="nav-link-item highlight-link">
+            <i class="fa fa-shield-heart" style="color: #103c25;"></i> Health Guide
+          </a>
+          <a href="/favorites.html" class="btn-primary">
+            <i class="fa fa-bookmark"></i> Saved Pins
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Filter Chips -->
+    <nav class="filter-chips-row" id="filterChipsBar"></nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="masonry-container">
+
+        <section class="performers-header" style="padding-bottom: var(--spacing-lg);">
+          <span class="pin-overlay-pill" style="position: static; display: inline-block; margin-bottom: 8px; background: #ffd700; color: #000000; font-weight: 800;">
+            ⭐ Premium Exclusives
+          </span>
+          <h1 class="display-lg">Curated Exclusives & Regional Collections</h1>
+          <p class="body-md" style="color: var(--color-mute); max-width: 600px; margin: 0 auto;">
+            Hand-picked video pins, verified performer shoots, and premium streams.
+          </p>
+        </section>
+
+        <!-- Pin Masonry Grid -->
+        <div class="pin-masonry-grid" id="pinMasonryGrid"></div>
+
+        <!-- Loading Indicator -->
+        <div id="gridLoadingIndicator" style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 48px 0; color: var(--color-mute); font-weight: 600;">
+          <i class="fa fa-circle-notch fa-spin" style="font-size: 24px; color: var(--color-primary);"></i>
+          <span>Loading exclusive pins...</span>
+        </div>
+
+        <div id="gridSentinel" style="height: 20px; width: 100%;"></div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+      <div class="footer-container">
+        <div class="footer-bottom-row" style="border: none; padding-top: 0;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="brand-p-badge" style="width: 24px; height: 24px; font-size: 12px;">W</div>
+            <span style="font-weight: 700; color: var(--color-ink);">Wi9ayah Pro © 2026.</span>
+          </div>
+          <div>
+            <a href="/" class="link-inline" style="margin-right: 16px;">Home</a>
+            <a href="/health.html" class="link-inline" style="margin-right: 16px;">Health & Safety</a>
+            <a href="/dmca.html" class="link-inline">DMCA</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-bar">
+      <a href="/" class="mobile-tab-btn">
+        <i class="fa fa-compass"></i>
+        <span>Explore</span>
       </a>
+      <a href="/reels.html" class="mobile-tab-btn">
+        <i class="fa fa-clapperboard"></i>
+        <span>Reels</span>
+      </a>
+      <a href="/models.html" class="mobile-tab-btn">
+        <i class="fa fa-crown"></i>
+        <span>Stars</span>
+      </a>
+      <a href="/health.html" class="mobile-tab-btn">
+        <i class="fa fa-shield-heart"></i>
+        <span>Health</span>
+      </a>
+      <a href="/favorites.html" class="mobile-tab-btn">
+        <i class="fa fa-bookmark"></i>
+        <span>Saved</span>
+      </a>
+    </nav>
+  </div>
 
-      <div class="search-box">
-        <input type="text" id="arabicSearchInput" placeholder="Search Arabic videos (Egyptian, Moroccan, Gulf, Lebanese)..." onkeypress="handleArabicSearch(event)">
-        <button class="search-btn" onclick="executeArabicSearch()" aria-label="Search">
-          <i class="fa fa-search"></i>
-        </button>
-      </div>
-
-      <div class="nav-actions desktop-only">
-        <a href="/models.html" class="btn-pill" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 0, 127, 0.3)); border-color: #ffd700; color: #ffd700; font-weight: 800;">
-          <i class="fa fa-star" style="color: #ffd700;"></i> Top Stars
-        </a>
-        <a href="/nikroli.html" class="btn-pill btn-tiktok" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff;">
-          <i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> nikroli (18+ Reels)
-        </a>
-        <a href="/photos.html" class="btn-pill">
-          <i class="fa fa-camera-retro" style="color: #ff007f;"></i> Photos & GIFs
-        </a>
-        <a href="/4k.html" class="btn-pill">
-          <i class="fa fa-tv" style="color: #c084fc;"></i> 4K UHD
-        </a>
-        <a href="/categories.html" class="btn-pill">
-          <i class="fa fa-th-large"></i> Categories
-        </a>
-        <a href="/" class="btn-pill">
-          <i class="fa fa-home"></i> Home
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Arabic Page Main Container -->
-  <main class="arabic-page-container">
-
-    <!-- Top Desktop Leaderboard 728x90 -->
-    <div class="ad-wrapper ad-desktop-only" style="margin-top: 0; margin-bottom: 20px;">
-      <div class="ad-badge">SPONSORED</div>
-      <script>
-        atOptions = {
-          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
-    </div>
-
-    <!-- Top Mobile Banner 320x50 -->
-    <div class="ad-wrapper ad-mobile-only" style="margin-top: 0; margin-bottom: 16px;">
-      <div class="ad-badge">SPONSORED</div>
-      <script>
-        atOptions = {
-          'key' : '0f2a63fbd6da2fd879750c7de7658080',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
-    </div>
-
-    <!-- Arabic Hero Banner -->
-    <div class="arabic-hero-banner">
-      <div class="arabic-hero-text">
-        <h1>
-          <i class="fa fa-star"></i>
-          <span>Sex Arabic Exclusive Collection</span>
-        </h1>
-        <p>Enjoy the latest high-definition Arabic adult videos from all countries with high-speed streaming servers and zero buffering.</p>
-      </div>
-      <div class="arabic-hero-actions">
-        <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-pill" style="background: linear-gradient(135deg, #ffd700, #ff8800); color: #000; font-weight: 800; border: none; padding: 10px 20px;">
-          <i class="fa fa-bolt"></i> High-Speed VIP Stream
-        </a>
-      </div>
-    </div>
-
-    <!-- Country Filter Tabs -->
-    <div class="arabic-countries-bar">
-      <button class="btn-arabic-country active" onclick="switchArabicSubCategory('arabic', this)"><i class="fa fa-layer-group"></i> All Countries</button>
-      <button class="btn-arabic-country" onclick="switchArabicSubCategory('egyptian', this)">🇪🇬 Egyptian</button>
-      <button class="btn-arabic-country" onclick="switchArabicSubCategory('moroccan', this)">🇲🇦 Moroccan</button>
-      <button class="btn-arabic-country" onclick="switchArabicSubCategory('gulf', this)">🇸🇦 Gulf & Saudi</button>
-      <button class="btn-arabic-country" onclick="switchArabicSubCategory('lebanese', this)">🇱🇧 Lebanese</button>
-      <button class="btn-arabic-country" onclick="switchArabicSubCategory('syrian', this)">🇸🇾 Syrian</button>
-      <button class="btn-arabic-country" onclick="switchArabicSubCategory('iraqi', this)">🇮🇶 Iraqi</button>
-      <button class="btn-arabic-country" onclick="switchArabicSubCategory('tunisian', this)">🇹🇳 North African</button>
-    </div>
-
-    <!-- Section Title & Counter -->
-    <div class="section-header">
-      <h2 class="section-title" id="arabicSectionTitle" style="font-size: 18px;">
-        <i class="fa fa-fire" style="color: #ffd700;"></i>
-        <span>Latest Arabic Videos</span>
-      </h2>
-      <span class="text-muted" id="arabicCountLabel" style="font-size: 13px;">Streaming live...</span>
-    </div>
-
-    <!-- Videos Grid -->
-    <div class="videos-grid" id="arabicVideosGrid"></div>
-
-    <!-- Infinite Scroll Loader -->
-    <div id="arabicLoader" class="infinite-loader" style="display: none;">
-      <div class="spinner-neon"></div>
-      <span>Loading more Arabic HD videos...</span>
-    </div>
-
-    <!-- Sentinel Element -->
-    <div id="arabicSentinel" style="height: 40px; width: 100%;"></div>
-
-  </main>
-
-  <!-- Mobile Bottom Navigation Bar -->
-  <nav class="mobile-bottom-nav">
-    <a href="/models.html" class="bottom-nav-item" style="color: #ffd700;">
-      <i class="fa fa-crown"></i>
-      <span>Stars</span>
-    </a>
-    <a href="/arabic.html" class="bottom-nav-item active" style="color: #ffd700;">
-      <i class="fa fa-star"></i>
-      <span>Arabic</span>
-    </a>
-    <a href="/reels.html" class="bottom-nav-item" style="color: #00f2fe;">
-      <i class="fa fa-clapperboard"></i>
-      <span>Reels</span>
-    </a>
-    <a href="/health.html" class="bottom-nav-item" style="color: var(--accent-pink);">
-      <i class="fa fa-shield-heart"></i>
-      <span>Health</span>
-    </a>
-    <a href="/" class="bottom-nav-item">
-      <i class="fa fa-home"></i>
-      <span>Home</span>
-    </a>
-  </nav>
-
-  <!-- Footer -->
-  <footer>
-    <img src="/images/logo.png" alt="wi9ayah.pro Logo" class="footer-logo">
-    
-    <div class="footer-links">
-      <a href="/health.html">Health & Safety</a>
-      <span>•</span>
-      <a href="/dmca.html">DMCA & Copyright</a>
-      <span>•</span>
-      <a href="/terms.html">Terms of Service</a>
-      <span>•</span>
-      <a href="/privacy.html">Privacy Policy</a>
-      <span>•</span>
-      <a href="/2257.html">18 U.S.C. 2257</a>
-      <span>•</span>
-      <a href="/contact.html">Contact Us</a>
-    </div>
-
-    <div class="disclaimer-container">
-      <p class="disclaimer-text">
-        <strong>Legal Disclaimer:</strong> <strong>wi9ayah.pro</strong> is a digital search engine and intermediary interface for streaming video embeds. We do not host or store any media files on our own servers. 18+ adult content only.
-      </p>
-    </div>
-
-    <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 wi9ayah.pro. All rights reserved.</p>
-  </footer>
-
+  <!-- Scripts -->
+  <script src="/js/masonry.js?v=2.0"></script>
+  <script src="/js/app.js?v=2.0"></script>
   <script>
-    let currentArabicQuery = 'arabic';
-    let arabicCurrentPage = 1;
-    let isArabicLoading = false;
-    let hasMoreArabic = true;
-    let renderedArabicIds = new Set();
-    let arabicObserver = null;
-
-    document.addEventListener('DOMContentLoaded', () => {
-      loadArabicVideos('arabic', true);
-      initArabicInfiniteScroll();
+    window.addEventListener('DOMContentLoaded', () => {
+      AppState.category = 'exclusive';
+      loadVideos(true);
     });
-
-    async function loadArabicVideos(query = 'arabic', isInitial = false) {
-      if (isArabicLoading || (!hasMoreArabic && !isInitial)) return;
-      isArabicLoading = true;
-
-      currentArabicQuery = query;
-      const grid = document.getElementById('arabicVideosGrid');
-      const loader = document.getElementById('arabicLoader');
-      const countLabel = document.getElementById('arabicCountLabel');
-
-      if (isInitial) {
-        arabicCurrentPage = 1;
-        hasMoreArabic = true;
-        renderedArabicIds.clear();
-        grid.innerHTML = getArabicSkeleton(8);
-      } else if (loader) {
-        loader.style.display = 'flex';
-      }
-
-      try {
-        const res = await fetch(`/api/videos?category=${encodeURIComponent(query)}&page=${arabicCurrentPage}`);
-        const data = await res.json();
-        const videos = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
-
-        if (isInitial) grid.innerHTML = '';
-
-        if (videos.length > 0) {
-          const unique = videos.filter(v => !renderedArabicIds.has(v.id));
-          if (unique.length > 0) {
-            unique.forEach(v => {
-              renderedArabicIds.add(v.id);
-              grid.appendChild(createArabicVideoCard(v));
-            });
-            arabicCurrentPage++;
-            if (countLabel) countLabel.innerText = `${renderedArabicIds.size}+ Arabic HD Videos`;
-          } else if (arabicCurrentPage > 1) {
-            arabicCurrentPage++;
-          }
-        } else {
-          if (isInitial) {
-            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">No videos found in this category.</div>';
-          }
-          hasMoreArabic = false;
-        }
-      } catch (e) {
-        if (isInitial) {
-          grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ef4444; padding: 50px;">Failed to load videos. Please check your connection.</div>';
-        }
-      } finally {
-        isArabicLoading = false;
-        if (loader) loader.style.display = 'none';
-      }
-    }
-
-    function createArabicVideoCard(v) {
-      const card = document.createElement('div');
-      card.className = 'video-card animate-fade';
-      card.onclick = () => {
-        const params = new URLSearchParams({
-          id: v.id || '',
-          title: v.title || '',
-          embed: v.embed_url || v.video_url || '',
-          thumb: v.thumbnail || '',
-          duration: v.duration || '12:00',
-          views: v.views || '18K',
-          rating: v.rating || '98%',
-          tags: (v.tags || ['arabic', 'sex_arabic']).join(',')
-        });
-        window.location.href = `/watch.html?${params.toString()}`;
-      };
-
-      card.innerHTML = `
-        <div class="thumb-wrap">
-          <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" loading="lazy" onerror="this.src='/images/logo.png'">
-          <span class="badge-hd" style="background: rgba(255, 215, 0, 0.9); color: #000; font-weight: 800;">Arabic HD</span>
-          <span class="badge-duration">${v.duration || '12:00'}</span>
-        </div>
-        <div class="card-details">
-          <h3 class="video-title" title="${v.title}">${v.title}</h3>
-          <div class="video-meta">
-            <span><i class="fa fa-eye"></i> ${v.views || '15K'} views</span>
-            <span class="meta-rating"><i class="fa fa-thumbs-up"></i> ${v.rating || '98%'}</span>
-          </div>
-        </div>
-      `;
-      return card;
-    }
-
-    function switchArabicSubCategory(query, btn) {
-      document.querySelectorAll('.btn-arabic-country').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      const titleEl = document.getElementById('arabicSectionTitle');
-      if (titleEl) titleEl.innerHTML = `<i class="fa fa-fire" style="color: #ffd700;"></i> Videos (${btn.innerText.trim()})`;
-      loadArabicVideos(query, true);
-    }
-
-    function initArabicInfiniteScroll() {
-      const sentinel = document.getElementById('arabicSentinel');
-      if (!sentinel) return;
-
-      if (arabicObserver) arabicObserver.disconnect();
-      arabicObserver = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && !isArabicLoading && hasMoreArabic) {
-          loadArabicVideos(currentArabicQuery, false);
-        }
-      }, { rootMargin: '400px' });
-      arabicObserver.observe(sentinel);
-    }
-
-    function handleArabicSearch(e) {
-      if (e.key === 'Enter') executeArabicSearch();
-    }
-
-    function executeArabicSearch() {
-      const q = document.getElementById('arabicSearchInput').value.trim();
-      if (q) window.location.href = `/?q=${encodeURIComponent(q)}`;
-    }
-
-    function getArabicSkeleton(count = 8) {
-      let html = '';
-      for (let i = 0; i < count; i++) {
-        html += `
-          <div class="video-card" style="opacity: 0.5;">
-            <div class="thumb-wrap" style="background: #1e1e2d;"></div>
-            <div class="card-details">
-              <div style="height: 14px; background: #28283c; border-radius: 4px; margin-bottom: 8px;"></div>
-              <div style="height: 10px; width: 60%; background: #28283c; border-radius: 4px;"></div>
-            </div>
-          </div>
-        `;
-      }
-      return html;
-    }
   </script>
 </body>
 </html>

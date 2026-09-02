@@ -1,360 +1,120 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>All Adult Video Categories & Genres — wi9ayah.pro</title>
-  <meta name="description" content="Explore all adult video categories and genres in 4K and Full HD on wi9ayah.pro.">
-  <meta name="keywords" content="wi9ayah.pro, adult categories, genres, arabic porn, milf, amateur, teen, 4k ultra hd">
+  <meta name="referrer" content="no-referrer">
+  <title>Categories & Genres Hub — Wi9ayah Pro</title>
+  <meta name="description" content="Explore curated video categories, niches, and genres in high definition on Wi9ayah Pro.">
   <link rel="icon" type="image/png" href="/images/logo.png">
-  <link rel="canonical" href="https://wi9ayah.pro/categories.html">
 
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=10.0">
-  <script src="/js/weqaya_guard.js?v=1.0"></script>
+  <link rel="stylesheet" href="/css/design-system.css?v=2.0">
+  <link rel="stylesheet" href="/css/style.css?v=2.0">
 
-  <!-- Monetization & Popunder Scripts -->
+  <!-- Monetization Scripts -->
   <script src="https://pl31054762.profitableratecpmnetwork.com/72/f4/9a/72f49a7889c2432c21f5fdf844a52e5d.js"></script>
-  <script src="https://pl31054764.profitableratecpmnetwork.com/16/4d/5c/164d5cb44941d85d54f598046baf38b5.js"></script>
-
-  <style>
-    .categories-page-container {
-      max-width: 1400px;
-      margin: 20px auto 60px;
-      padding: 0 20px;
-    }
-
-    .categories-search-filter {
-      position: relative;
-      max-width: 600px;
-      margin: 0 auto 30px;
-    }
-    .categories-search-filter input {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      border-radius: 30px;
-      padding: 14px 20px 14px 50px;
-      color: #fff;
-      font-size: 15px;
-      outline: none;
-      transition: var(--transition);
-    }
-    .categories-search-filter input:focus {
-      border-color: var(--accent-pink);
-      box-shadow: 0 0 20px var(--accent-glow);
-    }
-    .categories-search-filter i {
-      position: absolute;
-      left: 18px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--accent-pink);
-      font-size: 18px;
-    }
-
-    .standalone-categories-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 18px;
-    }
-
-    .category-card-standalone {
-      position: relative;
-      height: 180px;
-      border-radius: 16px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 18px;
-      text-decoration: none;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: #12121e;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-    }
-
-    .category-card-standalone:hover {
-      transform: translateY(-5px) scale(1.02);
-      border-color: var(--accent-pink);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px var(--accent-glow);
-    }
-
-    .category-card-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.5s ease;
-      z-index: 1;
-    }
-
-    .category-card-standalone:hover .category-card-bg {
-      transform: scale(1.1);
-    }
-
-    .category-card-gradient {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(0deg, rgba(7, 7, 11, 0.95) 0%, rgba(7, 7, 11, 0.45) 50%, rgba(7, 7, 11, 0.15) 100%);
-      z-index: 2;
-    }
-
-    .cat-text-info {
-      position: relative;
-      z-index: 3;
-    }
-
-    .cat-text-info h3 {
-      font-size: 18px;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
-    }
-
-    .cat-text-info span {
-      font-size: 12px;
-      font-weight: 700;
-      color: #00f2fe;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 3px 8px;
-      border-radius: 6px;
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .cat-model-name {
-      color: #ffd700 !important;
-      font-size: 11px !important;
-      margin-left: 6px;
-      background: rgba(0, 0, 0, 0.75) !important;
-      border: 1px solid rgba(255, 215, 0, 0.4) !important;
-    }
-
-    .category-card-standalone.special-models-card {
-      border-color: rgba(255, 215, 0, 0.6);
-      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 0, 127, 0.15));
-    }
-    .category-card-standalone.special-models-card:hover {
-      border-color: #ffd700;
-      box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-    }
-    .category-card-standalone.special-models-card .cat-text-info span {
-      color: #ffd700;
-      border-color: rgba(255, 215, 0, 0.5);
-      background: rgba(0, 0, 0, 0.8);
-    }
-
-    .category-card-standalone.special-arabic-card {
-      border-color: rgba(255, 215, 0, 0.4);
-    }
-    .category-card-standalone.special-arabic-card:hover {
-      border-color: #ffd700;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
-    }
-    .category-card-standalone.special-arabic-card .cat-text-info span {
-      color: #ffd700;
-      border-color: rgba(255, 215, 0, 0.3);
-    }
-
-    .category-card-standalone.special-tiktok-card {
-      border-color: rgba(0, 242, 254, 0.4);
-    }
-    .category-card-standalone.special-tiktok-card:hover {
-      border-color: #00f2fe;
-      box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
-    }
-
-    @media (max-width: 768px) {
-      .categories-page-container { padding: 0 12px; margin-top: 12px; }
-      .standalone-categories-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-      .category-card-standalone { height: 130px; padding: 12px; }
-      .cat-text-info h3 { font-size: 14px; margin-bottom: 4px; }
-      .cat-text-info span { font-size: 10px; padding: 2px 6px; }
-    }
-  </style>
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <header class="navbar">
-    <div class="nav-container">
-      <a href="/" class="brand-logo">
-        <img src="/images/logo.png" alt="وقاية برو Logo">
+  <div class="site-wrapper">
+    <!-- Top Sticky Navigation Bar -->
+    <header class="primary-nav">
+      <div class="nav-container">
+        <a href="/" class="brand-link">
+          <div class="brand-p-badge">W</div>
+          <span class="brand-text">Wi9ayah<span style="color: var(--color-ink);">.pro</span></span>
+        </a>
+
+        <div class="nav-search-wrapper">
+          <i class="fa fa-search search-bar-icon"></i>
+          <input type="text" id="categorySearchInput" class="search-bar" placeholder="Search category (e.g. Amateur, MILF, 4K)..." oninput="filterCategories(this.value)">
+        </div>
+
+        <div class="nav-actions-cluster desktop-only">
+          <a href="/" class="nav-link-item">
+            <i class="fa fa-compass"></i> Explore
+          </a>
+          <a href="/models.html" class="nav-link-item">
+            <i class="fa fa-crown" style="color: #ffd700;"></i> Stars
+          </a>
+          <a href="/categories.html" class="nav-link-item active">
+            <i class="fa fa-th-large"></i> Categories
+          </a>
+          <a href="/health.html" class="nav-link-item highlight-link">
+            <i class="fa fa-shield-heart" style="color: #103c25;"></i> Health Guide
+          </a>
+          <a href="/favorites.html" class="btn-primary">
+            <i class="fa fa-bookmark"></i> Saved Pins
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="masonry-container">
+
+        <section class="performers-header">
+          <span class="pin-overlay-pill" style="position: static; display: inline-block; margin-bottom: 12px; background: var(--color-surface-card);">
+            🗂️ 50+ Curated Genres
+          </span>
+          <h1 class="display-lg" style="margin-bottom: 8px;">Explore All Categories</h1>
+          <p class="body-md" style="color: var(--color-mute); max-width: 600px; margin: 0 auto;">
+            Browse through our expansive collection of curated video boards, 4K productions, and niche themes.
+          </p>
+        </section>
+
+        <!-- Category Tiles Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: var(--spacing-xxl);" id="categoriesGrid"></div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+      <div class="footer-container">
+        <div class="footer-bottom-row" style="border: none; padding-top: 0;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="brand-p-badge" style="width: 24px; height: 24px; font-size: 12px;">W</div>
+            <span style="font-weight: 700; color: var(--color-ink);">Wi9ayah Pro © 2026.</span>
+          </div>
+          <div>
+            <a href="/" class="link-inline" style="margin-right: 16px;">Home</a>
+            <a href="/health.html" class="link-inline" style="margin-right: 16px;">Health & Safety</a>
+            <a href="/dmca.html" class="link-inline">DMCA</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-bar">
+      <a href="/" class="mobile-tab-btn">
+        <i class="fa fa-compass"></i>
+        <span>Explore</span>
       </a>
+      <a href="/reels.html" class="mobile-tab-btn">
+        <i class="fa fa-clapperboard"></i>
+        <span>Reels</span>
+      </a>
+      <a href="/models.html" class="mobile-tab-btn">
+        <i class="fa fa-crown"></i>
+        <span>Stars</span>
+      </a>
+      <a href="/categories.html" class="mobile-tab-btn active">
+        <i class="fa fa-th-large"></i>
+        <span>Categories</span>
+      </a>
+      <a href="/favorites.html" class="mobile-tab-btn">
+        <i class="fa fa-bookmark"></i>
+        <span>Saved</span>
+      </a>
+    </nav>
+  </div>
 
-      <div class="search-box">
-        <input type="text" id="headerSearch" placeholder="Search 4K, Arabic, categories..." onkeypress="handleHeaderSearch(event)">
-        <button class="search-btn" onclick="executeHeaderSearch()" aria-label="Search">
-          <i class="fa fa-search"></i>
-        </button>
-      </div>
-
-      <div class="nav-actions desktop-only">
-        <a href="/models.html" class="btn-pill" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 0, 127, 0.3)); border-color: #ffd700; color: #ffd700; font-weight: 800;">
-          <i class="fa fa-star" style="color: #ffd700;"></i> Top Stars
-        </a>
-        <a href="/arabic.html" class="btn-pill btn-arabic">
-          <i class="fa fa-star" style="color: #ffd700;"></i> Arabic Exclusives
-        </a>
-        <a href="/nikroli.html" class="btn-pill btn-tiktok" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff;">
-          <i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> nikroli (18+ Reels)
-        </a>
-        <a href="/photos.html" class="btn-pill">
-          <i class="fa fa-camera-retro" style="color: #ff007f;"></i> Photos & GIFs
-        </a>
-        <a href="/" class="btn-pill">
-          <i class="fa fa-home"></i> Home
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Categories Main Layout -->
-  <main class="categories-page-container">
-
-    <!-- Top Desktop Leaderboard 728x90 -->
-    <div class="ad-wrapper ad-desktop-only" style="margin-top: 0; margin-bottom: 20px;">
-      <div class="ad-badge">SPONSORED</div>
-      <script>
-        atOptions = {
-          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
-    </div>
-
-    <!-- Top Mobile Banner 320x50 -->
-    <div class="ad-wrapper ad-mobile-only" style="margin-top: 0; margin-bottom: 16px;">
-      <div class="ad-badge">SPONSORED</div>
-      <script>
-        atOptions = {
-          'key' : '0f2a63fbd6da2fd879750c7de7658080',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
-    </div>
-
-    <div class="section-header" style="justify-content: center; text-align: center; margin-bottom: 20px;">
-      <h1 class="section-title" style="font-size: 24px;">
-        <i class="fa fa-th-large" style="color: var(--accent-pink);"></i>
-        <span>Browse All Adult Video Categories</span>
-      </h1>
-    </div>
-
-    <!-- Live Category Search Filter -->
-    <div class="categories-search-filter">
-      <i class="fa fa-search"></i>
-      <input type="text" id="categoryFilterInput" placeholder="Filter categories (e.g. Arabic, MILF, 4K, Amateur, Teen)..." oninput="filterCategoriesList(event)">
-    </div>
-
-    <!-- Categories Grid Cards -->
-    <div class="standalone-categories-grid" id="standaloneCategoriesGrid">
-      <!-- Populated dynamically via categories.js -->
-    </div>
-
-  </main>
-
-  <!-- Mobile Bottom Navigation Bar -->
-  <nav class="mobile-bottom-nav">
-    <a href="/models.html" class="bottom-nav-item" style="color: #ffd700;">
-      <i class="fa fa-crown"></i>
-      <span>Stars</span>
-    </a>
-    <a href="/arabic.html" class="bottom-nav-item" style="color: #ffd700;">
-      <i class="fa fa-star"></i>
-      <span>Arabic</span>
-    </a>
-    <a href="/reels.html" class="bottom-nav-item" style="color: #00f2fe;">
-      <i class="fa fa-clapperboard"></i>
-      <span>Reels</span>
-    </a>
-    <a href="/health.html" class="bottom-nav-item" style="color: var(--accent-pink);">
-      <i class="fa fa-shield-heart"></i>
-      <span>Health</span>
-    </a>
-    <a href="/" class="bottom-nav-item">
-      <i class="fa fa-home"></i>
-      <span>Home</span>
-    </a>
-  </nav>
-
-  <!-- Footer with Legal Disclaimer & Static Links -->
-  <footer>
-    <img src="/images/logo.png" alt="wi9ayah.pro Logo" class="footer-logo">
-    
-    <div class="footer-links">
-      <a href="/health.html">Health & Safety</a>
-      <span>•</span>
-      <a href="/dmca.html">DMCA & Copyright</a>
-      <span>•</span>
-      <a href="/terms.html">Terms of Service</a>
-      <span>•</span>
-      <a href="/privacy.html">Privacy Policy</a>
-      <span>•</span>
-      <a href="/2257.html">18 U.S.C. 2257</a>
-      <span>•</span>
-      <a href="/contact.html">Contact Us</a>
-    </div>
-
-    <!-- Bottom Desktop Leaderboard 728x90 -->
-    <div class="ad-wrapper ad-desktop-only" style="margin-top: 30px;">
-      <div class="ad-badge">SPONSORED</div>
-      <script>
-        atOptions = {
-          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
-    </div>
-
-    <!-- Bottom Mobile Banner 320x50 -->
-    <div class="ad-wrapper ad-mobile-only" style="margin-top: 20px;">
-      <div class="ad-badge">SPONSORED</div>
-      <script>
-        atOptions = {
-          'key' : '0f2a63fbd6da2fd879750c7de7658080',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
-    </div>
-
-    <div class="disclaimer-container">
-      <p class="disclaimer-text">
-        <strong>Legal Disclaimer:</strong> <strong>wi9ayah.pro</strong> is a digital search engine and intermediary interface for streaming video embeds. We do not host or store any media files on our own servers. 18+ adult content only.
-      </p>
-    </div>
-
-    <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 wi9ayah.pro. All rights reserved.</p>
-  </footer>
-
-  <script src="/js/categories.js?v=5.0"></script>
+  <!-- Scripts -->
+  <script src="/js/categories.js?v=2.0"></script>
 </body>
 </html>

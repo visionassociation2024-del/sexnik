@@ -3,200 +3,191 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>My Favorite Videos - wi9ayah.pro</title>
-  <meta name="description" content="View and manage your bookmarked favorite adult videos on wi9ayah.pro.">
+  <meta name="referrer" content="no-referrer">
+  <title>Saved Pins & Collections — Wi9ayah Pro</title>
+  <meta name="description" content="Manage your saved video pins, favorite performers, and bookmarked collections on Wi9ayah Pro.">
   <link rel="icon" type="image/png" href="/images/logo.png">
+
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=3.0">
-  <script src="/js/weqaya_guard.js?v=1.0"></script>
+  <link rel="stylesheet" href="/css/design-system.css?v=2.0">
+  <link rel="stylesheet" href="/css/style.css?v=2.0">
+
+  <!-- Monetization Scripts -->
+  <script src="https://pl31054762.profitableratecpmnetwork.com/72/f4/9a/72f49a7889c2432c21f5fdf844a52e5d.js"></script>
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <header class="navbar">
-    <div class="nav-container">
-      <a href="/" class="brand-logo">
-        <img src="/images/logo.png" alt="wi9ayah.pro Logo">
-      </a>
+  <div class="site-wrapper">
+    <!-- Top Sticky Navigation Bar -->
+    <header class="primary-nav">
+      <div class="nav-container">
+        <a href="/" class="brand-link">
+          <div class="brand-p-badge">W</div>
+          <span class="brand-text">Wi9ayah<span style="color: var(--color-ink);">.pro</span></span>
+        </a>
 
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search saved favorites..." oninput="filterFavorites(event)">
-        <button class="search-btn" aria-label="Search">
-          <i class="fa fa-search"></i>
-        </button>
+        <div class="nav-search-wrapper">
+          <i class="fa fa-search search-bar-icon"></i>
+          <input type="text" class="search-bar" placeholder="Search your saved pins..." oninput="filterSavedPins(this.value)">
+        </div>
+
+        <div class="nav-actions-cluster desktop-only">
+          <a href="/" class="nav-link-item">
+            <i class="fa fa-compass"></i> Explore
+          </a>
+          <a href="/models.html" class="nav-link-item">
+            <i class="fa fa-crown" style="color: #ffd700;"></i> Stars
+          </a>
+          <a href="/history.html" class="nav-link-item">
+            <i class="fa fa-history"></i> History
+          </a>
+          <a href="/favorites.html" class="btn-primary">
+            <i class="fa fa-bookmark"></i> Saved Pins
+          </a>
+        </div>
       </div>
+    </header>
 
-      <div class="nav-actions desktop-only">
-        <a href="/models.html" class="btn-pill" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 0, 127, 0.3)); border-color: #ffd700; color: #ffd700; font-weight: 800;">
-          <i class="fa fa-star" style="color: #ffd700;"></i> Top Stars
-        </a>
-        <a href="/arabic.html" class="btn-pill btn-arabic">
-          <i class="fa fa-star" style="color: #ffd700;"></i> Arabic Exclusives
-        </a>
-        <a href="/reels.html" class="btn-pill btn-tiktok" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff;">
-          <i class="fa-solid fa-clapperboard" style="color: #00f2fe;"></i> Weqaya Reels (18+ Reels)
-        </a>
-        <a href="/categories.html" class="btn-pill">
-          <i class="fa fa-th-large"></i> Categories
-        </a>
-        <a href="/history.html" class="btn-pill">
-          <i class="fa fa-history"></i> History
-        </a>
-        <a href="/" class="btn-pill">
-          <i class="fa fa-home"></i> Home
-        </a>
-      </div>
-    </div>
-  </header>
+    <!-- Main Content -->
+    <main class="main-content" style="padding-top: var(--spacing-xl);">
+      <div class="masonry-container">
 
-  <!-- Favorites Main Container -->
-  <main class="main-container" style="margin-top: 20px;">
-
-    <div class="section-header">
-      <h1 class="section-title" style="font-size: 20px;">
-        <i class="fa fa-heart" style="color: #ff007f;"></i>
-        <span>My Saved Favorites</span>
-      </h1>
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span class="text-muted" id="favCountLabel" style="font-size: 13px;">Loading favorites...</span>
-        <button id="btnClearFavs" class="btn-pill" style="padding: 4px 10px; font-size: 11px; border-color: #ef4444; color: #ef4444;" onclick="clearAllFavorites()">
-          <i class="fa fa-trash"></i> Clear All
-        </button>
-      </div>
-    </div>
-
-    <!-- Videos Grid -->
-    <div class="videos-grid" id="favoritesGrid"></div>
-
-  </main>
-
-  <!-- Mobile Bottom Navigation Bar -->
-  <nav class="mobile-bottom-nav">
-    <a href="/models.html" class="bottom-nav-item" style="color: #ffd700;">
-      <i class="fa fa-star"></i>
-      <span>Stars</span>
-    </a>
-    <a href="/arabic.html" class="bottom-nav-item" style="color: #ffd700;">
-      <i class="fa fa-globe"></i>
-      <span>Arabic</span>
-    </a>
-    <a href="/reels.html" class="bottom-nav-item" style="color: #00f2fe;">
-      <i class="fa-solid fa-clapperboard"></i>
-      <span>Weqaya Reels</span>
-    </a>
-    <a href="/photos.html" class="bottom-nav-item" style="color: var(--accent-pink);">
-      <i class="fa fa-images"></i>
-      <span>Photos</span>
-    </a>
-    <a href="/" class="bottom-nav-item">
-      <i class="fa fa-home"></i>
-      <span>Home</span>
-    </a>
-    <a href="/favorites.html" class="bottom-nav-item active">
-      <i class="fa fa-heart" style="color: #ff007f;"></i>
-      <span>Favorites</span>
-    </a>
-  </nav>
-
-  <!-- Footer -->
-  <footer>
-    <img src="/images/logo.png" alt="wi9ayah.pro" class="footer-logo">
-    <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 wi9ayah.pro. All rights reserved.</p>
-  </footer>
-
-  <script>
-    let localFavorites = [];
-
-    document.addEventListener('DOMContentLoaded', () => {
-      loadFavoritesPage();
-    });
-
-    function loadFavoritesPage() {
-      try {
-        localFavorites = JSON.parse(localStorage.getItem('niksex_favorites') || '[]');
-      } catch (e) {
-        localFavorites = [];
-      }
-      renderFavorites(localFavorites);
-    }
-
-    function renderFavorites(list) {
-      const grid = document.getElementById('favoritesGrid');
-      const countLabel = document.getElementById('favCountLabel');
-      const clearBtn = document.getElementById('btnClearFavs');
-
-      if (!list || list.length === 0) {
-        if (countLabel) countLabel.innerText = '0 Saved Videos';
-        if (clearBtn) clearBtn.style.display = 'none';
-        grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
-            <i class="fa fa-heart fa-3x" style="color: #ff007f; margin-bottom: 14px; opacity: 0.6;"></i>
-            <h3 style="color: #fff; margin-bottom: 6px;">No Favorite Videos Yet</h3>
-            <p style="font-size: 13px;">Click the "Favorite" button on any video watch page to save it here!</p>
-            <a href="/" class="btn-pill" style="margin-top: 15px; display: inline-flex;">Explore Trending Videos</a>
-          </div>
-        `;
-        return;
-      }
-
-      if (countLabel) countLabel.innerText = `${list.length} Saved in Favorites`;
-      if (clearBtn) clearBtn.style.display = 'inline-flex';
-      grid.innerHTML = '';
-
-      list.forEach(v => {
-        const card = document.createElement('div');
-        card.className = 'video-card animate-fade';
-        card.onclick = () => {
-          const params = new URLSearchParams({
-            id: v.id || '',
-            title: v.title || '',
-            embed: v.embed_url || v.video_url || '',
-            thumb: v.thumbnail || '',
-            duration: v.duration || '12:00',
-            views: v.views || '18K',
-            rating: v.rating || '98%',
-            tags: (v.tags || ['favorite', 'niksex']).join(',')
-          });
-          window.location.href = `/watch.html?${params.toString()}`;
-        };
-
-        card.innerHTML = `
-          <div class="thumb-wrap">
-            <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" loading="lazy" onerror="this.src='/images/logo.png'">
-            <span class="badge-hd" style="background: var(--accent-pink);">Favorite</span>
-            <span class="badge-duration">${v.duration || '12:00'}</span>
-          </div>
-          <div class="card-details">
-            <h3 class="video-title" title="${v.title}">${v.title}</h3>
-            <div class="video-meta">
-              <span><i class="fa fa-eye"></i> ${v.views || '15K'}</span>
-              <span class="meta-rating"><i class="fa fa-thumbs-up"></i> ${v.rating || '98%'}</span>
+        <section class="performers-header">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px;">
+            <div class="brand-p-badge" style="width: 44px; height: 44px; font-size: 20px;">
+              <i class="fa fa-bookmark"></i>
             </div>
           </div>
-        `;
-        grid.appendChild(card);
-      });
+          <h1 class="display-lg">My Saved Pins Board</h1>
+          <p class="body-md" style="color: var(--color-mute); max-width: 500px; margin: 0 auto 16px;">
+            All your saved videos and bookmarked inspirations are safely stored locally in your browser.
+          </p>
+
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <button class="btn-secondary" onclick="clearAllSavedPins()"><i class="fa fa-trash"></i> Clear All Saved Pins</button>
+            <a href="/" class="btn-primary"><i class="fa fa-compass"></i> Discover More Pins</a>
+          </div>
+        </section>
+
+        <!-- Saved Pins Masonry Grid -->
+        <div class="pin-masonry-grid" id="savedPinsGrid"></div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+      <div class="footer-container">
+        <div class="footer-bottom-row" style="border: none; padding-top: 0;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="brand-p-badge" style="width: 24px; height: 24px; font-size: 12px;">W</div>
+            <span style="font-weight: 700; color: var(--color-ink);">Wi9ayah Pro © 2026.</span>
+          </div>
+          <div>
+            <a href="/" class="link-inline" style="margin-right: 16px;">Home</a>
+            <a href="/health.html" class="link-inline" style="margin-right: 16px;">Health & Safety</a>
+            <a href="/dmca.html" class="link-inline">DMCA</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-bar">
+      <a href="/" class="mobile-tab-btn">
+        <i class="fa fa-compass"></i>
+        <span>Explore</span>
+      </a>
+      <a href="/reels.html" class="mobile-tab-btn">
+        <i class="fa fa-clapperboard"></i>
+        <span>Reels</span>
+      </a>
+      <a href="/models.html" class="mobile-tab-btn">
+        <i class="fa fa-crown"></i>
+        <span>Stars</span>
+      </a>
+      <a href="/health.html" class="mobile-tab-btn">
+        <i class="fa fa-shield-heart"></i>
+        <span>Health</span>
+      </a>
+      <a href="/favorites.html" class="mobile-tab-btn active">
+        <i class="fa fa-bookmark"></i>
+        <span>Saved</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/masonry.js?v=2.0"></script>
+  <script>
+    let savedList = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSavedBoard();
+    });
+
+    function loadSavedBoard() {
+      if (!window.pinEngine) return;
+      savedList = window.pinEngine.getSavedPins();
+      renderSavedGrid(savedList);
     }
 
-    function filterFavorites(e) {
-      const term = e.target.value.toLowerCase().trim();
-      if (!term) {
-        renderFavorites(localFavorites);
+    function renderSavedGrid(list) {
+      const grid = document.getElementById('savedPinsGrid');
+      if (!grid) return;
+
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 64px 20px; background: #ffffff; border-radius: 16px; margin-top: 20px;">
+            <i class="fa fa-bookmark" style="font-size: 42px; color: #91918c; margin-bottom: 16px;"></i>
+            <h3 style="font-size: 20px; font-weight: 700; color: #000000; margin-bottom: 8px;">No Saved Pins Yet</h3>
+            <p style="color: #62625b; font-size: 15px; margin-bottom: 20px;">When you see videos you love, click the red "Save" button to keep them on this board.</p>
+            <a href="/" class="btn-primary">Explore Trending Pins</a>
+          </div>
+        `;
         return;
       }
-      const filtered = localFavorites.filter(v => 
-        (v.title && v.title.toLowerCase().includes(term)) ||
-        (v.tags && v.tags.some(t => t.toLowerCase().includes(term)))
-      );
-      renderFavorites(filtered);
+
+      grid.innerHTML = list.map(p => `
+        <div class="pin-card" data-id="${p.id}" data-title="${escapeHtml(p.title)}" data-thumb="${p.thumbnail}" data-duration="${p.duration}">
+          <div class="pin-media-wrapper" onclick="window.location.href='/watch.html?id=${p.id}'">
+            <img src="${p.thumbnail}" alt="${escapeHtml(p.title)}" class="pin-image" loading="lazy">
+            <div class="pin-overlay-scrim"></div>
+            <button class="pin-save-cta js-save-pin" data-id="${p.id}" style="background-color: #262622;" title="Remove Pin">Saved</button>
+            <span class="pin-overlay-pill pin-pill-duration">${p.duration || 'HD'}</span>
+          </div>
+          <div class="pin-meta" onclick="window.location.href='/watch.html?id=${p.id}'">
+            <h3 class="pin-title">${escapeHtml(p.title)}</h3>
+            <div class="pin-author">
+              <span class="pin-author-name">${p.author || 'Saved Pin'}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
     }
 
-    function clearAllFavorites() {
-      if (confirm('Are you sure you want to clear all your saved favorites?')) {
-        localStorage.removeItem('niksex_favorites');
-        localFavorites = [];
-        renderFavorites([]);
+    function filterSavedPins(query) {
+      const q = query.trim().toLowerCase();
+      if (!q) {
+        renderSavedGrid(savedList);
+        return;
       }
+      const filtered = savedList.filter(p => p.title && p.title.toLowerCase().includes(q));
+      renderSavedGrid(filtered);
+    }
+
+    function clearAllSavedPins() {
+      if (confirm('Are you sure you want to clear your saved pins board?')) {
+        localStorage.removeItem('pinterest_saved_pins');
+        loadSavedBoard();
+        if (window.pinEngine) window.pinEngine.showToast('Saved pins board cleared', 'info');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
   </script>
 </body>

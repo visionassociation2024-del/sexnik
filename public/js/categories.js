@@ -1,113 +1,58 @@
-// Categories Data — images will be injected from random models
+/**
+ * Categories Page Engine
+ */
+
 const ALL_CATEGORIES = [
-  { id: 'models',       title: 'Top Pornstars & Models',     icon: 'fa-crown',             count: '1,000+ Stars', link: '/models.html',     special: 'models' },
-  { id: 'sex_arabic',   title: 'Sex Arabic (Exclusive)',      icon: 'fa-star',              count: '15,400+',      link: '/arabic.html',     special: 'arabic' },
-  { id: 'nikroli',      title: 'nikroli Reels (18+ Shorts)',  icon: 'fa-brands fa-tiktok',  count: '25,800+',      link: '/nikroli.html',    special: 'tiktok' },
-  { id: 'trending',     title: 'Trending (Top Rated)',        icon: 'fa-fire',              count: '54,200+',      link: '/?cat=trending' },
-  { id: '4k',           title: '4K Ultra HD (2160p)',         icon: 'fa-tv',                count: '12,900+',      link: '/4k.html' },
-  { id: 'photos',       title: 'Photos & GIFs',              icon: 'fa-camera-retro',      count: '18,500+',      link: '/photos.html' },
-  { id: 'amateur',      title: 'Amateur Couples',            icon: 'fa-user',              count: '36,400+',      link: '/?cat=amateur' },
-  { id: 'milf',         title: 'MILF & Mature',              icon: 'fa-heart',             count: '29,100+',      link: '/?cat=milf' },
-  { id: 'lesbian',      title: 'Lesbian & Girls',            icon: 'fa-venus-double',      count: '19,800+',      link: '/?cat=lesbian' },
-  { id: 'teen',         title: '18+ Teen Babes',             icon: 'fa-star-half-alt',     count: '23,400+',      link: '/?cat=teen' },
-  { id: 'anal',         title: 'Anal Hardcore',              icon: 'fa-circle-notch',      count: '18,700+',      link: '/?cat=anal' },
-  { id: 'blowjob',      title: 'Blowjob & Deepthroat',      icon: 'fa-kiss',              count: '26,500+',      link: '/?cat=blowjob' },
-  { id: 'hardcore',     title: 'Hardcore & Rough',           icon: 'fa-bolt',              count: '31,200+',      link: '/?cat=hardcore' },
-  { id: 'asian',        title: 'Asian & Japanese',           icon: 'fa-globe-asia',        count: '16,800+',      link: '/?cat=asian' },
-  { id: 'ebony',        title: 'Ebony Babes',                icon: 'fa-moon',              count: '14,900+',      link: '/?cat=ebony' },
-  { id: 'latina',       title: 'Latina Hotties',             icon: 'fa-sun',               count: '17,600+',      link: '/?cat=latina' },
-  { id: 'hentai',       title: 'Hentai & 3D Anime',         icon: 'fa-dragon',            count: '11,400+',      link: '/?cat=hentai' },
-  { id: 'vr',           title: 'VR 360° Porn',              icon: 'fa-vr-cardboard',      count: '6,800+',       link: '/?cat=vr' },
-  { id: 'creampie',     title: 'Creampie Internal',          icon: 'fa-tint',              count: '21,900+',      link: '/?cat=creampie' },
-  { id: 'threesome',    title: 'Threesome & Group',          icon: 'fa-users',             count: '13,500+',      link: '/?cat=threesome' },
-  { id: 'fetish',       title: 'Fetish & BDSM',             icon: 'fa-mask',              count: '9,400+',       link: '/?cat=fetish' },
-  { id: 'masturbation', title: 'Solo & Masturbation',        icon: 'fa-hand-sparkles',     count: '15,800+',      link: '/?cat=masturbation' },
-  { id: 'big_tits',     title: 'Big Tits & Boobs',          icon: 'fa-heartbeat',         count: '28,100+',      link: '/?cat=big_tits' },
-  { id: 'big_ass',      title: 'Big Ass & Booty',           icon: 'fa-ring',              count: '24,900+',      link: '/?cat=big_ass' },
-  { id: 'squirt',       title: 'Squirting Orgasm',           icon: 'fa-water',             count: '10,700+',      link: '/?cat=squirt' }
+  { id: 'trending', name: 'Trending Pins', icon: 'fa-fire', count: '54,200+ Videos', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80' },
+  { id: '4k', name: '4K Ultra HD', icon: 'fa-tv', count: '12,900+ Videos', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80' },
+  { id: 'amateur', name: 'Amateur Couples', icon: 'fa-user', count: '36,400+ Videos', image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&auto=format&fit=crop&q=80' },
+  { id: 'milf', name: 'MILF & Mature', icon: 'fa-heart', count: '29,100+ Videos', image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&auto=format&fit=crop&q=80' },
+  { id: 'lesbian', name: 'Lesbian & Solo', icon: 'fa-venus-double', count: '19,800+ Videos', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80' },
+  { id: 'teen', name: '18+ Youth Babes', icon: 'fa-star', count: '23,400+ Videos', image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&auto=format&fit=crop&q=80' },
+  { id: 'anal', name: 'Anal Hardcore', icon: 'fa-circle-notch', count: '18,700+ Videos', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80' },
+  { id: 'blowjob', name: 'Oral & Sensual', icon: 'fa-kiss', count: '26,500+ Videos', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80' },
+  { id: 'hardcore', name: 'Hardcore Rough', icon: 'fa-bolt', count: '31,200+ Videos', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80' },
+  { id: 'japanese', name: 'Asian & Japanese', icon: 'fa-globe-asia', count: '16,800+ Videos', image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&auto=format&fit=crop&q=80' },
+  { id: 'vr', name: 'VR 360° Porn', icon: 'fa-vr-cardboard', count: '6,800+ Videos', image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&auto=format&fit=crop&q=80' },
+  { id: 'creampie', name: 'Creampie Internal', icon: 'fa-tint', count: '21,900+ Videos', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80' }
 ];
 
-// Store the random model images once fetched
-let randomModelImages = [];
-
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadRandomModelImages();
-  renderCategoriesGrid(ALL_CATEGORIES);
+document.addEventListener('DOMContentLoaded', () => {
+  renderCategories(ALL_CATEGORIES);
 });
 
-// Fetch random models from the in-memory database to use as category backgrounds
-async function loadRandomModelImages() {
-  try {
-    const res = await fetch(`/api/models/random?count=${ALL_CATEGORIES.length}`);
-    const data = await res.json();
-    if (data.success && data.models && data.models.length > 0) {
-      randomModelImages = data.models;
-    }
-  } catch (err) {
-    console.warn('[Categories] Could not load random models for backgrounds:', err.message);
-  }
-}
-
-function renderCategoriesGrid(list) {
-  const container = document.getElementById('standaloneCategoriesGrid');
-  if (!container) return;
-  container.innerHTML = '';
+function renderCategories(list) {
+  const grid = document.getElementById('categoriesGrid');
+  if (!grid) return;
 
   if (list.length === 0) {
-    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;"><i class="fa fa-search" style="font-size: 28px; display: block; margin-bottom: 10px; opacity: 0.4;"></i>No categories match your search.</div>';
-    return;
-  }
-
-  list.forEach((c, index) => {
-    const card = document.createElement('a');
-    card.href = c.link;
-    card.className = `category-card-standalone ${c.special === 'models' ? 'special-models-card' : (c.special === 'arabic' ? 'special-arabic-card' : (c.special === 'tiktok' ? 'special-tiktok-card' : ''))}`;
-
-    // Pick a random model image for this category
-    const model = randomModelImages[index % randomModelImages.length] || null;
-    const coverImg = model ? (model.cover || model.avatar || '/images/logo.png') : '/images/logo.png';
-    const modelName = model ? model.name : '';
-    const fallbackImg = '/images/logo.png';
-
-    // Use proxy for external CDN images
-    const imgSrc = coverImg.startsWith('http')
-      ? `/api/proxy/image?url=${encodeURIComponent(coverImg)}`
-      : coverImg;
-
-    card.innerHTML = `
-      <img src="${imgSrc}" alt="${c.title}" class="category-card-bg" loading="lazy" onerror="this.src='${fallbackImg}'" referrerpolicy="no-referrer">
-      <div class="category-card-gradient"></div>
-      <div class="cat-text-info">
-        <h3><i class="fa ${c.icon}"></i> ${c.title}</h3>
-        <span><i class="fa fa-play-circle"></i> ${c.count} Videos</span>
-        ${modelName ? `<span class="cat-model-name"><i class="fa fa-star" style="color: #ffd700; font-size: 9px;"></i> ${modelName}</span>` : ''}
+    grid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 48px; background: #ffffff; border-radius: 16px;">
+        <p style="color: #62625b;">No categories found.</p>
       </div>
     `;
-
-    container.appendChild(card);
-  });
-}
-
-function filterCategoriesList(e) {
-  const term = e.target.value.toLowerCase().trim();
-  if (!term) {
-    renderCategoriesGrid(ALL_CATEGORIES);
     return;
   }
 
-  const filtered = ALL_CATEGORIES.filter(c =>
-    c.title.toLowerCase().includes(term) ||
-    c.id.toLowerCase().includes(term)
-  );
-
-  renderCategoriesGrid(filtered);
+  grid.innerHTML = list.map(c => `
+    <div class="category-tile" onclick="window.location.href='/?cat=${c.id}'">
+      <div style="z-index: 2;">
+        <span class="pin-overlay-pill" style="position: static; display: inline-block; margin-bottom: 8px; font-size: 11px;">
+          <i class="fa ${c.icon}" style="color: #e60023;"></i> ${c.count}
+        </span>
+        <h3 class="heading-md" style="color: var(--color-ink);">${c.name}</h3>
+      </div>
+      <img src="${c.image}" class="category-tile-bg" alt="${c.name}">
+    </div>
+  `).join('');
 }
 
-function handleHeaderSearch(e) {
-  if (e.key === 'Enter') executeHeaderSearch();
-}
-
-function executeHeaderSearch() {
-  const q = document.getElementById('headerSearch').value.trim();
-  if (q) window.location.href = `/?q=${encodeURIComponent(q)}`;
+function filterCategories(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    renderCategories(ALL_CATEGORIES);
+    return;
+  }
+  const filtered = ALL_CATEGORIES.filter(c => c.name.toLowerCase().includes(q) || c.id.includes(q));
+  renderCategories(filtered);
 }

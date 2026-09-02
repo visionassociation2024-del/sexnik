@@ -1,240 +1,130 @@
-// Monetization & Smartlink Configuration
-const SMARTLINK_URL = 'https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab';
-const ALLOWED_AD_DOMAINS = [
-  'profitableratecpmnetwork.com',
-  'highrevenueformat.com'
+/**
+ * Photography & GIF Masonry Engine
+ */
+
+let allPhotos = [];
+let currentPhotoFilter = 'all';
+let currentActiveLightbox = null;
+
+const CURATED_SAMPLE_PHOTOS = [
+  { id: 'p1', title: 'Sensual Portrait Photography', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80', aspect: '3/4', author: 'Eva Bloom', type: 'models' },
+  { id: 'p2', title: 'Golden Hour Aesthetic', url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80', aspect: '2/3', author: 'Studio X', type: 'art' },
+  { id: 'p3', title: 'Editorial Glamour Shot', url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&auto=format&fit=crop&q=80', aspect: '1/1', author: 'Max Vision', type: 'models' },
+  { id: 'p4', title: 'Cinematic Visual Set', url: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&auto=format&fit=crop&q=80', aspect: '4/5', author: 'Lana R', type: '4k' },
+  { id: 'p5', title: 'Monochrome Intimacy', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=80', aspect: '3/4', author: 'Noir Art', type: 'art' },
+  { id: 'p6', title: 'Animated GIF Motion Loop', url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80', aspect: '1/1', author: 'GIF Hub', type: 'gifs' },
+  { id: 'p7', title: 'Sensual Summer Glow', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80', aspect: '2/3', author: 'Kendra L', type: 'models' },
+  { id: 'p8', title: 'High-Res Studio Production', url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80', aspect: '4/5', author: 'Pro 4K', type: '4k' }
 ];
 
-function isAllowedAdUrl(urlStr) {
-  if (!urlStr) return false;
-  try {
-    const parsed = new URL(urlStr, window.location.origin);
-    return ALLOWED_AD_DOMAINS.some(domain => parsed.hostname.includes(domain));
-  } catch (e) {
-    return false;
-  }
-}
-
-// Intensive Smart Popunder Handler for Maximum Monetization
-(function initSmartlinkMonetization() {
-  let clickCount = 0;
-  const COOLDOWN_MS = 30 * 1000;
-
-  document.addEventListener('click', function(e) {
-    const link = e.target.closest('a');
-    if (link && isAllowedAdUrl(link.href)) {
-      return;
-    }
-
-    clickCount++;
-    const lastFired = parseInt(sessionStorage.getItem('nx_smartlink_photos_pop') || '0', 10);
-    const now = Date.now();
-
-    if ((clickCount % 2 === 1) && (now - lastFired > COOLDOWN_MS)) {
-      sessionStorage.setItem('nx_smartlink_photos_pop', now.toString());
-      try {
-        const adWin = window.open(SMARTLINK_URL, '_blank');
-        if (adWin) {
-          adWin.blur();
-          window.focus();
-        }
-      } catch (err) {}
-    }
-  }, { capture: true });
-})();
-
-// Gallery State
-let currentPhotoCategory = 'all';
-let currentPhotoPage = 1;
-let isPhotosLoading = false;
-let hasMorePhotos = true;
-let renderedMediaKeys = new Set();
-let photosObserver = null;
-
 document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const q = params.get('q') || 'all';
-  loadPhotosFeed(q, true);
-  initPhotosInfiniteScroll();
+  loadPhotosFeed();
 });
 
-async function loadPhotosFeed(category = 'all', isInitial = false) {
-  if (isPhotosLoading || (!hasMorePhotos && !isInitial)) return;
-  isPhotosLoading = true;
-
-  currentPhotoCategory = category;
-  const grid = document.getElementById('photosGrid');
-  const loader = document.getElementById('photosLoader');
-  const countLabel = document.getElementById('photosCountLabel');
-
-  if (isInitial) {
-    currentPhotoPage = 1;
-    hasMorePhotos = true;
-    renderedMediaKeys.clear();
-    grid.innerHTML = getPhotosSkeletonHTML(8);
-  } else if (loader) {
-    loader.style.display = 'flex';
-  }
+async function loadPhotosFeed() {
+  const loading = document.getElementById('photosLoading');
 
   try {
-    let endpoint = `/api/photos?q=${encodeURIComponent(category)}&page=${currentPhotoPage}`;
-    if (category === 'gifs') {
-      endpoint = `/api/gifs?q=hot&page=${currentPhotoPage}`;
-    }
-
-    const res = await fetch(endpoint);
+    const res = await fetch('/api/photos');
     const data = await res.json();
-    const items = (data.success && (data.items || data.gifs)) ? (data.items || data.gifs) : [];
-
-    if (isInitial) grid.innerHTML = '';
-
-    if (items.length > 0) {
-      const uniqueItems = items.filter(item => {
-        const key = item.id || item.image_url || item.gif_url || item.thumbnail;
-        if (!key || renderedMediaKeys.has(key)) return false;
-        renderedMediaKeys.add(key);
-        return true;
-      });
-
-      if (uniqueItems.length > 0) {
-        uniqueItems.forEach(item => {
-          grid.appendChild(createPhotoCard(item));
-        });
-        currentPhotoPage++;
-        if (countLabel) countLabel.innerText = `${renderedMediaKeys.size}+ HD Photos & GIFs`;
-      } else if (currentPhotoPage > 1) {
-        currentPhotoPage++;
-      }
+    if (data && data.photos && data.photos.length > 0) {
+      allPhotos = data.photos;
     } else {
-      if (isInitial) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">No photos or GIFs found in this category.</div>';
-      }
-      hasMorePhotos = false;
+      allPhotos = CURATED_SAMPLE_PHOTOS;
     }
-  } catch (err) {
-    console.error('Failed to load photos:', err);
-    if (isInitial) {
-      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ef4444; padding: 50px;">Failed to load media. Check your connection.</div>';
-    }
+  } catch (e) {
+    allPhotos = CURATED_SAMPLE_PHOTOS;
   } finally {
-    isPhotosLoading = false;
-    if (loader) loader.style.display = 'none';
+    if (loading) loading.style.display = 'none';
+    renderPhotos(allPhotos);
   }
 }
 
-function createPhotoCard(item) {
-  const card = document.createElement('div');
-  card.className = 'gif-card animate-fade';
+function renderPhotos(photosList) {
+  const grid = document.getElementById('photosMasonryGrid');
+  if (!grid) return;
 
-  card.onclick = () => {
-    try {
-      const adWin = window.open(SMARTLINK_URL, '_blank');
-      if (adWin) {
-        adWin.blur();
-        window.focus();
-      }
-    } catch (err) {}
-    openPhotoLightbox(item);
-  };
-
-  const mediaSrc = item.image_url || item.gif_url || item.mp4_url || item.thumbnail;
-  const isGif = item.type === 'gif' || String(mediaSrc).includes('.gif') || String(mediaSrc).includes('/gif') || (item.tags && item.tags.includes('gif'));
-  const isMp4 = String(mediaSrc).endsWith('.mp4');
-  const title = item.title || 'HD Model Media';
-  const views = item.views || '45K';
-  const likes = item.likes || '3.2K';
-
-  card.innerHTML = `
-    <div class="gif-thumb-wrap">
-      ${isMp4 
-        ? `<video src="${mediaSrc}" autoplay loop muted playsinline></video>` 
-        : `<img src="${mediaSrc}" alt="${title}" loading="lazy" onerror="this.src='/images/logo.png'">`
-      }
-      <span class="badge-gif-hot"><i class="fa fa-fire"></i> ${isGif ? 'HOT GIF' : 'HD PHOTO'}</span>
-      <span class="badge-gif-type"><i class="${isGif ? 'fa fa-film' : 'fa fa-camera'}"></i> ${isGif ? 'GIF' : 'PHOTO'}</span>
-    </div>
-    <div class="gif-details">
-      <h3 class="gif-title" title="${title}">${title}</h3>
-      <div class="gif-meta">
-        <span><i class="fa fa-eye"></i> ${views}</span>
-        <span style="color: var(--accent-pink);"><i class="fa fa-heart"></i> ${likes}</span>
-      </div>
-    </div>
-  `;
-
-  return card;
-}
-
-function openPhotoLightbox(item) {
-  const modal = document.getElementById('photoLightboxModal');
-  const mediaWrap = document.getElementById('photoLightboxMedia');
-  const titleEl = document.getElementById('photoLightboxTitle');
-  if (!modal || !mediaWrap) return;
-
-  const mediaSrc = item.image_url || item.gif_url || item.mp4_url || item.thumbnail;
-  const isMp4 = String(mediaSrc).endsWith('.mp4');
-
-  if (isMp4) {
-    mediaWrap.innerHTML = `<video src="${mediaSrc}" controls autoplay loop playsinline style="max-height: 70vh; width: 100%; object-fit: contain;"></video>`;
-  } else {
-    mediaWrap.innerHTML = `<img src="${mediaSrc}" alt="${item.title || ''}" style="max-height: 70vh; width: 100%; object-fit: contain;">`;
-  }
-
-  if (titleEl) titleEl.innerText = item.title || 'HD Model Photo / GIF';
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-
-function closePhotoLightbox(e) {
-  if (e && e.target && e.target.classList.contains('btn-gif-action')) return;
-  const modal = document.getElementById('photoLightboxModal');
-  const mediaWrap = document.getElementById('photoLightboxMedia');
-  if (modal) modal.classList.remove('active');
-  if (mediaWrap) mediaWrap.innerHTML = '';
-  document.body.style.overflow = '';
-}
-
-function switchPhotosTab(cat, btn) {
-  document.querySelectorAll('.btn-photo-tab').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  loadPhotosFeed(cat, true);
-}
-
-function initPhotosInfiniteScroll() {
-  const sentinel = document.getElementById('photosSentinel');
-  if (!sentinel) return;
-
-  if (photosObserver) photosObserver.disconnect();
-
-  photosObserver = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isPhotosLoading && hasMorePhotos) {
-      loadPhotosFeed(currentPhotoCategory, false);
-    }
-  }, { rootMargin: '400px' });
-
-  photosObserver.observe(sentinel);
-}
-
-function handlePhotosSearch(e) {
-  if (e.key === 'Enter') executePhotosSearch();
-}
-
-function executePhotosSearch() {
-  const q = document.getElementById('searchInput').value.trim();
-  if (q) loadPhotosFeed(q, true);
-}
-
-function getPhotosSkeletonHTML(count = 8) {
-  let html = '';
-  for (let i = 0; i < count; i++) {
-    html += `
-      <div class="gif-card" style="opacity: 0.5;">
-        <div class="gif-thumb-wrap" style="background: #1e1e2d; min-height: 220px;"></div>
-        <div class="gif-details">
-          <div style="height: 12px; background: #28283c; border-radius: 4px; margin-bottom: 6px;"></div>
+  grid.innerHTML = photosList.map(p => `
+    <div class="pin-card" onclick="openPhotoLightbox('${p.url}', '${escapeHtml(p.title)}', '${p.id}')">
+      <div class="pin-media-wrapper">
+        <img src="${p.url}" alt="${escapeHtml(p.title)}" class="pin-image" loading="lazy">
+        <div class="pin-overlay-scrim"></div>
+        <button class="pin-save-cta js-save-pin" data-id="${p.id}" data-title="${escapeHtml(p.title)}" data-thumb="${p.url}" title="Save Pin">Save</button>
+        <div class="pin-quick-actions">
+          <button class="pin-action-btn" title="View Fullscreen"><i class="fa fa-expand"></i></button>
         </div>
       </div>
-    `;
+      <div class="pin-meta">
+        <h3 class="pin-title">${escapeHtml(p.title)}</h3>
+        <div class="pin-author">
+          <span class="pin-author-name">${p.author || 'Wi9ayah Gallery'}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  if (window.pinEngine) {
+    window.pinEngine.observeImages(grid);
   }
-  return html;
+}
+
+function filterPhotoTab(type, btn) {
+  currentPhotoFilter = type;
+  document.querySelectorAll('.filter-chips-row .filter-chip').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  if (type === 'all') {
+    renderPhotos(allPhotos);
+  } else {
+    const filtered = allPhotos.filter(p => p.type === type || (p.title && p.title.toLowerCase().includes(type)));
+    renderPhotos(filtered.length > 0 ? filtered : allPhotos);
+  }
+}
+
+function filterPhotosByQuery(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    renderPhotos(allPhotos);
+    return;
+  }
+  const filtered = allPhotos.filter(p => p.title && p.title.toLowerCase().includes(q));
+  renderPhotos(filtered);
+}
+
+function openPhotoLightbox(url, title, id) {
+  currentActiveLightbox = { url, title, id };
+  const modal = document.getElementById('photoLightboxModal');
+  const img = document.getElementById('lightboxImage');
+  const titleEl = document.getElementById('lightboxTitle');
+  const dlBtn = document.getElementById('lightboxDownloadBtn');
+
+  if (img) img.src = url;
+  if (titleEl) titleEl.textContent = title;
+  if (dlBtn) dlBtn.href = url;
+  if (modal) modal.classList.add('active');
+}
+
+function closeLightbox(e) {
+  if (e.target.id === 'photoLightboxModal') {
+    closeLightboxDirect();
+  }
+}
+
+function closeLightboxDirect() {
+  const modal = document.getElementById('photoLightboxModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function saveCurrentLightboxPin() {
+  if (!currentActiveLightbox || !window.pinEngine) return;
+  window.pinEngine.toggleSavePin({
+    id: currentActiveLightbox.id,
+    title: currentActiveLightbox.title,
+    thumbnail: currentActiveLightbox.url
+  });
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }

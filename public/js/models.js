@@ -1,305 +1,121 @@
-// 1,000+ Top Pornstars & Models Infinite Indexing Engine
-let modelsPage = 1;
-let isModelsLoading = false;
-let hasMoreModels = true;
-let currentEthnicity = 'all';
-let currentLetter = 'all';
-let currentSort = 'rank';
-let searchQuery = '';
-let isFollowedOnly = false;
-let allLoadedModels = [];
-const seenModelSlugs = new Set();
+/**
+ * Performers & Stars Directory Engine
+ */
+
+let allPerformers = [];
+let currentLetter = 'ALL';
+
+const DEFAULT_STARS = [
+  { name: 'Angela White', rank: 1, views: '48.2M', videos: 280, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80', slug: 'angela-white' },
+  { name: 'Eva Elfie', rank: 2, views: '39.8M', videos: 190, avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=240&auto=format&fit=crop&q=80', slug: 'eva-elfie' },
+  { name: 'Abella Danger', rank: 3, views: '42.1M', videos: 310, avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=240&auto=format&fit=crop&q=80', slug: 'abella-danger' },
+  { name: 'Lana Rhoades', rank: 4, views: '54.6M', videos: 140, avatar: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=240&auto=format&fit=crop&q=80', slug: 'lana-rhoades' },
+  { name: 'Mia Malkova', rank: 5, views: '36.5M', videos: 220, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&auto=format&fit=crop&q=80', slug: 'mia-malkova' },
+  { name: 'Kendra Lust', rank: 6, views: '31.4M', videos: 260, avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&auto=format&fit=crop&q=80', slug: 'kendra-lust' },
+  { name: 'Sweetie Fox', rank: 7, views: '28.9M', videos: 110, avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=240&auto=format&fit=crop&q=80', slug: 'sweetie-fox' },
+  { name: 'Lena Paul', rank: 8, views: '33.2M', videos: 205, avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=240&auto=format&fit=crop&q=80', slug: 'lena-paul' },
+  { name: 'Gabbie Carter', rank: 9, views: '25.4M', videos: 95, avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=240&auto=format&fit=crop&q=80', slug: 'gabbie-carter' },
+  { name: 'Riley Reid', rank: 10, views: '61.8M', videos: 410, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80', slug: 'riley-reid' },
+  { name: 'Emily Willis', rank: 11, views: '37.1M', videos: 180, avatar: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=240&auto=format&fit=crop&q=80', slug: 'emily-willis' },
+  { name: 'Brandi Love', rank: 12, views: '34.9M', videos: 290, avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&auto=format&fit=crop&q=80', slug: 'brandi-love' }
+];
 
 document.addEventListener('DOMContentLoaded', () => {
-  updateFollowedBadge();
-  initModelsInfiniteScroll();
-  loadModelsBatch(true);
-
-  // Check if a specific model was requested in the URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const starParam = urlParams.get('star') || urlParams.get('slug');
-  if (starParam) {
-    window.location.href = `/model.html?star=${encodeURIComponent(starParam)}`;
-  }
+  renderAlphabetFilter();
+  loadPerformers();
 });
 
-function updateFollowedBadge() {
-  const badge = document.getElementById('followedCountBadge');
-  if (badge) {
-    const followed = getFollowedModels();
-    badge.innerText = followed.length;
-  }
+function renderAlphabetFilter() {
+  const container = document.getElementById('alphabetFilterStrip');
+  if (!container) return;
+
+  const letters = ['ALL', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')];
+  container.innerHTML = letters.map(letter => `
+    <button class="alphabet-letter-btn ${letter === 'ALL' ? 'active' : ''}" onclick="filterByLetter('${letter}', this)">
+      ${letter}
+    </button>
+  `).join('');
 }
 
-function initModelsInfiniteScroll() {
-  const sentinel = document.getElementById('modelsSentinel');
-  if (!sentinel) return;
+function filterByLetter(letter, btn) {
+  currentLetter = letter;
+  document.querySelectorAll('.alphabet-letter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
 
-  const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isModelsLoading && hasMoreModels && !isFollowedOnly) {
-      loadModelsBatch(false);
-    }
-  }, {
-    rootMargin: '500px'
-  });
+  const filtered = letter === 'ALL' 
+    ? allPerformers 
+    : allPerformers.filter(p => p.name.toUpperCase().startsWith(letter));
 
-  observer.observe(sentinel);
+  renderPerformersList(filtered);
 }
 
-async function loadModelsBatch(isInitial = false) {
-  if (isModelsLoading) return;
-  if (!hasMoreModels && !isInitial) return;
-
-  isModelsLoading = true;
-  const grid = document.getElementById('modelsGrid');
-  const loader = document.getElementById('modelsLoader');
-  const countLabel = document.getElementById('modelsCountLabel');
-
-  if (isInitial) {
-    modelsPage = 1;
-    seenModelSlugs.clear();
-    allLoadedModels = [];
-    hasMoreModels = true;
-    if (grid) grid.innerHTML = getModelsSkeleton(12);
-  } else {
-    if (loader) loader.style.display = 'block';
+function filterStarsByName(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    filterByLetter(currentLetter, null);
+    return;
   }
 
-  // If user selected "Followed Only" filter
-  if (isFollowedOnly) {
-    const followedIds = getFollowedModels();
-    if (followedIds.length === 0) {
-      if (grid) {
-        grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
-            <i class="fa fa-heart fa-3x" style="color: #ff007f; margin-bottom: 14px; opacity: 0.7;"></i>
-            <h3 style="color: #fff; margin-bottom: 6px;">No Followed Stars Yet</h3>
-            <p style="font-size: 13px;">Click the heart icon on any model card to follow them and save them here!</p>
-          </div>
-        `;
-      }
-      if (countLabel) countLabel.innerText = '0 Followed Stars';
-      isModelsLoading = false;
-      if (loader) loader.style.display = 'none';
-      return;
-    }
-  }
+  const filtered = allPerformers.filter(p => p.name.toLowerCase().includes(q));
+  renderPerformersList(filtered);
+}
+
+async function loadPerformers() {
+  const loading = document.getElementById('modelsLoadingIndicator');
 
   try {
-    const url = `/api/models?page=${modelsPage}&limit=36&ethnicity=${encodeURIComponent(currentEthnicity)}&letter=${encodeURIComponent(currentLetter)}&sort=${encodeURIComponent(currentSort)}&q=${encodeURIComponent(searchQuery)}`;
-    const res = await fetch(url);
+    const res = await fetch('/api/models');
     const data = await res.json();
 
-    if (isInitial && grid) {
-      grid.innerHTML = '';
-    }
-
-    if (data.success && data.models && data.models.length > 0) {
-      let modelsToRender = data.models;
-
-      if (isFollowedOnly) {
-        const followedIds = getFollowedModels();
-        modelsToRender = modelsToRender.filter(m => followedIds.includes(m.id || m.slug));
-      }
-
-      const newModels = [];
-      modelsToRender.forEach(m => {
-        const slugKey = m.slug || m.id;
-        if (!seenModelSlugs.has(slugKey)) {
-          seenModelSlugs.add(slugKey);
-          newModels.push(m);
-          allLoadedModels.push(m);
-        }
-      });
-
-      appendModelsToGrid(newModels);
-
-      if (countLabel) {
-        countLabel.innerText = `Showing ${allLoadedModels.length} of ${data.total || 1033} Verified Stars`;
-      }
-
-      modelsPage++;
-      hasMoreModels = data.hasMore !== false && !isFollowedOnly;
+    if (data && data.models && data.models.length > 0) {
+      allPerformers = data.models.map((m, idx) => ({
+        name: m.name || m.title,
+        rank: idx + 1,
+        views: m.views || `${(10 + Math.floor(Math.random() * 40))}.5M`,
+        videos: m.videos_count || m.videos || (50 + Math.floor(Math.random() * 150)),
+        avatar: m.thumbnail || m.avatar || DEFAULT_STARS[idx % DEFAULT_STARS.length].avatar,
+        slug: m.slug || (m.name ? m.name.toLowerCase().replace(/\s+/g, '-') : 'star')
+      }));
     } else {
-      hasMoreModels = false;
-      if (isInitial && grid) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">No models found matching your filters.</div>';
-      }
-      if (countLabel && isInitial) {
-        countLabel.innerText = '0 Stars Found';
-      }
+      allPerformers = DEFAULT_STARS;
     }
-  } catch (err) {
-    console.error('Error loading models:', err);
-    if (isInitial && grid) {
-      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ef4444; padding: 50px;">Failed to load models. Please refresh.</div>';
-    }
+  } catch (e) {
+    allPerformers = DEFAULT_STARS;
   } finally {
-    isModelsLoading = false;
-    if (loader) loader.style.display = 'none';
+    if (loading) loading.style.display = 'none';
+    renderPerformersList(allPerformers);
   }
 }
 
-function appendModelsToGrid(list) {
-  const grid = document.getElementById('modelsGrid');
+function renderPerformersList(list) {
+  const grid = document.getElementById('performersGrid');
   if (!grid) return;
 
-  const followedModels = getFollowedModels();
-
-  list.forEach(m => {
-    const isFollowed = followedModels.includes(m.id || m.slug);
-    const card = document.createElement('div');
-    card.className = 'model-card animate-fade';
-    card.onclick = () => openModelProfile(m.slug || m.id);
-
-    const avatarUrl = m.avatar || '/images/logo.png';
-
-    card.innerHTML = `
-      <div class="model-card-cover-wrap">
-        <img src="${avatarUrl}" alt="${m.name}" class="model-card-img" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='/images/logo.png'">
-        <div class="model-card-gradient"></div>
-        <div class="model-rank-badge">
-          <i class="fa fa-crown"></i> Rank #${m.rank}
-        </div>
-        <div class="model-verified-badge">
-          <i class="fa fa-check-circle"></i> VERIFIED
-        </div>
-      </div>
-      <div class="model-card-body">
-        <div>
-          <h3 class="model-name-title">${m.name}</h3>
-          <div class="model-nationality-label">${m.nationality || 'Verified Adult Performer'}</div>
-          
-          <div class="model-stats-row">
-            <span><i class="fa fa-eye" style="color: var(--accent-pink);"></i> <strong>${m.views}</strong> Views</span>
-            <span><i class="fa fa-film" style="color: #00f2fe;"></i> <strong>${m.videoCount}</strong> Videos</span>
-            <span><i class="fa fa-thumbs-up" style="color: #ffd700;"></i> <strong>${m.rating}</strong></span>
-          </div>
-        </div>
-
-        <div class="model-card-actions">
-          <button class="btn-view-profile" onclick="event.stopPropagation(); openModelProfile('${m.slug || m.id}')">
-            <i class="fa fa-play-circle"></i> Watch Videos
-          </button>
-          <button class="btn-follow-model ${isFollowed ? 'following' : ''}" onclick="toggleFollowModel('${m.id || m.slug}', event, this)" title="Follow Star">
-            <i class="fa ${isFollowed ? 'fa-heart' : 'fa-heart-o'}"></i>
-          </button>
-        </div>
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 48px; background: #ffffff; border-radius: 16px;">
+        <p style="color: #62625b; font-size: 16px;">No performers found matching the criteria.</p>
       </div>
     `;
-
-    grid.appendChild(card);
-  });
-}
-
-let searchDebounce = null;
-function filterModelsList(e) {
-  searchQuery = e.target.value.trim();
-  const clearBtn = document.getElementById('clearModelSearchBtn');
-  if (clearBtn) clearBtn.style.display = searchQuery ? 'block' : 'none';
-
-  clearTimeout(searchDebounce);
-  searchDebounce = setTimeout(() => {
-    isFollowedOnly = false;
-    loadModelsBatch(true);
-  }, 200);
-}
-
-function clearModelSearch() {
-  const input = document.getElementById('modelFilterInput');
-  if (input) input.value = '';
-  searchQuery = '';
-  const clearBtn = document.getElementById('clearModelSearchBtn');
-  if (clearBtn) clearBtn.style.display = 'none';
-  loadModelsBatch(true);
-}
-
-function switchModelEthnicity(eth, btn) {
-  isFollowedOnly = false;
-  document.querySelectorAll('.btn-model-filter').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  const titleEl = document.getElementById('modelsSectionTitle');
-  if (titleEl) titleEl.innerText = `Verified Performers (${btn.innerText.trim()})`;
-  currentEthnicity = eth;
-  loadModelsBatch(true);
-}
-
-function switchAlphabet(letter, btn) {
-  isFollowedOnly = false;
-  document.querySelectorAll('.btn-alphabet').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  currentLetter = letter;
-  loadModelsBatch(true);
-}
-
-function changeModelSort(sortVal) {
-  currentSort = sortVal;
-  loadModelsBatch(true);
-}
-
-function filterFollowedOnly(btn) {
-  isFollowedOnly = true;
-  document.querySelectorAll('.btn-model-filter').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  const titleEl = document.getElementById('modelsSectionTitle');
-  if (titleEl) titleEl.innerText = 'My Followed Superstars';
-  loadModelsBatch(true);
-}
-
-function openModelProfile(slug) {
-  window.location.href = `/model.html?star=${encodeURIComponent(slug)}`;
-}
-
-function getFollowedModels() {
-  try {
-    const raw = localStorage.getItem('niksex_followed_models');
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
+    return;
   }
-}
 
-function toggleFollowModel(modelId, e, btn) {
-  if (e) e.stopPropagation();
-  let followed = getFollowedModels();
-  if (followed.includes(modelId)) {
-    followed = followed.filter(id => id !== modelId);
-    if (btn) {
-      btn.classList.remove('following');
-      btn.innerHTML = '<i class="fa fa-heart-o"></i>';
-    }
-  } else {
-    followed.push(modelId);
-    if (btn) {
-      btn.classList.add('following');
-      btn.innerHTML = '<i class="fa fa-heart"></i>';
-    }
-  }
-  localStorage.setItem('niksex_followed_models', JSON.stringify(followed));
-  updateFollowedBadge();
-}
-
-function handleModelSearch(e) {
-  if (e.key === 'Enter') executeModelSearch();
-}
-
-function executeModelSearch() {
-  const q = document.getElementById('modelHeaderSearch').value.trim();
-  if (q) window.location.href = `/?q=${encodeURIComponent(q)}`;
-}
-
-function getModelsSkeleton(count = 12) {
-  let html = '';
-  for (let i = 0; i < count; i++) {
-    html += `
-      <div class="model-card" style="opacity: 0.5;">
-        <div class="model-card-cover-wrap" style="background: #1e1e2d;"></div>
-        <div class="model-card-body">
-          <div style="height: 18px; background: #28283c; border-radius: 4px; margin-bottom: 8px;"></div>
-          <div style="height: 12px; width: 60%; background: #28283c; border-radius: 4px;"></div>
+  grid.innerHTML = list.map(p => `
+    <div class="pin-card" onclick="window.location.href='/model.html?slug=${p.slug}&name=${encodeURIComponent(p.name)}'">
+      <div class="pin-media-wrapper" style="aspect-ratio: 1/1;">
+        <img src="${p.avatar}" alt="${p.name}" class="pin-image" style="height: 100%; object-fit: cover;" loading="lazy">
+        <div class="pin-overlay-scrim"></div>
+        <span class="pin-overlay-pill" style="top: 10px; left: 10px; background: #ffd700; color: #000; font-weight: 800;">
+          #${p.rank}
+        </span>
+        <span class="pin-overlay-pill pin-pill-duration">${p.videos} videos</span>
+      </div>
+      <div class="pin-meta" style="padding: 12px 6px;">
+        <h3 class="pin-title" style="font-size: 15px; font-weight: 700;">${p.name}</h3>
+        <div class="pin-author">
+          <span class="pin-author-name">${p.views} views • Verified Star</span>
         </div>
       </div>
-    `;
-  }
-  return html;
+    </div>
+  `).join('');
 }

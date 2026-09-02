@@ -1,1804 +1,374 @@
-// Monetization & Smartlink Configuration
-const SMARTLINK_URL = 'https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab';
-const ALLOWED_AD_DOMAINS = [
-  'profitableratecpmnetwork.com',
-  'highrevenueformat.com'
+/**
+ * Main Application Frontend Logic
+ * Pinterest Discovery Architecture, Masonry Feeds, Live Autocomplete & State Management
+ */
+
+// State Management
+const AppState = {
+  category: 'trending',
+  page: 1,
+  searchQuery: '',
+  isLoading: false,
+  hasMore: true,
+  renderedIds: new Set(),
+  videos: []
+};
+
+// English Categories Directory
+const CATEGORIES = [
+  { id: 'trending', name: 'Trending', icon: 'fa-fire' },
+  { id: '4k', name: '4K Ultra HD', icon: 'fa-tv' },
+  { id: 'stars', name: 'Top Stars', icon: 'fa-crown', link: '/models.html' },
+  { id: 'reels', name: 'Reels (+18)', icon: 'fa-clapperboard', link: '/reels.html' },
+  { id: 'photos', name: 'Photos & GIFs', icon: 'fa-camera-retro', link: '/photos.html' },
+  { id: 'health', name: 'Health & Safety', icon: 'fa-shield-heart', link: '/health.html' },
+  { id: 'amateur', name: 'Amateur Couples', icon: 'fa-user' },
+  { id: 'milf', name: 'MILF & Mature', icon: 'fa-heart' },
+  { id: 'lesbian', name: 'Lesbian & Solo', icon: 'fa-venus-double' },
+  { id: 'teen', name: '18+ Youth', icon: 'fa-star' },
+  { id: 'anal', name: 'Anal Passion', icon: 'fa-circle-notch' },
+  { id: 'blowjob', name: 'Oral & Sensual', icon: 'fa-kiss' },
+  { id: 'hardcore', name: 'Hardcore Action', icon: 'fa-bolt' },
+  { id: 'japanese', name: 'Asian & Japanese', icon: 'fa-globe' },
+  { id: 'vr', name: 'VR 360° Experience', icon: 'fa-vr-cardboard' },
+  { id: 'exclusive', name: 'Exclusive HD', icon: 'fa-gem' }
 ];
 
-function isAllowedAdUrl(urlStr) {
-  if (!urlStr) return false;
-  try {
-    const parsed = new URL(urlStr, window.location.origin);
-    return ALLOWED_AD_DOMAINS.some(domain => parsed.hostname.includes(domain));
-  } catch (e) {
-    return false;
-  }
-}
-
-// Intensive Smart Popunder Handler for Maximum Monetization
-(function initSmartlinkMonetization() {
-  let clickCount = 0;
-  const COOLDOWN_MS = 30 * 1000; // 30 seconds cooldown between pops
-
-  document.addEventListener('click', function(e) {
-    const link = e.target.closest('a');
-    if (link && isAllowedAdUrl(link.href)) {
-      return; // Allow direct click without intercepting
-    }
-
-    clickCount++;
-    const lastFired = parseInt(sessionStorage.getItem('nx_smartlink_last_click_pop') || '0', 10);
-    const now = Date.now();
-
-    if ((clickCount % 2 === 1) && (now - lastFired > COOLDOWN_MS)) {
-      sessionStorage.setItem('nx_smartlink_last_click_pop', now.toString());
-      try {
-        const adWin = window.open(SMARTLINK_URL, '_blank');
-        if (adWin) {
-          adWin.blur();
-          window.focus();
-        }
-      } catch (err) {}
-    }
-  }, { capture: true });
-})();
-
-
-
-// Global App State
-let currentVideos = [];
-let currentCategory = 'trending';
-let currentSearchQuery = '';
-let currentDurationFilter = 'all';
-let currentSortFilter = 'trending';
-let isSearchMode = false;
-let isHistoryMode = false;
-let isFavoritesMode = false;
-let isForYouMode = false;
-let isTikTokMode = false;
-let isTikTokReelsView = true;
-let tiktokReelsList = [];
-let reelsObserver = null;
-let isGlobalTikTokMuted = false;
-let isAutoScrollNext = true;
-let isReelsLoading = false;
-let activeReelSlideIndex = 0;
-let currentPage = 1;
-let isLoading = false;
-let hasMore = true;
-let renderedVideoIds = new Set();
-let scrollObserver = null;
-
-// Categories Database
-const CATEGORIES_LIST = [
-  { id: 'sex_arabic', title: 'Sex Arabic (Exclusive)', icon: 'fa-star', special: true, count: '15,400+' },
-  { id: 'nikroli', title: 'nikroli Reels (18+ Shorts)', icon: 'fa-brands fa-tiktok', specialTikTok: true, count: '25,800+' },
-  { id: 'trending', title: 'Trending', icon: 'fa-fire', count: '54,200+' },
-  { id: '4k', title: '4K Ultra HD', icon: 'fa-tv', count: '12,900+' },
-  { id: 'amateur', title: 'Amateur Couples', icon: 'fa-user', count: '36,400+' },
-  { id: 'milf', title: 'MILF & Mature', icon: 'fa-heart', count: '29,100+' },
-  { id: 'lesbian', title: 'Lesbian & Girls', icon: 'fa-venus-double', count: '19,800+' },
-  { id: 'teen', title: '18+ Teen Babes', icon: 'fa-star-half-alt', count: '23,400+' },
-  { id: 'anal', title: 'Anal Hardcore', icon: 'fa-circle-notch', count: '18,700+' },
-  { id: 'blowjob', title: 'Blowjob & Deepthroat', icon: 'fa-kiss', count: '26,500+' },
-  { id: 'hardcore', title: 'Hardcore & Rough', icon: 'fa-bolt', count: '31,200+' },
-  { id: 'asian', title: 'Asian & Japanese', icon: 'fa-globe-asia', count: '16,800+' },
-  { id: 'ebony', title: 'Ebony Babes', icon: 'fa-moon', count: '14,900+' },
-  { id: 'latina', title: 'Latina Hotties', icon: 'fa-sun', count: '17,600+' },
-  { id: 'hentai', title: 'Hentai & Anime', icon: 'fa-dragon', count: '11,400+' },
-  { id: 'vr', title: 'VR 360° Porn', icon: 'fa-vr-cardboard', count: '6,800+' },
-  { id: 'creampie', title: 'Creampie Internal', icon: 'fa-tint', count: '21,900+' },
-  { id: 'threesome', title: 'Threesome & Group', icon: 'fa-users', count: '13,500+' },
-  { id: 'fetish', title: 'Fetish & BDSM', icon: 'fa-mask', count: '9,400+' },
-  { id: 'masturbation', title: 'Solo & Masturbation', icon: 'fa-hand-sparkles', count: '15,800+' },
-  { id: 'big_tits', title: 'Big Tits & Boobs', icon: 'fa-heartbeat', count: '28,100+' },
-  { id: 'big_ass', title: 'Big Ass & Booty', icon: 'fa-ring', count: '24,900+' }
+// Curated Top Stars for Carousel
+const FEATURED_STARS = [
+  { name: 'Angela White', views: '48.2M', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80', slug: 'angela-white' },
+  { name: 'Eva Elfie', views: '39.8M', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&auto=format&fit=crop&q=80', slug: 'eva-elfie' },
+  { name: 'Abella Danger', views: '42.1M', avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=160&auto=format&fit=crop&q=80', slug: 'abella-danger' },
+  { name: 'Lana Rhoades', views: '54.6M', avatar: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=160&auto=format&fit=crop&q=80', slug: 'lana-rhoades' },
+  { name: 'Mia Malkova', views: '36.5M', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&auto=format&fit=crop&q=80', slug: 'mia-malkova' },
+  { name: 'Kendra Lust', views: '31.4M', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80', slug: 'kendra-lust' },
+  { name: 'Sweetie Fox', views: '28.9M', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=160&auto=format&fit=crop&q=80', slug: 'sweetie-fox' },
+  { name: 'Lena Paul', views: '33.2M', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&auto=format&fit=crop&q=80', slug: 'lena-paul' }
 ];
 
-const SEARCH_SUGGESTIONS = [
-  'arabic', 'egyptian', 'moroccan', 'lebanese', 'syrian', 'iraqi', 'tunisian',
-  '4k uhd', 'amateur couple', 'milf stepmom', 'lesbian massage', 'big ass latina',
-  'creampie hardcore', 'anal deepthroat', 'japanese uncensored', 'vr 360 virtual reality'
-];
-
-// Global Spotlight state
-let currentSpotlightVideo = null;
-
-// Initialize on DOM load
+// Initialize on DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
-  initSpotlightHero();
-  initReelsStrip();
-  initArabicCuratedBlock();
-  initActiveStarsGrid();
-  initHomeStarsCarousel();
-  initRandomCategoryImages();
+  initFilterChips();
+  initTopStarsCarousel();
+  initSearchAutocomplete();
+  initInfiniteScrollObserver();
 
+  // Read URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const q = urlParams.get('q');
   const cat = urlParams.get('cat');
-  const hist = urlParams.get('history');
-  const fav = urlParams.get('fav');
 
   if (q) {
-    const sInput = document.getElementById('searchInput') || document.getElementById('headerSearch');
-    if (sInput) sInput.value = q;
-    executeSearch();
-  } else if (cat === 'reels' || cat === 'shorts') {
-    loadReelsView();
+    AppState.searchQuery = q.trim();
+    const searchInput = document.getElementById('globalSearchInput');
+    if (searchInput) searchInput.value = AppState.searchQuery;
+    loadVideos(true);
   } else if (cat) {
-    resetAndLoadCategory(cat);
-  } else if (hist) {
-    loadWatchHistory();
-  } else if (fav) {
-    loadFavoritesView();
+    AppState.category = cat;
+    highlightActiveChip(cat);
+    loadVideos(true);
   } else {
-    resetAndLoadCategory('trending');
+    loadVideos(true);
   }
-
-  initInfiniteScrollObserver();
-
-  // Close autocomplete on click outside
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-box')) {
-      const box = document.getElementById('searchAutocomplete');
-      if (box) box.style.display = 'none';
-    }
-  });
 });
 
-// 1. Initialize Spotlight Hero with top trending video
-async function initSpotlightHero() {
-  try {
-    const res = await fetch('/api/videos?category=trending&page=1');
-    const data = await res.json();
-    if (data.success && data.videos && data.videos.length > 0) {
-      const topVid = data.videos[0];
-      currentSpotlightVideo = topVid;
-
-      const titleEl = document.getElementById('heroSpotlightTitle');
-      const imgEl = document.getElementById('heroSpotlightImg');
-      const viewsEl = document.getElementById('heroSpotlightViews');
-      const ratingEl = document.getElementById('heroSpotlightRating');
-      const durEl = document.getElementById('heroSpotlightDuration');
-
-      if (titleEl) titleEl.innerText = topVid.title || 'Featured High Definition Video of the Day';
-      if (imgEl && topVid.thumbnail) imgEl.src = topVid.thumbnail;
-      if (viewsEl) viewsEl.innerText = topVid.views || '185.4K';
-      if (ratingEl) ratingEl.innerText = topVid.rating || '99%';
-      if (durEl) durEl.innerText = topVid.duration || '24:15';
-    }
-  } catch (e) {
-    console.error('Failed to load spotlight video:', e);
-  }
-}
-
-function playSpotlightVideo(e) {
-  if (e) e.stopPropagation();
-  if (currentSpotlightVideo) {
-    navigateToWatchPage(currentSpotlightVideo);
-  } else {
-    window.location.href = '/watch.html';
-  }
-}
-
-// 2. Initialize Weqaya Reels Strip (Replacing nikroli & tiktok)
-async function initReelsStrip() {
-  const container = document.getElementById('reelsStripContainer') || document.getElementById('nikroliStripContainer');
+// Render Filter Chips
+function initFilterChips() {
+  const container = document.getElementById('filterChipsBar');
   if (!container) return;
 
-  try {
-    const res = await fetch('/api/tiktok?q=trending&page=1');
-    const data = await res.json();
-    const reels = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
-
-    if (reels.length === 0) {
-      container.innerHTML = '<div style="padding: 20px; color: var(--text-muted);">Reels streaming soon...</div>';
-      return;
-    }
-
-    container.innerHTML = '';
-    reels.slice(0, 14).forEach(r => {
-      const card = document.createElement('a');
-      card.href = '/reels.html';
-      card.className = 'nikroli-strip-card';
-
-      const thumb = r.poster || r.thumbnail || '/images/logo.png';
-      const title = r.title || 'وقاية ريلز 18+ Shorts';
-      const likes = r.likes || '3.2K';
-
-      card.innerHTML = `
-        <img src="${thumb}" alt="${title}" loading="lazy" onerror="this.src='/images/logo.png'">
-        <div class="nikroli-strip-gradient"></div>
-        <span class="nikroli-strip-badge" style="background: linear-gradient(135deg, #ff007f, #9d4edd);"><i class="fa fa-clapperboard"></i> ريلز</span>
-        <div class="nikroli-strip-play-icon"><i class="fa fa-play"></i></div>
-        <div class="nikroli-strip-info">
-          <h4>${title}</h4>
-          <span><i class="fa fa-heart" style="color: #ff007f;"></i> ${likes}</span>
-        </div>
+  container.innerHTML = CATEGORIES.map(cat => {
+    const isLink = !!cat.link;
+    const activeClass = cat.id === AppState.category ? 'active' : '';
+    if (isLink) {
+      return `
+        <a href="${cat.link}" class="filter-chip">
+          <i class="fa ${cat.icon}"></i>
+          <span>${cat.name}</span>
+        </a>
       `;
-      container.appendChild(card);
-    });
-  } catch (e) {
-    container.innerHTML = '<div style="padding: 20px; color: #ef4444;">Failed to load reels.</div>';
-  }
-}
-
-// Initialize Active Stars Grid (Screenshot Style with Green Online Dot)
-async function initActiveStarsGrid() {
-  const container = document.getElementById('activeStarsGrid');
-  if (!container) return;
-
-  try {
-    const res = await fetch('/api/models?limit=12&sort=views');
-    const data = await res.json();
-    const models = (data.success && data.models && data.models.length > 0) ? data.models : [];
-
-    if (models.length === 0) {
-      container.innerHTML = '<div style="padding: 15px; color: var(--text-muted);">No models available.</div>';
-      return;
     }
-
-    container.innerHTML = '';
-    models.forEach(m => {
-      const card = document.createElement('a');
-      card.href = `/model.html?star=${encodeURIComponent(m.slug || m.id)}`;
-      card.className = 'sexamore-star-card animate-fade';
-
-      const avatar = m.avatar ? (m.avatar.startsWith('http') ? `/api/proxy/image?url=${encodeURIComponent(m.avatar)}` : m.avatar) : '/images/logo.png';
-      const city = m.nationality || 'Verified Star';
-
-      card.innerHTML = `
-        <div class="sexamore-star-thumb-wrap">
-          <img src="${avatar}" alt="${m.name}" loading="lazy" onerror="this.src='/images/logo.png'">
-        </div>
-        <div class="sexamore-star-meta">
-          <div class="sexamore-star-name">
-            <span class="dot-online" title="متصل الآن Online"></span>
-            <span title="${m.name}">${m.name}</span>
-          </div>
-          <span style="font-size: 10px; color: #94a3b8; margin-top: 2px; display: block;">${city}</span>
-        </div>
-      `;
-      container.appendChild(card);
-    });
-  } catch (err) {
-    container.innerHTML = '<div style="padding: 15px; color: #ef4444;">Failed to load active stars.</div>';
-  }
+    return `
+      <button class="filter-chip ${activeClass}" onclick="selectCategory('${cat.id}', this)">
+        <i class="fa ${cat.icon}"></i>
+        <span>${cat.name}</span>
+      </button>
+    `;
+  }).join('');
 }
 
-function loadReelsView() {
-  window.location.href = '/reels.html';
+function selectCategory(catId, btnEl) {
+  if (AppState.category === catId && !AppState.searchQuery) return;
+  AppState.category = catId;
+  AppState.searchQuery = '';
+  
+  // Update UI
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  const searchInput = document.getElementById('globalSearchInput');
+  if (searchInput) searchInput.value = '';
+
+  // Update URL state without page refresh
+  const newUrl = catId === 'trending' ? '/' : `/?cat=${catId}`;
+  window.history.pushState({}, '', newUrl);
+
+  loadVideos(true);
 }
 
-// 3. Initialize Sex Arabic Curated Block
-async function initArabicCuratedBlock() {
-  const container = document.getElementById('arabicFeaturedGrid');
-  if (!container) return;
-
-  try {
-    const res = await fetch('/api/videos?category=arabic&page=1');
-    const data = await res.json();
-    const arabicVids = (data.success && data.videos && data.videos.length > 0) ? data.videos.slice(0, 4) : [];
-
-    container.innerHTML = '';
-    if (arabicVids.length > 0) {
-      arabicVids.forEach(v => {
-        const card = createVideoCardElement(v);
-        container.appendChild(card);
-      });
+function highlightActiveChip(catId) {
+  document.querySelectorAll('.filter-chip').forEach(c => {
+    const text = c.textContent.trim().toLowerCase();
+    if (text.includes(catId.toLowerCase())) {
+      c.classList.add('active');
     } else {
-      container.innerHTML = '<div style="grid-column: 1/-1; color: var(--text-muted); text-align: center; padding: 20px;">No Arabic videos found.</div>';
+      c.classList.remove('active');
     }
-  } catch (e) {
-    container.innerHTML = '<div style="grid-column: 1/-1; color: #ef4444; text-align: center; padding: 20px;">Failed to load Arabic section.</div>';
-  }
+  });
 }
 
-// 3.5 Initialize Top Verified Pornstars & Models Carousel (Pornhub Signature Feature)
-async function initHomeStarsCarousel() {
-  const container = document.getElementById('homeStarsCarouselStrip');
+// Render Top Stars Carousel
+function initTopStarsCarousel() {
+  const container = document.getElementById('topStarsCarousel');
   if (!container) return;
 
-  try {
-    const res = await fetch('/api/models?limit=16&sort=rank');
-    const data = await res.json();
-    const models = (data.success && data.models && data.models.length > 0) ? data.models : [];
-
-    if (models.length === 0) {
-      container.innerHTML = '<div style="padding: 15px; color: var(--text-muted);">No stars found.</div>';
-      return;
-    }
-
-    container.innerHTML = '';
-    models.forEach(m => {
-      const card = document.createElement('a');
-      card.href = `/model.html?star=${encodeURIComponent(m.slug || m.id)}`;
-      card.className = 'star-strip-card animate-fade';
-
-      const avatar = m.avatar ? (m.avatar.startsWith('http') ? `/api/proxy/image?url=${encodeURIComponent(m.avatar)}` : m.avatar) : '/images/logo.png';
-
-      card.innerHTML = `
-        <div class="star-strip-avatar-wrap">
-          <img src="${avatar}" alt="${m.name}" class="star-strip-avatar" loading="lazy" onerror="this.src='/images/logo.png'">
-          <span class="star-strip-rank-badge">#${m.rank || 1}</span>
-        </div>
-        <h4 class="star-strip-name" title="${m.name}">${m.name}</h4>
-        <span class="star-strip-videos"><i class="fa fa-film"></i> ${m.videoCount || m.videos || '50+'} vids</span>
-      `;
-      container.appendChild(card);
-    });
-  } catch (err) {
-    container.innerHTML = '<div style="padding: 15px; color: #ef4444;">Failed to load top stars.</div>';
-  }
-}
-
-// 4. Dynamically populate category matrix backgrounds with random model photos
-async function initRandomCategoryImages() {
-  const images = document.querySelectorAll('.cat-matrix-bg');
-  if (images.length === 0) return;
-
-  try {
-    const res = await fetch(`/api/models/random?count=${images.length}`);
-    const data = await res.json();
-    if (data.success && data.models && data.models.length > 0) {
-      images.forEach((img, idx) => {
-        const model = data.models[idx % data.models.length];
-        if (model && (model.cover || model.avatar)) {
-          const coverUrl = model.cover || model.avatar;
-          img.src = coverUrl.startsWith('http') ? `/api/proxy/image?url=${encodeURIComponent(coverUrl)}` : coverUrl;
-        }
-      });
-    }
-  } catch (e) {}
-}
-
-// Dedicated Standalone Page Routing Functions
-function loadNikroliView() {
-  window.location.href = '/nikroli.html';
-}
-
-function loadTikTokView() {
-  window.location.href = '/nikroli.html';
-}
-
-function loadPhotosView() {
-  window.location.href = '/photos.html';
-}
-
-function loadGifsView() {
-  window.location.href = '/photos.html';
-}
-
-function loadFavoritesView() {
-  window.location.href = '/favorites.html';
-}
-
-function loadWatchHistory() {
-  window.location.href = '/history.html';
-}
-
-function openCategoriesModal() {
-  window.location.href = '/categories.html';
-}
-
-function loadFavoritesView() {
-  window.location.href = '/favorites.html';
-}
-
-function loadWatchHistory() {
-  window.location.href = '/history.html';
-}
-
-function openCategoriesModal() {
-  window.location.href = '/categories.html';
-}
-
-// Category switcher
-function setCategory(btn, category) {
-  if (category === 'tiktok' || category === 'shorts') {
-    window.location.href = '/scroll.html';
-    return;
-  }
-  if (category === 'sex_arabic' || category === 'arabic') {
-    window.location.href = '/arabic.html';
-    return;
-  }
-  if (category === 'photos' || category === 'gifs') {
-    window.location.href = '/photos.html';
-    return;
-  }
-  if (category === '4k') {
-    window.location.href = '/4k.html';
-    return;
-  }
-
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  resetAndLoadCategory(category);
-}
-
-function resetAndLoadCategory(category) {
-  isSearchMode = false;
-  currentSearchQuery = '';
-  currentCategory = category;
-  currentPage = 1;
-  hasMore = true;
-  renderedVideoIds.clear();
-  currentVideos = [];
-
-  const catObj = CATEGORIES_LIST.find(c => c.id === category);
-  const label = catObj ? catObj.title.toUpperCase() : category.toUpperCase();
-  const catLabelEl = document.getElementById('categoryLabel');
-  if (catLabelEl) catLabelEl.innerText = label;
-
-  const countLabelEl = document.getElementById('videoCountLabel');
-  if (countLabelEl) countLabelEl.innerText = 'Streaming live videos...';
-
-  const grid = document.getElementById('videosGrid');
-  if (grid) {
-    grid.innerHTML = getSkeletonHTML(8);
-  }
-  loadVideosBatch(true);
-}
-
-// Fetch and Render TikTok Vertical Reels Feed
-async function fetchAndRenderTikTokReels(isInitial = false) {
-  if (isReelsLoading) return;
-  isReelsLoading = true;
-
-  const feed = document.getElementById('tiktokReelsFeed');
-  if (!feed) return;
-
-  if (isInitial) {
-    feed.innerHTML = `
-      <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); gap: 14px;">
-        <div class="spinner-neon"></div>
-        <span style="font-weight: 700; color: #00f2fe;"><i class="fa-brands fa-tiktok"></i> Loading TikTok 18+ Reels...</span>
+  container.innerHTML = FEATURED_STARS.map(star => `
+    <div class="star-card-compact" onclick="window.location.href='/model.html?slug=${star.slug}'">
+      <div class="star-avatar-wrap">
+        <img src="${star.avatar}" alt="${star.name}" class="star-avatar-img" loading="lazy">
+        <div class="star-verified-check"><i class="fa fa-check"></i></div>
       </div>
-    `;
-    currentPage = 1;
-    tiktokReelsList = [];
-  }
-
-  try {
-    const res = await fetch(`/api/tiktok?q=trending&page=${currentPage}`);
-    const data = await res.json();
-    const videos = (data.success && data.videos && data.videos.length > 0) ? data.videos : [];
-
-    if (isInitial) feed.innerHTML = '';
-
-    if (videos.length === 0 && isInitial) {
-      feed.innerHTML = `
-        <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); gap: 10px;">
-          <i class="fa fa-film" style="font-size: 36px; color: #ff007f;"></i>
-          <span>No TikTok reels found at the moment.</span>
-        </div>
-      `;
-      isReelsLoading = false;
-      return;
-    }
-
-    const startIndex = tiktokReelsList.length;
-    videos.forEach((v, i) => {
-      const globalIndex = startIndex + i;
-      tiktokReelsList.push(v);
-      const slide = createTikTokReelSlideElement(v, globalIndex);
-      feed.appendChild(slide);
-    });
-
-    setupReelsIntersectionObserver();
-
-    if (isInitial && feed.firstElementChild) {
-      const firstVid = feed.querySelector('.tiktok-reel-video');
-      if (firstVid) {
-        firstVid.muted = isGlobalTikTokMuted;
-        firstVid.play().catch(() => {
-          firstVid.muted = true;
-          firstVid.play().catch(() => {});
-        });
-      }
-    }
-
-    currentPage++;
-  } catch (e) {
-    console.error('Failed to load TikTok reels:', e);
-  } finally {
-    isReelsLoading = false;
-  }
-}
-
-function createTikTokReelSlideElement(v, index) {
-  const slide = document.createElement('div');
-  slide.className = 'tiktok-reel-slide';
-  slide.dataset.index = index;
-
-  const videoSrc = v.direct_video_url || v.video_url || '';
-  const poster = v.poster || v.thumbnail || '/images/logo.png';
-  const title = v.title || 'niksex TikTok 18+ Short';
-  const likes = v.likes || '2.4K';
-  const tags = (v.tags || ['tiktok', 'shorts', 'hot', 'niksex']).map(t => `#${t}`).slice(0, 3).join(' ');
-
-  slide.innerHTML = `
-    <img class="tiktok-reel-bg" src="${poster}" alt="" onerror="this.style.display='none'">
-    <video class="tiktok-reel-video" src="${videoSrc}" poster="${poster}" loop playsinline webkit-playsinline x5-playsinline preload="${index < 3 ? 'auto' : 'metadata'}" data-index="${index}" onclick="toggleTikTokPlay(${index})"></video>
-    <div class="tiktok-reel-play-btn" id="playIndicator_${index}"><i class="fa fa-play"></i></div>
-
-    <!-- Right Sidebar Floating Actions -->
-    <div class="tiktok-reel-sidebar">
-      <button class="tiktok-action-btn" id="btnLike_${index}" onclick="toggleTikTokReelLike(${index}, event)">
-        <div class="tiktok-action-icon"><i class="fa fa-heart"></i></div>
-        <span class="tiktok-action-label" id="likeCount_${index}">${likes}</span>
-      </button>
-
-      <button class="tiktok-action-btn" onclick="openTikTokReelWatch(${index}, event)" title="Watch in Full Cinema Player">
-        <div class="tiktok-action-icon"><i class="fa fa-expand"></i></div>
-        <span class="tiktok-action-label">HD</span>
-      </button>
-
-      <button class="tiktok-action-btn" onclick="shareTikTokReel(${index}, event)" title="Share Reel">
-        <div class="tiktok-action-icon"><i class="fa fa-share"></i></div>
-        <span class="tiktok-action-label">Share</span>
-      </button>
-
-      <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="tiktok-action-btn" title="Download HD / VIP Stream">
-        <div class="tiktok-action-icon" style="border-color: #ffd700; color: #ffd700;"><i class="fa fa-download"></i></div>
-        <span class="tiktok-action-label" style="color: #ffd700;">VIP</span>
-      </a>
-
-      <div class="tiktok-sound-disc">
-        <img src="/images/logo.png" alt="">
-      </div>
+      <span class="star-name-label">${star.name}</span>
+      <span class="star-meta-count">${star.views} views</span>
     </div>
+  `).join('');
+}
 
-    <!-- Bottom Metadata Overlay -->
-    <div class="tiktok-reel-overlay">
-      <div class="tiktok-author-tag">
-        <span>@niksex_shorts</span>
-        <i class="fa fa-check-circle verified-badge"></i>
-      </div>
-      <div class="tiktok-reel-title">${title} <span style="color: #00f2fe; font-weight: 700;">${tags}</span></div>
-      <div class="tiktok-sound-track">
-        <i class="fa fa-music"></i>
-        <span style="font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;">Original Sound - niksex TikTok Live</span>
-      </div>
-    </div>
-  `;
+// Load Videos Feed from API
+async function loadVideos(reset = false) {
+  if (AppState.isLoading) return;
+  if (!reset && !AppState.hasMore) return;
 
-  const videoEl = slide.querySelector('.tiktok-reel-video');
-  if (videoEl) {
-    videoEl.addEventListener('ended', () => {
-      if (isAutoScrollNext && isTikTokMode && isTikTokReelsView) {
-        scrollTikTokReel('next');
-      }
-    });
+  AppState.isLoading = true;
+  const grid = document.getElementById('pinMasonryGrid');
+  const loadingIndicator = document.getElementById('gridLoadingIndicator');
+
+  if (reset) {
+    AppState.page = 1;
+    AppState.hasMore = true;
+    AppState.renderedIds.clear();
+    AppState.videos = [];
+    if (grid) grid.innerHTML = '';
   }
 
-  return slide;
-}
-
-// Prebuffer upcoming reels for 0-second lag
-function prebufferUpcomingReels(currentIndex) {
-  const nextSlide1 = document.querySelector(`.tiktok-reel-slide[data-index="${currentIndex + 1}"]`);
-  if (nextSlide1) {
-    const v1 = nextSlide1.querySelector('.tiktok-reel-video');
-    if (v1 && v1.preload !== 'auto') {
-      v1.preload = 'auto';
-      v1.load();
-    }
-  }
-
-  const nextSlide2 = document.querySelector(`.tiktok-reel-slide[data-index="${currentIndex + 2}"]`);
-  if (nextSlide2) {
-    const v2 = nextSlide2.querySelector('.tiktok-reel-video');
-    if (v2 && v2.preload !== 'auto') {
-      v2.preload = 'auto';
-      v2.load();
-    }
-  }
-}
-
-// Observer for Swiping and Auto-Playing active slide
-function setupReelsIntersectionObserver() {
-  const slides = document.querySelectorAll('.tiktok-reel-slide');
-  if (!slides || slides.length === 0) return;
-
-  if (reelsObserver) reelsObserver.disconnect();
-
-  reelsObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const slide = entry.target;
-      const index = parseInt(slide.dataset.index, 10);
-      const vid = slide.querySelector('.tiktok-reel-video');
-
-      if (entry.isIntersecting && entry.intersectionRatio >= 0.65) {
-        activeReelSlideIndex = index;
-        if (vid) {
-          vid.preload = 'auto';
-          vid.muted = isGlobalTikTokMuted;
-          const playPromise = vid.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(() => {
-              vid.muted = true;
-              vid.play().catch(() => {});
-            });
-          }
-        }
-
-        prebufferUpcomingReels(index);
-
-        // Check if near the end, prefetch next batch
-        if (index >= tiktokReelsList.length - 3 && !isReelsLoading) {
-          fetchAndRenderTikTokReels(false);
-        }
-      } else {
-        if (vid) {
-          vid.pause();
-          vid.currentTime = 0;
-        }
-      }
-    });
-  }, {
-    root: document.getElementById('tiktokReelsFeed'),
-    threshold: 0.65
-  });
-
-  slides.forEach(s => reelsObserver.observe(s));
-}
-
-// Pause all reels when navigating away
-function pauseAllTikTokReels() {
-  document.querySelectorAll('.tiktok-reel-video').forEach(v => {
-    v.pause();
-  });
-}
-
-// Scroll to next/prev reel
-function scrollTikTokReel(direction) {
-  const feed = document.getElementById('tiktokReelsFeed');
-  if (!feed) return;
-
-  const slides = feed.querySelectorAll('.tiktok-reel-slide');
-  if (!slides || slides.length === 0) return;
-
-  if (direction === 'next') {
-    activeReelSlideIndex = Math.min(activeReelSlideIndex + 1, slides.length - 1);
-  } else {
-    activeReelSlideIndex = Math.max(activeReelSlideIndex - 1, 0);
-  }
-
-  if (slides[activeReelSlideIndex]) {
-    slides[activeReelSlideIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-}
-
-// Play / Pause toggle with animated feedback
-function toggleTikTokPlay(index) {
-  const slide = document.querySelector(`.tiktok-reel-slide[data-index="${index}"]`);
-  if (!slide) return;
-
-  const vid = slide.querySelector('.tiktok-reel-video');
-  const indicator = document.getElementById(`playIndicator_${index}`);
-  if (!vid) return;
-
-  if (vid.paused) {
-    vid.play().catch(() => {});
-    if (indicator) {
-      indicator.innerHTML = '<i class="fa fa-play"></i>';
-      indicator.classList.add('show');
-      setTimeout(() => indicator.classList.remove('show'), 400);
-    }
-  } else {
-    vid.pause();
-    if (indicator) {
-      indicator.innerHTML = '<i class="fa fa-pause"></i>';
-      indicator.classList.add('show');
-      setTimeout(() => indicator.classList.remove('show'), 600);
-    }
-  }
-}
-
-// Global Sound Mute / Unmute
-function toggleTikTokGlobalSound(e) {
-  if (e) e.stopPropagation();
-  isGlobalTikTokMuted = !isGlobalTikTokMuted;
-  const icon = document.getElementById('iconSoundGlobal');
-  const btn = document.getElementById('btnSoundGlobal');
-
-  if (isGlobalTikTokMuted) {
-    if (icon) icon.className = 'fa fa-volume-mute';
-    if (btn) btn.style.color = '#ef4444';
-  } else {
-    if (icon) icon.className = 'fa fa-volume-up';
-    if (btn) btn.style.color = '#00f2fe';
-  }
-
-  document.querySelectorAll('.tiktok-reel-video').forEach(v => {
-    v.muted = isGlobalTikTokMuted;
-  });
-}
-
-// Toggle between Reels Fullscreen View and Grid View
-function toggleTikTokDisplayMode() {
-  isTikTokReelsView = !isTikTokReelsView;
-  const btnToggle = document.getElementById('btnTikTokViewToggle');
-
-  if (btnToggle) {
-    btnToggle.innerHTML = isTikTokReelsView ? '<i class="fa fa-th-large"></i> <span class="desktop-only-inline">Grid</span>' : '<i class="fa fa-mobile-alt"></i> <span class="desktop-only-inline">Reels</span>';
-  }
-
-  loadTikTokView();
-}
-
-// Exit Fullscreen Reels Mode back to standard browsing
-function exitTikTokReels() {
-  document.body.classList.remove('reels-fullscreen-active');
-  pauseAllTikTokReels();
-  const reelsContainer = document.getElementById('tiktokReelsContainer');
-  if (reelsContainer) reelsContainer.style.display = 'none';
-
-  resetAndLoadCategory('trending');
-}
-
-// Like action with heart bounce animation
-function toggleTikTokReelLike(index, e) {
-  if (e) e.stopPropagation();
-  const btn = document.getElementById(`btnLike_${index}`);
-  const counter = document.getElementById(`likeCount_${index}`);
-  if (!btn) return;
-
-  const isLiked = btn.classList.toggle('liked');
-  let count = parseInt((counter.innerText || '2400').replace(/[^0-9]/g, ''), 10);
-  if (isLiked) {
-    count++;
-    counter.innerText = (count > 999 ? (count/1000).toFixed(1) + 'K' : count);
-    btn.querySelector('.tiktok-action-icon').style.transform = 'scale(1.35)';
-    setTimeout(() => {
-      btn.querySelector('.tiktok-action-icon').style.transform = '';
-    }, 250);
-  } else {
-    count = Math.max(1, count - 1);
-    counter.innerText = (count > 999 ? (count/1000).toFixed(1) + 'K' : count);
-  }
-}
-
-// Open TikTok Reel in Cinema Watch Page
-function openTikTokReelWatch(index, e) {
-  if (e) e.stopPropagation();
-  const v = tiktokReelsList[index];
-  if (v) navigateToWatchPage(v);
-}
-
-// Share TikTok Reel
-function shareTikTokReel(index, e) {
-  if (e) e.stopPropagation();
-  const v = tiktokReelsList[index];
-  if (!v) return;
-
-  const url = `${window.location.origin}/watch.html?id=${v.id || ''}&is_tiktok=1&title=${encodeURIComponent(v.title || '')}`;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => {
-      alert('🔗 Reel link copied to clipboard!');
-    }).catch(() => {
-      prompt('Copy Reel Link:', url);
-    });
-  } else {
-    prompt('Copy Reel Link:', url);
-  }
-}
-
-// Keyboard shortcuts listener for TikTok Reels (ArrowUp, ArrowDown, Space, M, Esc)
-document.addEventListener('keydown', (e) => {
-  if (!isTikTokMode || !isTikTokReelsView) return;
-
-  if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-    e.preventDefault();
-    scrollTikTokReel('next');
-  } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-    e.preventDefault();
-    scrollTikTokReel('prev');
-  } else if (e.key === ' ') {
-    e.preventDefault();
-    toggleTikTokPlay(activeReelSlideIndex);
-  } else if (e.key.toLowerCase() === 'm') {
-    e.preventDefault();
-    toggleTikTokGlobalSound();
-  } else if (e.key === 'Escape') {
-    e.preventDefault();
-    exitTikTokReels();
-  }
-});
-
-function hideTikTokReelsFeed() {
-  document.body.classList.remove('reels-fullscreen-active');
-  pauseAllTikTokReels();
-  const reelsContainer = document.getElementById('tiktokReelsContainer');
-  const grid = document.getElementById('videosGrid');
-  const sentinel = document.getElementById('scrollSentinel');
-  if (reelsContainer) reelsContainer.style.display = 'none';
-  if (grid) grid.style.display = 'grid';
-  if (sentinel) sentinel.style.display = 'block';
-}
-
-// Smart Recommendations ("For You / Personalized")
-function loadForYouFeed(btn) {
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-
-  hideTikTokReelsFeed();
-  isTikTokMode = false;
-  isGifsMode = false;
-  isSearchMode = false;
-  isHistoryMode = false;
-  isFavoritesMode = false;
-  isForYouMode = true;
-  currentPage = 1;
-  hasMore = true;
-  renderedVideoIds.clear();
-  currentVideos = [];
-
-
-  document.getElementById('btnClearHistory').style.display = 'none';
-  document.getElementById('categoryLabel').innerText = 'FOR YOU (Personalized)';
-  document.getElementById('videoCountLabel').innerText = 'Personalized live stream...';
-
-  const topPref = getUserTopPreference();
-  currentCategory = topPref ? topPref.category : 'arabic';
-
-  const grid = document.getElementById('videosGrid');
-  grid.innerHTML = getSkeletonHTML(8);
-
-  loadVideosBatch(true);
-}
-
-function loadForYouFeedMobile(el) {
-  document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
-  if (el) el.classList.add('active');
-  loadForYouFeed();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// Favorites View (Saved)
-function loadFavoritesView(btn) {
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-
-  hideTikTokReelsFeed();
-  isTikTokMode = false;
-  isFavoritesMode = true;
-  isHistoryMode = false;
-  isSearchMode = false;
-  isForYouMode = false;
-  hasMore = false;
-
-  document.getElementById('categoryLabel').innerText = 'MY FAVORITES (Saved)';
-  document.getElementById('btnClearHistory').style.display = 'none';
-
-  const favorites = getLocalFavorites();
-  const grid = document.getElementById('videosGrid');
-
-  if (favorites.length === 0) {
-    document.getElementById('videoCountLabel').innerText = '0 Favorites';
-    grid.innerHTML = `
-      <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
-        <i class="fa fa-heart fa-3x" style="color: #ff007f; margin-bottom: 14px; opacity: 0.7;"></i>
-        <h3 style="color: #fff; margin-bottom: 6px;">No Favorite Videos Yet</h3>
-        <p style="font-size: 13px;">Click the "Favorite" button on any video watch page to save it here!</p>
-        <button class="btn-pill" style="margin-top: 15px;" onclick="resetAndLoadCategory('trending')">Explore Trending Videos</button>
-      </div>
-    `;
-    return;
-  }
-
-  document.getElementById('videoCountLabel').innerText = `${favorites.length} Saved in Favorites`;
-  grid.innerHTML = '';
-
-  favorites.forEach(v => {
-    grid.appendChild(createVideoCardElement(v, false));
-  });
-}
-
-function loadFavoritesMobile(el) {
-  document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
-  if (el) el.classList.add('active');
-  loadFavoritesView();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function getLocalFavorites() {
-  try {
-    const raw = localStorage.getItem('niksex_favorites');
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-// Watch History Browser Storage Engine
-function loadWatchHistory() {
-  hideTikTokReelsFeed();
-  isTikTokMode = false;
-  isHistoryMode = true;
-  isFavoritesMode = false;
-  isSearchMode = false;
-  isForYouMode = false;
-  hasMore = false;
-
-  document.getElementById('categoryLabel').innerText = 'MY WATCH HISTORY';
-  document.getElementById('btnClearHistory').style.display = 'inline-flex';
-
-  const history = getLocalWatchHistory();
-  const grid = document.getElementById('videosGrid');
-
-  if (history.length === 0) {
-    document.getElementById('videoCountLabel').innerText = '0 Videos in History';
-    grid.innerHTML = `
-      <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
-        <i class="fa fa-history fa-3x" style="color: var(--accent-pink); margin-bottom: 14px; opacity: 0.7;"></i>
-        <h3 style="color: #fff; margin-bottom: 6px;">Your Watch History is Empty</h3>
-        <p style="font-size: 13px;">Videos you watch will be automatically saved here in your browser for quick access!</p>
-        <button class="btn-pill" style="margin-top: 15px;" onclick="resetAndLoadCategory('trending')">Explore Trending Videos</button>
-      </div>
-    `;
-    return;
-  }
-
-  document.getElementById('videoCountLabel').innerText = `${history.length} Saved in Browser`;
-  grid.innerHTML = '';
-
-  history.forEach(v => {
-    grid.appendChild(createVideoCardElement(v, true));
-  });
-}
-
-function getLocalWatchHistory() {
-  try {
-    const raw = localStorage.getItem('niksex_watch_history');
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function clearHistory() {
-  if (confirm('Are you sure you want to clear your saved watch history?')) {
-    localStorage.removeItem('niksex_watch_history');
-    localStorage.removeItem('niksex_interest_scores');
-    loadWatchHistory();
-  }
-}
-
-// User Preference Tracking Logic
-function recordInterest(categoryOrTag) {
-  if (!categoryOrTag) return;
-  try {
-    const raw = localStorage.getItem('niksex_interest_scores');
-    const scores = raw ? JSON.parse(raw) : {};
-    const key = categoryOrTag.toLowerCase().trim();
-    scores[key] = (scores[key] || 0) + 1;
-    localStorage.setItem('niksex_interest_scores', JSON.stringify(scores));
-  } catch (e) {}
-}
-
-function getUserTopPreference() {
-  try {
-    const raw = localStorage.getItem('niksex_interest_scores');
-    if (!raw) return null;
-    const scores = JSON.parse(raw);
-    let topCat = null;
-    let maxScore = 0;
-    for (const [cat, score] of Object.entries(scores)) {
-      if (score > maxScore) {
-        maxScore = score;
-        topCat = cat;
-      }
-    }
-    return topCat ? { category: topCat, count: maxScore } : null;
-  } catch (e) {
-    return null;
-  }
-}
-
-// Filters & Sorting Handlers
-function setDurationFilter(btn, filter) {
-  document.querySelectorAll('.filter-group:first-child .filter-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  currentDurationFilter = filter;
-  reRenderFilteredVideos();
-}
-
-function setSortFilter(btn, sort) {
-  document.querySelectorAll('.filter-group:last-child .filter-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  currentSortFilter = sort;
-  reRenderFilteredVideos();
-}
-
-function reRenderFilteredVideos() {
-  if (currentVideos.length === 0) return;
-  let filtered = [...currentVideos];
-
-  // Duration Filter
-  if (currentDurationFilter !== 'all') {
-    filtered = filtered.filter(v => {
-      const minutes = parseDurationToMinutes(v.duration);
-      if (currentDurationFilter === 'short') return minutes < 10;
-      if (currentDurationFilter === 'medium') return minutes >= 10 && minutes <= 20;
-      if (currentDurationFilter === 'long') return minutes > 20;
-      return true;
-    });
-  }
-
-  // Sort Filter
-  if (currentSortFilter === 'views') {
-    filtered.sort((a, b) => parseViewsToNumber(b.views) - parseViewsToNumber(a.views));
-  } else if (currentSortFilter === 'rating') {
-    filtered.sort((a, b) => parseFloat(b.rating || '0') - parseFloat(a.rating || '0'));
-  }
-
-  const grid = document.getElementById('videosGrid');
-  grid.innerHTML = '';
-  filtered.forEach(v => grid.appendChild(createVideoCardElement(v, false)));
-  document.getElementById('videoCountLabel').innerText = `${filtered.length} Filtered HD Videos`;
-}
-
-function parseDurationToMinutes(durStr = '10:00') {
-  const parts = durStr.split(':').map(p => parseInt(p, 10) || 0);
-  if (parts.length === 2) return parts[0] + (parts[1] / 60);
-  if (parts.length === 3) return (parts[0] * 60) + parts[1] + (parts[2] / 60);
-  return 10;
-}
-
-function parseViewsToNumber(viewsStr = '15K') {
-  let clean = String(viewsStr).replace(/,/g, '').trim().toUpperCase();
-  if (clean.includes('M')) return parseFloat(clean) * 1000000;
-  if (clean.includes('K')) return parseFloat(clean) * 1000;
-  return parseFloat(clean) || 1000;
-}
-
-// Search History Helpers
-function getSearchHistory() {
-  try {
-    const raw = localStorage.getItem('niksex_search_history');
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function saveSearchHistory(term) {
-  if (!term || term.length < 2) return;
-  try {
-    let hist = getSearchHistory();
-    hist = hist.filter(item => item.toLowerCase() !== term.toLowerCase());
-    hist.unshift(term);
-    if (hist.length > 8) hist = hist.slice(0, 8);
-    localStorage.setItem('niksex_search_history', JSON.stringify(hist));
-  } catch (e) {}
-}
-
-function clearSearchHistory() {
-  localStorage.removeItem('niksex_search_history');
-  const dropdown = document.getElementById('searchAutocomplete');
-  if (dropdown) dropdown.style.display = 'none';
-}
-
-// Live Predictive Search Autocomplete with Live Models, Video Thumbs & Suggestions
-let searchDebounceTimer = null;
-
-function handleSearchFocus() {
-  const input = document.getElementById('searchInput');
-  const dropdown = document.getElementById('searchAutocomplete');
-  if (!input || !dropdown) return;
-
-  const q = input.value.trim().toLowerCase();
-  if (!q) {
-    const history = getSearchHistory();
-    if (history.length > 0) {
-      dropdown.className = 'autocomplete-dropdown predictive-search-popup';
-      dropdown.innerHTML = `
-        <div class="search-popup-header">
-          <span><i class="fa fa-history" style="color: var(--accent-pink);"></i> Recent Searches</span>
-          <button class="search-history-clear-btn" onclick="clearSearchHistory()"><i class="fa fa-trash"></i> Clear</button>
-        </div>
-        <div class="search-tags-row">
-          ${history.map(item => `
-            <span class="search-tag-chip" onclick="selectSearchTag('${item.replace(/'/g, "\\'")}')">
-              <i class="fa fa-search" style="font-size: 10px; color: var(--accent-pink);"></i> ${item}
-            </span>
-          `).join('')}
-        </div>
-      `;
-      dropdown.style.display = 'block';
-    }
-  } else {
-    handleSearchInput({ target: input });
-  }
-}
-
-async function handleSearchInput(e) {
-  const q = e.target.value.trim().toLowerCase();
-  const dropdown = document.getElementById('searchAutocomplete');
-  if (!dropdown) return;
-
-  if (q.length < 2) {
-    handleSearchFocus();
-    return;
-  }
-
-  clearTimeout(searchDebounceTimer);
-  searchDebounceTimer = setTimeout(async () => {
-    try {
-      const res = await fetch(`/api/search/live?q=${encodeURIComponent(q)}`);
-      const data = await res.json();
-
-      if (!data.success) {
-        dropdown.style.display = 'none';
-        return;
-      }
-
-      const models = data.models || [];
-      const videos = data.videos || [];
-      const suggestions = data.suggestions || [];
-
-      if (models.length === 0 && videos.length === 0 && suggestions.length === 0) {
-        dropdown.style.display = 'none';
-        return;
-      }
-
-      dropdown.className = 'autocomplete-dropdown predictive-search-popup';
-      let html = '';
-
-      // 1. Matching Verified Models / Stars
-      if (models.length > 0) {
-        html += `
-          <div class="search-popup-header">
-            <span><i class="fa fa-crown" style="color: #ffd700;"></i> Verified Stars & Models</span>
-            <a href="/models.html" style="color: var(--accent-pink); font-size: 11px;">Browse all 1,000+ &raquo;</a>
-          </div>
-          <div class="search-stars-grid">
-            ${models.map(m => `
-              <div class="search-star-item" onclick="window.location.href='/model.html?star=${encodeURIComponent(m.slug || m.id)}'">
-                <img src="${m.avatar || '/images/logo.png'}" alt="${m.name}" class="search-star-avatar" referrerpolicy="no-referrer" onerror="this.src='/images/logo.png'">
-                <div class="search-star-details">
-                  <h5>${m.name}</h5>
-                  <span><i class="fa fa-crown"></i> #${m.rank || 1}</span>
-                  ${m.videos ? `<span style="color: var(--text-muted); font-size: 9px;"><i class="fa fa-film"></i> ${m.videos} videos</span>` : ''}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }
-
-      // 2. Matching Video Previews
-      if (videos.length > 0) {
-        html += `
-          <div class="search-popup-header">
-            <span><i class="fa fa-play-circle" style="color: #00f2fe;"></i> Video Results</span>
-            <span style="font-size: 10px; color: var(--text-muted);">${videos.length} found</span>
-          </div>
-          <div class="search-videos-list">
-            ${videos.map(v => `
-              <div class="search-video-item" onclick="navigateToWatchPage(${JSON.stringify(v).replace(/"/g, '&quot;')})">
-                <div style="position: relative; flex-shrink: 0;">
-                  <img src="${v.thumbnail || '/images/logo.png'}" alt="${v.title}" class="search-video-thumb" referrerpolicy="no-referrer" onerror="this.src='/images/logo.png'">
-                  <span style="position: absolute; bottom: 3px; right: 4px; background: rgba(0,0,0,0.85); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px;">${v.duration || '10:00'}</span>
-                </div>
-                <div class="search-video-info">
-                  <div class="search-video-title">${v.title}</div>
-                  <div class="search-video-meta">
-                    <span><i class="fa fa-eye"></i> ${v.views || '20K'}</span>
-                    <span style="color: #22c55e;"><i class="fa fa-thumbs-up"></i> ${v.rating || '98%'}</span>
-                    <span style="color: #00f2fe;"><i class="fa fa-tv"></i> HD</span>
-                  </div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }
-
-      // 3. Matching Keywords & Trending Tags
-      if (suggestions.length > 0) {
-        html += `
-          <div class="search-popup-header">
-            <span><i class="fa fa-tags" style="color: var(--accent-purple);"></i> Related Keywords</span>
-          </div>
-          <div class="search-tags-row">
-            ${suggestions.map(s => `
-              <span class="search-tag-chip" onclick="selectSearchTag('${s.replace(/'/g, "\\'")}')">
-                <i class="fa fa-search" style="font-size: 9px; color: var(--accent-pink);"></i> ${s}
-              </span>
-            `).join('')}
-          </div>
-        `;
-      }
-
-      // Search footer
-      html += `
-        <div style="padding: 8px 16px; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between;">
-          <span style="font-size: 10px; color: var(--text-muted);"><i class="fa fa-keyboard" style="margin-right: 4px;"></i> Press <strong style="color: #fff;">Enter</strong> to search all results</span>
-          <span style="font-size: 10px; color: var(--text-muted);"><i class="fa fa-bolt" style="color: var(--accent-pink);"></i> Instant Results</span>
-        </div>
-      `;
-
-      dropdown.innerHTML = html;
-      dropdown.style.display = 'block';
-    } catch (err) {
-      dropdown.style.display = 'none';
-    }
-  }, 120);
-}
-
-function selectSearchTag(tag) {
-  const input = document.getElementById('searchInput');
-  if (input) input.value = tag;
-  const dropdown = document.getElementById('searchAutocomplete');
-  if (dropdown) dropdown.style.display = 'none';
-  executeSearch();
-}
-
-// Close search dropdown when clicking outside
-document.addEventListener('click', function(e) {
-  const searchBox = document.querySelector('.search-box');
-  const dropdown = document.getElementById('searchAutocomplete');
-  if (dropdown && searchBox && !searchBox.contains(e.target)) {
-    dropdown.style.display = 'none';
-  }
-});
-
-// Mobile bottom navigation handler
-function mobileNav(category, el) {
-  document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
-  if (el) el.classList.add('active');
-  resetAndLoadCategory(category);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// Fetch and append a batch of videos (Infinite Pagination)
-async function loadVideosBatch(isInitial = false) {
-  if (isLoading || (!hasMore && !isInitial) || isHistoryMode || isFavoritesMode) return;
-  isLoading = true;
-
-  const loader = document.getElementById('infiniteLoader');
-  if (!isInitial && loader) loader.style.display = 'flex';
+  if (loadingIndicator) loadingIndicator.style.display = 'flex';
 
   try {
     let url = '';
-    if (isSearchMode && currentSearchQuery) {
-      url = `/api/search?q=${encodeURIComponent(currentSearchQuery)}&page=${currentPage}`;
+    if (AppState.searchQuery) {
+      url = `/api/search?q=${encodeURIComponent(AppState.searchQuery)}&page=${AppState.page}`;
     } else {
-      url = `/api/videos?category=${encodeURIComponent(currentCategory)}&page=${currentPage}`;
+      url = `/api/videos?category=${encodeURIComponent(AppState.category)}&page=${AppState.page}`;
     }
 
-    const res = await fetch(url);
-    const data = await res.json();
+    const response = await fetch(url);
+    const data = await response.json();
 
-    if (data.success && data.videos && data.videos.length > 0) {
-      const uniqueNewVideos = data.videos.filter(v => !renderedVideoIds.has(v.id));
+    const videoList = data.videos || (Array.isArray(data) ? data : []);
 
-      if (uniqueNewVideos.length > 0) {
-        uniqueNewVideos.forEach(v => {
-          renderedVideoIds.add(v.id);
-          currentVideos.push(v);
-        });
-
-        appendVideoCards(uniqueNewVideos, isInitial);
-        currentPage++;
-        document.getElementById('videoCountLabel').innerText = `${renderedVideoIds.size}+ HD Videos`;
-      } else if (currentPage > 1) {
-        currentPage++;
+    if (videoList.length === 0) {
+      AppState.hasMore = false;
+      if (reset && grid) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 64px 20px; background: #ffffff; border-radius: 16px; margin: 20px 0;">
+            <i class="fa fa-search" style="font-size: 42px; color: #91918c; margin-bottom: 16px;"></i>
+            <h3 style="font-size: 20px; font-weight: 700; color: #000000; margin-bottom: 8px;">No Pins Found</h3>
+            <p style="color: #62625b; font-size: 15px; margin-bottom: 20px;">Try searching for different keywords or explore our top categories.</p>
+            <button class="btn-primary" onclick="selectCategory('trending', null)">Explore Trending</button>
+          </div>
+        `;
       }
     } else {
-      if (isInitial) {
-        document.getElementById('videosGrid').innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-muted);">No videos found in this category.</div>';
-      }
-      hasMore = false;
+      renderPins(videoList, grid);
+      AppState.page++;
     }
   } catch (err) {
-    if (isInitial) {
-      document.getElementById('videosGrid').innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #ef4444;">Failed to stream videos. Check connection.</div>`;
+    console.error('[Feed Error]', err);
+    if (reset && grid) {
+      grid.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 48px 20px;">
+          <p style="color: #9e0a0a; font-weight: 600;">Unable to load video pins. Please try again.</p>
+          <button class="btn-secondary" style="margin-top: 12px;" onclick="loadVideos(true)">Retry</button>
+        </div>
+      `;
     }
   } finally {
-    isLoading = false;
-    if (loader) loader.style.display = 'none';
+    AppState.isLoading = false;
+    if (loadingIndicator) loadingIndicator.style.display = 'none';
   }
 }
 
-// Instant Hover & Touch Video Preview Controller
-function attachVideoPreviewHandlers(card, v) {
-  const thumbWrap = card.querySelector('.thumb-wrap');
-  if (!thumbWrap) return;
+// Render Pin Cards into Masonry Grid
+function renderPins(videos, container) {
+  if (!container) return;
 
-  const videoEl = thumbWrap.querySelector('.preview-video-el');
-  const progressFill = thumbWrap.querySelector('.preview-progress-fill');
-  const mobilePreviewBtn = thumbWrap.querySelector('.btn-mobile-preview');
+  const fragment = document.createDocumentFragment();
 
-  let previewTimer = null;
-  let progressInterval = null;
-  let isPreviewing = false;
+  videos.forEach(video => {
+    if (AppState.renderedIds.has(video.id)) return;
+    AppState.renderedIds.add(video.id);
 
-  function startPreview(e) {
-    if (e && e.stopPropagation) e.stopPropagation();
-    if (isPreviewing) return;
+    const card = document.createElement('div');
+    card.className = 'pin-card';
+    card.dataset.id = video.id;
+    card.dataset.title = video.title || 'Exclusive Stream';
+    card.dataset.thumb = video.thumbnail || '';
+    card.dataset.duration = video.duration || '10:00';
+    card.dataset.author = video.author || 'Featured Performer';
 
-    previewTimer = setTimeout(() => {
-      isPreviewing = true;
-      card.classList.add('preview-active');
+    const isSaved = window.pinEngine ? window.pinEngine.isPinSaved(video.id) : false;
+    const saveBtnText = isSaved ? 'Saved' : 'Save';
+    const saveBtnBg = isSaved ? '#262622' : '#e60023';
 
-      if (v.preview_video && videoEl) {
-        if (!videoEl.src) {
-          videoEl.src = v.preview_video;
-        }
-        videoEl.muted = true;
-        videoEl.currentTime = 0;
-        const playPromise = videoEl.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {});
-        }
-      }
-
-      // Start scrubber progress fill animation
-      let progress = 0;
-      if (progressFill) {
-        progressFill.style.width = '0%';
-        clearInterval(progressInterval);
-        progressInterval = setInterval(() => {
-          progress = (progress + 2) % 100;
-          progressFill.style.width = `${progress}%`;
-        }, 100);
-      }
-    }, 180); // 180ms smooth debounce
-  }
-
-  function stopPreview(e) {
-    if (previewTimer) clearTimeout(previewTimer);
-    if (!isPreviewing) return;
-    isPreviewing = false;
-    card.classList.remove('preview-active');
-
-    if (videoEl) {
-      videoEl.pause();
-      videoEl.currentTime = 0;
-    }
-    if (progressInterval) clearInterval(progressInterval);
-    if (progressFill) progressFill.style.width = '0%';
-  }
-
-  // Desktop Mouse Hover
-  thumbWrap.addEventListener('mouseenter', startPreview);
-  thumbWrap.addEventListener('mouseleave', stopPreview);
-
-  // Mobile Touch Quick Preview Button
-  if (mobilePreviewBtn) {
-    mobilePreviewBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      if (isPreviewing) {
-        stopPreview();
-      } else {
-        startPreview();
-      }
-    });
-  }
-
-  // Touch and hold / long press on mobile
-  let touchStartTime = 0;
-  thumbWrap.addEventListener('touchstart', (e) => {
-    touchStartTime = Date.now();
-    previewTimer = setTimeout(() => {
-      startPreview(e);
-    }, 250);
-  }, { passive: true });
-
-  thumbWrap.addEventListener('touchend', (e) => {
-    if (Date.now() - touchStartTime < 250) {
-      if (previewTimer) clearTimeout(previewTimer);
-    }
-  }, { passive: true });
-}
-
-// Create individual video card element with live hover/touch preview
-function createVideoCardElement(v, isHistory = false) {
-  const card = document.createElement('div');
-  const isTik = v.is_tiktok || v.source === 'tiktok' || (v.category === 'tiktok') || isTikTokMode;
-  card.className = `video-card animate-fade ${isTik ? 'tiktok-card' : ''}`;
-  card.onclick = () => navigateToWatchPage(v);
-
-  const thumb = v.thumbnail || '/images/logo.png';
-  const duration = v.duration || '10:00';
-  const title = v.title || 'niksex Stream';
-  const views = v.views || '15.2K';
-  const rating = v.rating || '96%';
-  const previewVideo = v.preview_video || v.direct_video_url || '';
-  const channelName = (v.tags && v.tags[0]) ? v.tags[0] : (v.category ? v.category : 'Verified Channel');
-
-  card.innerHTML = `
-    <div class="thumb-wrap">
-      <img src="${thumb}" alt="${title}" loading="lazy" onerror="this.src='/images/logo.png'">
-      ${previewVideo ? `<video class="preview-video-el" src="${previewVideo}" muted playsinline loop preload="none"></video>` : ''}
-      <span class="badge-preview-live"><i class="fa fa-play"></i> Preview</span>
-      ${isTik ? '<span class="badge-tiktok"><i class="fa-brands fa-tiktok"></i> TikTok 18+</span>' : '<span class="badge-hd">1080p HD</span>'}
-      ${isHistory ? '<span class="badge-watched"><i class="fa fa-check"></i> Watched</span>' : ''}
-      <span class="badge-duration">${duration}</span>
-      <button class="btn-card-quick-fav" onclick="quickFavoriteCard(event, ${JSON.stringify(v).replace(/"/g, '&quot;')})" title="Add to Favorites"><i class="fa fa-heart"></i></button>
-      <button class="btn-mobile-preview" aria-label="Preview Video"><i class="fa fa-eye"></i> Preview</button>
-      <div class="preview-progress-bar"><div class="preview-progress-fill"></div></div>
-    </div>
-    <div class="card-details">
-      <h3 class="video-title" title="${title}">${title}</h3>
-      <div class="card-channel-row">
-        <i class="fa fa-circle-check"></i>
-        <span>${channelName}</span>
+    card.innerHTML = `
+      <div class="pin-media-wrapper" onclick="openPin('${video.id}', '${video.source || ''}')">
+        <img src="${video.thumbnail}" alt="${escapeHtml(video.title)}" class="pin-image" loading="lazy">
+        <div class="pin-overlay-scrim"></div>
+        <button class="pin-save-cta js-save-pin" data-id="${video.id}" style="background-color: ${saveBtnBg};" title="Save Pin">${saveBtnText}</button>
+        <span class="pin-overlay-pill pin-pill-duration">${video.duration || '12:00'}</span>
+        ${video.rating ? `<span class="pin-overlay-pill pin-pill-badge"><i class="fa fa-thumbs-up" style="font-size: 10px; margin-right: 4px;"></i>${video.rating}</span>` : ''}
+        <div class="pin-quick-actions">
+          <button class="pin-action-btn" onclick="event.stopPropagation(); openPin('${video.id}', '${video.source || ''}');" title="Watch Video">
+            <i class="fa fa-play"></i>
+          </button>
+          <button class="pin-action-btn" onclick="event.stopPropagation(); copyPinLink('${video.id}');" title="Share Pin">
+            <i class="fa fa-arrow-up-right-from-square"></i>
+          </button>
+        </div>
       </div>
-      <div class="video-meta">
-        <span class="video-meta-views"><i class="fa fa-eye"></i> ${views}</span>
-        <span class="meta-rating"><i class="${isTik ? 'fa fa-heart' : 'fa fa-thumbs-up'}" style="${isTik ? 'color: #ff007f;' : ''}"></i> ${isTik ? (v.likes || '1.5K') : rating}</span>
-      </div>
-    </div>
-  `;
-
-  attachVideoPreviewHandlers(card, v);
-  return card;
-}
-
-function quickFavoriteCard(e, videoObj) {
-  if (e) e.stopPropagation();
-  try {
-    let favs = JSON.parse(localStorage.getItem('niksex_favorites') || '[]');
-    const exists = favs.some(f => f.id === videoObj.id || f.title === videoObj.title);
-    if (exists) {
-      favs = favs.filter(f => f.id !== videoObj.id && f.title !== videoObj.title);
-      alert('Removed from favorites!');
-    } else {
-      favs.unshift(videoObj);
-      alert('❤️ Saved to your Favorites!');
-    }
-    localStorage.setItem('niksex_favorites', JSON.stringify(favs));
-  } catch (err) {}
-}
-
-
-let totalRenderedInFeedCards = 0;
-
-function createInFeedAdCard() {
-  const adCard = document.createElement('div');
-  adCard.className = 'in-grid-ad-card animate-fade';
-  
-  if (totalRenderedInFeedCards % 2 === 0) {
-    adCard.innerHTML = `
-      <div class="ad-badge">SPONSORED</div>
-      <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="promo-smartlink-card" style="width: 100%;">
-        <span class="promo-badge-hot"><i class="fa fa-fire"></i> LIVE 18+ STREAM</span>
-        <h4 class="promo-title">🔥 Live Sex Cam & HD Private Shows</h4>
-        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">100% Free Live Stream • 4K Quality</p>
-        <span class="promo-btn-action"><i class="fa fa-play-circle"></i> Watch Live Now</span>
-      </a>
-    `;
-  } else {
-    adCard.innerHTML = `
-      <div class="ad-badge">ADVERTISEMENT</div>
-      <a href="${SMARTLINK_URL}" target="_blank" rel="noopener noreferrer" class="promo-smartlink-card" style="width: 100%; background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 0, 127, 0.2)); border-color: #ffd700;">
-        <span class="promo-badge-hot" style="background: linear-gradient(135deg, #ffd700, #ff8800); color: #000;"><i class="fa fa-bolt"></i> VIP SERVER</span>
-        <h4 class="promo-title">⚡ Ultra Fast 4K Download Server</h4>
-        <p style="font-size: 11px; color: #ffd700; margin-bottom: 8px;">Direct High Speed Unlimited</p>
-        <span class="promo-btn-action" style="background: linear-gradient(135deg, #ff007f, #9d4edd); color: #fff;"><i class="fa fa-download"></i> Direct Download</span>
-      </a>
-    `;
-  }
-  return adCard;
-}
-
-// Append video cards to grid with In-Feed Ad Insertion every 5 cards
-function appendVideoCards(videos, isInitial) {
-  const grid = document.getElementById('videosGrid');
-  if (isInitial) {
-    grid.innerHTML = '';
-    totalRenderedInFeedCards = 0;
-  }
-
-  videos.forEach((v, index) => {
-    grid.appendChild(createVideoCardElement(v, false));
-    totalRenderedInFeedCards++;
-
-    // In-Feed Ad inserted every 5 video cards!
-    if (totalRenderedInFeedCards % 5 === 0) {
-      grid.appendChild(createInFeedAdCard());
-    }
-  });
-}
-
-// Setup High-Performance Infinite Scroll Observer
-function initInfiniteScrollObserver() {
-  const sentinel = document.getElementById('scrollSentinel');
-  if (!sentinel) return;
-
-  if (scrollObserver) scrollObserver.disconnect();
-
-  scrollObserver = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isLoading && hasMore && !isHistoryMode && !isFavoritesMode) {
-      loadVideosBatch(false);
-    }
-  }, { rootMargin: '400px' });
-
-  scrollObserver.observe(sentinel);
-
-  window.addEventListener('scroll', () => {
-    if (isLoading || !hasMore || isHistoryMode || isFavoritesMode) return;
-    const scrollY = window.scrollY || window.pageYOffset;
-    const totalHeight = document.documentElement.scrollHeight;
-    const windowHeight = window.innerHeight;
-
-    if (scrollY + windowHeight >= totalHeight - 500) {
-      loadVideosBatch(false);
-    }
-  }, { passive: true });
-}
-
-// Direct Navigation to Watch Page with Smart Under-Click Monetization
-function navigateToWatchPage(v) {
-  if (currentCategory) recordInterest(currentCategory);
-  if (v.tags && Array.isArray(v.tags)) {
-    v.tags.forEach(t => recordInterest(t));
-  }
-
-  // Intensive click popunder
-  const lastPopTime = parseInt(sessionStorage.getItem('nx_nav_pop_time') || '0', 10);
-  if (Date.now() - lastPopTime > 45 * 1000) { // Every 45 seconds
-    sessionStorage.setItem('nx_nav_pop_time', Date.now().toString());
-    try {
-      window.open(SMARTLINK_URL, '_blank');
-    } catch(e) {}
-  }
-
-  const isTik = v.is_tiktok || v.source === 'tiktok' || (v.category === 'tiktok') || isTikTokMode;
-
-  const params = new URLSearchParams({
-    id: v.id || '',
-    title: v.title || 'niksex Video Stream',
-    embed: v.embed_url || v.video_url || v.direct_video_url || '',
-    direct: v.direct_video_url || '',
-    thumb: v.thumbnail || v.poster || '',
-    duration: v.duration || '00:30',
-    views: v.views || '15K',
-    likes: v.likes || '1.2K',
-    rating: v.rating || '98%',
-    is_tiktok: isTik ? '1' : '0',
-    tags: (v.tags || ['niksex', 'HD', 'TikTok', 'Shorts']).join(',')
-  });
-
-  window.location.href = `/watch.html?${params.toString()}`;
-}
-
-
-// Handle Search input
-function handleSearch(e) {
-  if (e.key === 'Enter') {
-    executeSearch();
-  }
-}
-
-async function executeSearch() {
-  const query = document.getElementById('searchInput').value.trim();
-  if (!query) return;
-
-  saveSearchHistory(query);
-  const dropdown = document.getElementById('searchAutocomplete');
-  if (dropdown) dropdown.style.display = 'none';
-
-  recordInterest(query);
-
-  hideTikTokReelsFeed();
-  isTikTokMode = false;
-  isSearchMode = true;
-  isHistoryMode = false;
-  isFavoritesMode = false;
-  isForYouMode = false;
-  currentSearchQuery = query;
-  currentPage = 1;
-  hasMore = true;
-  renderedVideoIds.clear();
-  currentVideos = [];
-
-  document.getElementById('btnClearHistory').style.display = 'none';
-  document.getElementById('categoryLabel').innerText = `Search: "${query}"`;
-  document.getElementById('videoCountLabel').innerText = 'Searching across sources...';
-
-  const grid = document.getElementById('videosGrid');
-  grid.innerHTML = getSkeletonHTML(8);
-
-  loadVideosBatch(true);
-}
-
-// Loading Skeleton HTML
-function getSkeletonHTML(count = 8) {
-  let html = '';
-  for (let i = 0; i < count; i++) {
-    html += `
-      <div class="video-card" style="opacity: 0.5;">
-        <div class="thumb-wrap" style="background: #1e1e2d;"></div>
-        <div class="card-details">
-          <div style="height: 14px; background: #28283c; border-radius: 4px; margin-bottom: 8px;"></div>
-          <div style="height: 10px; width: 60%; background: #28283c; border-radius: 4px;"></div>
+      <div class="pin-meta" onclick="openPin('${video.id}', '${video.source || ''}')">
+        <h3 class="pin-title">${escapeHtml(video.title)}</h3>
+        <div class="pin-author">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=50&auto=format&fit=crop&q=60" class="pin-author-avatar" alt="Star">
+          <span class="pin-author-name">${video.author || 'Wi9ayah Star'} • ${video.views || '15.2K'} views</span>
         </div>
       </div>
     `;
+
+    fragment.appendChild(card);
+  });
+
+  container.appendChild(fragment);
+
+  if (window.pinEngine) {
+    window.pinEngine.observeImages(container);
   }
-  return html;
 }
 
-/* ================= Adult Photos & GIFs Gallery System ================= */
-let isPhotosMode = false;
-let isGifsMode = false;
+// Navigation & Actions
+function openPin(videoId, source = '') {
+  window.location.href = `/watch.html?id=${encodeURIComponent(videoId)}${source ? '&src=' + encodeURIComponent(source) : ''}`;
+}
 
-async function loadPhotosView(btn) {
-  if (btn) {
-    document.querySelectorAll('.cat-btn, .btn-pill, .bottom-nav-item').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+function copyPinLink(videoId) {
+  const url = `${window.location.origin}/watch.html?id=${videoId}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      if (window.pinEngine) window.pinEngine.showToast('Link copied to clipboard! 📋', 'success');
+    });
   }
+}
 
-  hideTikTokReelsFeed();
-  isTikTokMode = false;
-  isPhotosMode = true;
-  isGifsMode = false;
-  isHistoryMode = false;
-  isFavoritesMode = false;
-  isForYouMode = false;
-  isSearchMode = false;
-  currentPage = 1;
-  hasMore = true;
-  renderedVideoIds.clear();
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
-  const grid = document.getElementById('videosGrid');
-  document.getElementById('categoryLabel').innerHTML = '<i class="fa fa-camera-retro" style="color: var(--accent-pink);"></i> Photos & GIFs Gallery';
-  document.getElementById('videoCountLabel').innerText = 'Loading 150+ HD Photos & GIFs...';
-  document.getElementById('btnClearHistory').style.display = 'none';
+// Infinite Scroll Observer
+function initInfiniteScrollObserver() {
+  const sentinel = document.getElementById('gridSentinel');
+  if (!sentinel) return;
 
-  grid.innerHTML = getSkeletonHTML(12);
-
-  try {
-    const res = await fetch(`/api/photos?page=1`);
-    const data = await res.json();
-
-    if (data.success && data.items && data.items.length > 0) {
-      grid.innerHTML = '';
-      document.getElementById('videoCountLabel').innerText = `${data.items.length} HD Photos & Animated GIFs`;
-      data.items.forEach(item => {
-        grid.appendChild(createPhotoOrGifCardElement(item));
-      });
-    } else {
-      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">No media available right now.</div>';
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !AppState.isLoading && AppState.hasMore) {
+      loadVideos(false);
     }
-  } catch (err) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px;">Failed to load photos & GIFs gallery.</div>';
-  }
+  }, { rootMargin: '400px 0px' });
+
+  observer.observe(sentinel);
 }
 
-async function loadGifsView(btn) {
-  loadPhotosView(btn);
+// Live Predictive Autocomplete
+function initSearchAutocomplete() {
+  const searchInput = document.getElementById('globalSearchInput');
+  const dropdown = document.getElementById('searchAutocompleteDropdown');
+  if (!searchInput || !dropdown) return;
+
+  let debounceTimeout = null;
+
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(debounceTimeout);
+    const query = e.target.value.trim();
+
+    if (query.length < 2) {
+      dropdown.classList.remove('active');
+      return;
+    }
+
+    debounceTimeout = setTimeout(() => {
+      renderAutocompleteSuggestions(query, dropdown);
+    }, 180);
+  });
+
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      executeSearch();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('active');
+    }
+  });
 }
 
-// Create Photo or GIF Card with Hidden Popunder on Click
-function createPhotoOrGifCardElement(item) {
-  const card = document.createElement('div');
-  card.className = 'gif-card animate-fade';
+function renderAutocompleteSuggestions(query, dropdown) {
+  const suggestions = [
+    { text: `${query} in Top Stars`, icon: 'fa-crown', type: 'stars', url: `/models.html?q=${encodeURIComponent(query)}` },
+    { text: `${query} in 4K UHD`, icon: 'fa-tv', type: '4k', url: `/?q=${encodeURIComponent(query + ' 4k')}` },
+    { text: `${query} in Reels`, icon: 'fa-clapperboard', type: 'reels', url: `/reels.html?q=${encodeURIComponent(query)}` },
+    { text: `Search for "${query}"`, icon: 'fa-search', type: 'search', url: `/?q=${encodeURIComponent(query)}` }
+  ];
 
-  card.onclick = (e) => {
-    // 1. Hidden SmartLink Popunder Trigger
-    try {
-      const adWin = window.open(SMARTLINK_URL, '_blank');
-      if (adWin) {
-        adWin.blur();
-        window.focus();
-      }
-    } catch(err) {}
-
-    // 2. Open Full HD Modal
-    openGifModal(item);
-  };
-
-  const mediaSrc = item.image_url || item.gif_url || item.mp4_url || item.thumbnail;
-  const isGif = item.type === 'gif' || mediaSrc.includes('.gif') || mediaSrc.includes('/gif') || (item.tags && item.tags.includes('gif'));
-  const isMp4 = mediaSrc.endsWith('.mp4');
-
-  card.innerHTML = `
-    <div class="gif-thumb-wrap">
-      ${isMp4 
-        ? `<video src="${mediaSrc}" autoplay loop muted playsinline></video>` 
-        : `<img src="${mediaSrc}" alt="${item.title}" loading="lazy" onerror="this.src='/images/logo.png'">`
-      }
-      <span class="badge-gif-hot"><i class="fa fa-fire"></i> ${isGif ? 'HOT GIF' : 'HD PHOTO'}</span>
-      <span class="badge-gif-type"><i class="${isGif ? 'fa fa-film' : 'fa fa-camera'}"></i> ${isGif ? 'GIF' : 'PHOTO'}</span>
-    </div>
-    <div class="gif-details">
-      <h3 class="gif-title" title="${item.title}">${item.title}</h3>
-      <div class="gif-meta">
-        <span><i class="fa fa-eye"></i> ${item.views || '120K'}</span>
-        <span style="color: var(--accent-pink);"><i class="fa fa-heart"></i> ${item.likes || '9.5K'}</span>
+  dropdown.innerHTML = `
+    <div class="autocomplete-section-title">Quick Search</div>
+    ${suggestions.map(s => `
+      <div class="autocomplete-item" onclick="window.location.href='${s.url}'">
+        <i class="fa ${s.icon}"></i>
+        <span>${escapeHtml(s.text)}</span>
       </div>
-    </div>
+    `).join('')}
   `;
 
-  return card;
+  dropdown.classList.add('active');
 }
 
-function createGifCardElement(gif) {
-  return createPhotoOrGifCardElement(gif);
+function executeSearch() {
+  const searchInput = document.getElementById('globalSearchInput');
+  if (!searchInput) return;
+
+  const query = searchInput.value.trim();
+  if (!query) return;
+
+  const dropdown = document.getElementById('searchAutocompleteDropdown');
+  if (dropdown) dropdown.classList.remove('active');
+
+  AppState.searchQuery = query;
+  AppState.category = '';
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+
+  window.history.pushState({}, '', `/?q=${encodeURIComponent(query)}`);
+  loadVideos(true);
 }
-
-// Open GIF / Photo Lightbox Modal
-function openGifModal(item) {
-  const modal = document.getElementById('gifModal');
-  const mediaWrap = document.getElementById('gifModalMedia');
-  const titleEl = document.getElementById('gifModalTitle');
-
-  if (!modal || !mediaWrap) return;
-
-  const mediaSrc = item.image_url || item.gif_url || item.mp4_url || item.thumbnail;
-  const isMp4 = mediaSrc.endsWith('.mp4');
-
-  if (isMp4) {
-    mediaWrap.innerHTML = `<video src="${mediaSrc}" controls autoplay loop playsinline style="max-height: 70vh; width: 100%; object-fit: contain;"></video>`;
-  } else {
-    mediaWrap.innerHTML = `<img src="${mediaSrc}" alt="${item.title}" style="max-height: 70vh; width: 100%; object-fit: contain;">`;
-  }
-
-  if (titleEl) titleEl.innerText = item.title || 'HD Model Photo / GIF';
-
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-
-// Close GIF Lightbox Modal
-function closeGifModal(e) {
-  if (e && e.target && e.target.classList.contains('btn-gif-action')) return;
-  const modal = document.getElementById('gifModal');
-  const mediaWrap = document.getElementById('gifModalMedia');
-  if (modal) modal.classList.remove('active');
-  if (mediaWrap) mediaWrap.innerHTML = '';
-  document.body.style.overflow = '';
-}
-
-/* ================= Stealth Panic Boss Key Handler ================= */
-let isStealthActive = false;
-let lastEscPress = 0;
-
-function toggleStealthMode() {
-  isStealthActive = !isStealthActive;
-  const overlay = document.getElementById('stealthOverlay');
-  if (overlay) {
-    overlay.style.display = isStealthActive ? 'block' : 'none';
-    if (isStealthActive) {
-      document.body.style.overflow = 'hidden';
-      document.querySelectorAll('video, iframe').forEach(el => {
-        try {
-          if (el.pause) el.pause();
-        } catch(e) {}
-      });
-    } else {
-      document.body.style.overflow = '';
-    }
-  }
-}
-
-function exitStealthMode() {
-  isStealthActive = false;
-  const overlay = document.getElementById('stealthOverlay');
-  if (overlay) overlay.style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === '`' || e.key === '~') {
-    e.preventDefault();
-    toggleStealthMode();
-  } else if (e.key === 'Escape') {
-    const now = Date.now();
-    if (now - lastEscPress < 400 || isStealthActive) {
-      toggleStealthMode();
-    }
-    lastEscPress = now;
-  }
-});
-
-

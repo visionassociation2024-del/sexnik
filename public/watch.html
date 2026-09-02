@@ -3,747 +3,196 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Watch HD Video — wi9ayah.pro | Next-Gen Streaming Player</title>
-  <meta name="description" content="Watch high-definition videos with 0-lag streaming, multiple server mirrors, mini PiP player, and verified performer details on wi9ayah.pro.">
+  <meta name="referrer" content="no-referrer">
+  <title>Watch Stream — Wi9ayah Pro Cinema</title>
+  <meta name="description" content="Stream high-definition videos with 0-lag player, multi-server mirrors, performer bio, and related pins on Wi9ayah Pro.">
   <link rel="icon" type="image/png" href="/images/logo.png">
+
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=10.0">
-  <script src="/js/weqaya_guard.js?v=1.0"></script>
+  <link rel="stylesheet" href="/css/design-system.css?v=2.0">
+  <link rel="stylesheet" href="/css/style.css?v=2.0">
 
-  <!-- Monetization & Popunder Scripts -->
+  <!-- Monetization Scripts -->
   <script src="https://pl31054762.profitableratecpmnetwork.com/72/f4/9a/72f49a7889c2432c21f5fdf844a52e5d.js"></script>
-  <script src="https://pl31054764.profitableratecpmnetwork.com/16/4d/5c/164d5cb44941d85d54f598046baf38b5.js"></script>
-
-  <style>
-    .watch-page-container {
-      max-width: 1400px;
-      margin: 20px auto 60px;
-      padding: 0 20px;
-    }
-    .watch-layout {
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      gap: 24px;
-    }
-    .cinema-player-wrap {
-      position: relative;
-      width: 100%;
-      padding-top: 56.25%;
-      background: #000;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 25px rgba(255, 0, 127, 0.25);
-      border: 1px solid var(--border-pink);
-      transition: all 0.3s ease;
-      z-index: 10;
-    }
-    .cinema-player-wrap.portrait-mode {
-      padding-top: 150%;
-      max-width: 460px;
-      margin: 0 auto;
-    }
-    .cinema-player-wrap iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-
-    /* Multi-Server Selector Bar */
-    .server-selector-card {
-      background: rgba(22, 22, 34, 0.9);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 12px 18px;
-      margin-top: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      backdrop-filter: blur(10px);
-    }
-    .server-selector-label {
-      font-size: 13px;
-      font-weight: 700;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .server-selector-buttons {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .btn-server-item {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 6px 14px;
-      border-radius: 18px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: var(--transition);
-    }
-    .btn-server-item:hover, .btn-server-item.active {
-      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
-      border-color: transparent;
-      color: #fff;
-      box-shadow: 0 0 12px var(--accent-glow);
-    }
-    .btn-server-item.btn-vip-stream {
-      background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 136, 0, 0.3));
-      border-color: #ffd700;
-      color: #ffd700;
-    }
-    .btn-server-item.btn-vip-stream:hover {
-      background: linear-gradient(135deg, #ffd700, #ff8800);
-      color: #000;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-    }
-    .btn-server-reload {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 6px 12px;
-      border-radius: 18px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .btn-server-reload:hover {
-      color: #fff;
-      border-color: var(--accent-pink);
-    }
-
-    .watch-details-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 24px;
-      margin-top: 16px;
-    }
-    .watch-video-title {
-      font-size: 22px;
-      font-weight: 800;
-      line-height: 1.4;
-      margin-bottom: 14px;
-      color: #fff;
-    }
-    .watch-action-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 14px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 16px;
-    }
-    .watch-stats-group {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-size: 13px;
-      color: var(--text-muted);
-      flex-wrap: wrap;
-    }
-    .vote-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .btn-vote {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border-color);
-      color: #fff;
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: var(--transition);
-    }
-    .btn-vote:hover, .btn-vote.active {
-      background: rgba(255, 0, 127, 0.2);
-      border-color: var(--accent-pink);
-      color: var(--accent-pink);
-    }
-    .btn-vote.favorite-active {
-      background: linear-gradient(135deg, #ef4444, #ff007f);
-      border-color: transparent;
-      color: #fff;
-      box-shadow: 0 0 12px rgba(255, 0, 127, 0.4);
-    }
-    .sidebar-header {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #fff;
-    }
-    .sidebar-header i { color: var(--accent-pink); }
-    .related-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .related-item {
-      display: flex;
-      gap: 12px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: var(--transition);
-      padding: 8px;
-    }
-    .related-item:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--border-pink);
-      transform: translateX(4px);
-    }
-    .related-thumb {
-      width: 120px;
-      height: 70px;
-      position: relative;
-      border-radius: 6px;
-      overflow: hidden;
-      flex-shrink: 0;
-      background: #000;
-    }
-    .related-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .related-info {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      flex: 1;
-      overflow: hidden;
-    }
-    .related-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: #fff;
-      line-height: 1.3;
-      height: 32px;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-    }
-    .intermediary-badge {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-color);
-      padding: 12px 16px;
-      border-radius: 10px;
-      font-size: 12px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* Theater Mode Backdrop */
-    .theater-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.92);
-      z-index: 5;
-      display: none;
-      backdrop-filter: blur(8px);
-    }
-    .theater-active .cinema-player-wrap {
-      box-shadow: 0 0 50px rgba(255, 0, 127, 0.5);
-    }
-
-    /* Footer Static Page Links */
-    .footer-links {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin: 16px 0 10px;
-      font-size: 13px;
-    }
-    .footer-links a {
-      color: var(--text-muted);
-      transition: var(--transition);
-    }
-    .footer-links a:hover {
-      color: var(--accent-pink);
-    }
-
-    @media (max-width: 992px) {
-      .watch-layout { grid-template-columns: 1fr; }
-      .watch-page-container { padding: 0 12px; margin-top: 10px; }
-      .watch-video-title { font-size: 17px; }
-      .watch-details-card { padding: 16px; border-radius: 12px; }
-      .cinema-player-wrap { border-radius: 12px; }
-    }
-  </style>
 </head>
 <body>
 
-  <!-- Theater Mode Dim Backdrop -->
-  <div class="theater-overlay" id="theaterOverlay" onclick="toggleTheaterMode()"></div>
+  <div class="site-wrapper">
+    <!-- Top Sticky Navigation Bar -->
+    <header class="primary-nav">
+      <div class="nav-container">
+        <a href="/" class="brand-link">
+          <div class="brand-p-badge">W</div>
+          <span class="brand-text">Wi9ayah<span style="color: var(--color-ink);">.pro</span></span>
+        </a>
 
-  <!-- Navigation Bar -->
-  <header class="navbar">
-    <div class="nav-container">
-      <a href="/" class="brand-logo">
-        <img src="/images/logo.png" alt="وقاية برو Logo">
-      </a>
+        <div class="nav-search-wrapper">
+          <i class="fa fa-search search-bar-icon"></i>
+          <input type="text" id="watchSearchInput" class="search-bar" placeholder="Search ideas, stars, 4K videos..." onkeydown="if(event.key==='Enter') window.location.href='/?q='+encodeURIComponent(this.value)">
+        </div>
 
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search 4K, Arabic, categories..." onkeypress="handleSearch(event)">
-        <button class="search-btn" onclick="executeSearch()" aria-label="Search">
-          <i class="fa fa-search"></i>
-        </button>
+        <div class="nav-actions-cluster desktop-only">
+          <a href="/" class="nav-link-item">
+            <i class="fa fa-compass"></i> Explore
+          </a>
+          <a href="/models.html" class="nav-link-item">
+            <i class="fa fa-crown" style="color: #ffd700;"></i> Stars
+          </a>
+          <a href="/health.html" class="nav-link-item highlight-link">
+            <i class="fa fa-shield-heart" style="color: #103c25;"></i> Health Guide
+          </a>
+          <a href="/favorites.html" class="btn-primary">
+            <i class="fa fa-bookmark"></i> Saved Pins
+          </a>
+        </div>
       </div>
+    </header>
 
-      <div class="nav-actions desktop-only">
-        <a href="/models.html" class="btn-pill" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 0, 127, 0.3)); border-color: #ffd700; color: #ffd700; font-weight: 800;">
-          <i class="fa fa-star" style="color: #ffd700;"></i> Top Stars
-        </a>
-        <a href="/arabic.html" class="btn-pill btn-arabic">
-          <i class="fa fa-star" style="color: #ffd700;"></i> Arabic Exclusives
-        </a>
-        <a href="/nikroli.html" class="btn-pill btn-tiktok" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.3)); border-color: #00f2fe; color: #fff; box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);">
-          <i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> nikroli (18+ Reels)
-        </a>
-        <a href="/photos.html" class="btn-pill btn-photos" style="background: rgba(255, 0, 127, 0.2); border-color: var(--accent-pink); color: #fff;">
-          <i class="fa fa-camera-retro" style="color: #ff007f;"></i> Photos & GIFs
-        </a>
-        <a href="/4k.html" class="btn-pill">
-          <i class="fa fa-tv" style="color: #c084fc;"></i> 4K UHD
-        </a>
-        <a href="/categories.html" class="btn-pill">
-          <i class="fa fa-th-large"></i> Categories
-        </a>
-        <a href="/favorites.html" class="btn-pill">
-          <i class="fa fa-heart" style="color: #ff007f;"></i> Favorites
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Watch Page Main Layout -->
-  <div class="watch-page-container">
-
-    <!-- Top Desktop Leaderboard 728x90 -->
-    <div class="ad-wrapper ad-desktop-only" style="margin-top: 0; margin-bottom: 20px;">
-      <div class="ad-badge">SPONSORED</div>
-      <script>
-        atOptions = {
-          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
-    </div>
-
-    <!-- Top Mobile Banner 320x50 -->
-    <div class="ad-wrapper ad-mobile-only" style="margin-top: 0; margin-bottom: 16px;">
-      <div class="ad-badge">SPONSORED</div>
-      <script>
-        atOptions = {
-          'key' : '0f2a63fbd6da2fd879750c7de7658080',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
-    </div>
-
-    <div class="watch-layout">
-
-      <!-- Main Video Column -->
-      <div class="watch-main-col">
+    <!-- Main Watch Container -->
+    <main class="main-content" style="padding-top: var(--spacing-xl);">
+      <div class="watch-page-grid">
         
-        <!-- Ambient Cinema Glow Layer -->
-        <div style="position: relative; width: 100%;">
-          <div class="ambient-glow-wrapper" id="ambientGlow"></div>
+        <!-- Left Main Stream Column -->
+        <div class="watch-main-column">
           
-          <!-- 16:9 / 9:16 Cinema Video Player (Unrestricted Embed & HTML5 Native Stream) -->
-          <div class="cinema-player-wrap" id="cinemaWrap">
-            <button class="btn-close-pip" id="btnClosePiP" onclick="closeMiniPiP(event)" title="Close Mini Player">&times;</button>
-            <iframe id="cinemaIframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
-            <video id="cinemaVideo" controls autoplay playsinline loop style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; object-fit: contain; background:#000;"></video>
+          <!-- Theater Player Frame -->
+          <div class="video-player-theater" id="theaterPlayerContainer">
+            <iframe id="videoIframe" src="" allowfullscreen allow="autoplay; fullscreen; encrypted-media"></iframe>
           </div>
+
+          <!-- Multi-Server Selector Pill Bar -->
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; background: var(--color-canvas); padding: 12px 18px; border-radius: var(--radius-md); box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--color-ink);">
+              <i class="fa fa-server" style="color: var(--color-primary);"></i> Server Mirror:
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;" id="serverButtonsContainer">
+              <button class="filter-chip active" onclick="switchServer(1, this)"><i class="fa fa-bolt"></i> Ultra Fast CDN</button>
+              <button class="filter-chip" onclick="switchServer(2, this)"><i class="fa fa-shield-alt"></i> Mirror 2 (1080p)</button>
+              <button class="filter-chip" onclick="switchServer(3, this)"><i class="fa fa-tv"></i> 4K UHD</button>
+            </div>
+          </div>
+
+          <!-- Video Details Card -->
+          <div class="watch-details-card watch-main-card" id="watchDetailsCard">
+            <h1 class="watch-video-title" id="videoTitle">Loading Stream Title...</h1>
+
+            <div class="watch-meta-strip">
+              <div class="watch-author-group">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="watch-author-avatar" id="modelAvatar" alt="Performer">
+                <div class="watch-author-details">
+                  <span class="watch-author-name" id="modelName">Verified Performer</span>
+                  <span class="watch-author-sub" id="videoMetaStats">15.4K views • 98% Rating</span>
+                </div>
+              </div>
+
+              <!-- Action Pills -->
+              <div class="watch-actions-group">
+                <button class="btn-primary js-save-pin" id="watchSaveBtn" title="Save to Board">
+                  <i class="fa fa-bookmark"></i> Save Pin
+                </button>
+                <button class="btn-secondary" onclick="shareCurrentPin()" title="Copy Link">
+                  <i class="fa fa-arrow-up-right-from-square"></i> Share
+                </button>
+                <button class="btn-icon-circular" onclick="toggleLike(this)" title="Like Pin">
+                  <i class="fa fa-thumbs-up"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tags Cloud -->
+            <div style="margin-top: 16px;">
+              <span class="caption-md" style="font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Related Tags</span>
+              <div class="watch-tags-cloud" id="watchTagsCloud"></div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Multi-Server Selector Card (100% Reliable Switching) -->
-        <div class="server-selector-card">
-          <div class="server-selector-label">
-            <i class="fa fa-server" style="color: var(--accent-pink);"></i>
-            <span>Video Streaming Server:</span>
-          </div>
-          <div class="server-selector-buttons" id="serverButtonsGroup">
-            <button class="btn-server-item active" id="btnServer1" onclick="switchVideoServer(1)">
-              <i class="fa fa-bolt" style="color: #00f2fe;"></i> Server 1 (HD Fast)
-            </button>
-            <button class="btn-server-item" id="btnServer2" onclick="switchVideoServer(2)">
-              <i class="fa fa-cloud" style="color: #c084fc;"></i> Server 2 (Cloud Mirror)
-            </button>
-            <button class="btn-server-item" id="btnServer3" onclick="switchVideoServer(3)">
-              <i class="fa fa-play-circle" style="color: var(--accent-pink);"></i> Server 3 (Direct Web)
-            </button>
-            <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-server-item btn-vip-stream">
-              <i class="fa fa-crown" style="color: #ffd700;"></i> Server 4 (VIP 4K UHD)
+        <!-- Right Side: Curated Sidebar & Up Next -->
+        <aside style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+          
+          <!-- Sexual Wellness Callout Box -->
+          <div style="background: linear-gradient(135deg, #103c25 0%, #164e31 100%); color: #ffffff; padding: 20px; border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(16, 60, 37, 0.15);">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 800; font-size: 15px;">
+              <i class="fa fa-shield-heart" style="color: #c7f0da;"></i> Sexual Health Advice
+            </div>
+            <p style="font-size: 13px; line-height: 1.5; color: rgba(255, 255, 255, 0.88); margin-bottom: 14px;">
+              Learn essential facts regarding safe sex, barrier protection methods, and regular STI screenings.
+            </p>
+            <a href="/health.html" class="btn-pill-on-image" style="background: #ffffff; color: #103c25; font-size: 12px; padding: 6px 14px;">
+              Read Medical Guide →
             </a>
-            <button class="btn-server-reload" onclick="reloadCurrentPlayer()" title="Reload Player">
-              <i class="fa fa-rotate-right"></i> Reload
-            </button>
-          </div>
-        </div>
-
-        <!-- High-CTR VIP Action Buttons -->
-        <div class="player-servers-bar">
-          <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-server-ad btn-server-vip">
-            <i class="fa fa-bolt"></i> Stream VIP Server (4K UHD)
-          </a>
-          <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-server-ad">
-            <i class="fa fa-download" style="color: #ffd700;"></i> Download Video (1080p)
-          </a>
-          <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-server-ad">
-            <i class="fa fa-video" style="color: #ff007f;"></i> Free Live Cams 18+
-          </a>
-        </div>
-
-        <!-- Video Metadata & Interaction Bar -->
-        <div class="watch-details-card">
-          <h1 class="watch-video-title" id="watchTitle">Loading video stream...</h1>
-
-          <div class="watch-action-bar">
-            <div class="watch-stats-group">
-              <span><i class="fa fa-eye" style="color: var(--accent-pink);"></i> <strong id="watchViews">15.4K</strong> views</span>
-              <span><i class="fa fa-clock"></i> <span id="watchDuration">10:00</span></span>
-              <span class="meta-rating"><i class="fa fa-thumbs-up"></i> <span id="watchRating">98%</span></span>
-              <span class="badge-sound"><i class="fa fa-volume-up"></i> Auto Sound Active</span>
-            </div>
-
-            <div class="vote-actions">
-              <a href="https://www.profitableratecpmnetwork.com/k46g8trs?key=d6b9b043fad434efa68a86b7b0f6b0ab" target="_blank" rel="noopener noreferrer" class="btn-vote btn-vip-download">
-                <i class="fa fa-download" style="color: #0b0b12;"></i> VIP Download HD
-              </a>
-              <button class="btn-vote" id="btnFavorite" onclick="toggleFavorite()"><i class="fa fa-heart"></i> <span id="favText">Favorite</span></button>
-              <button class="btn-vote" id="btnAmbient" onclick="toggleAmbientMode()"><i class="fa fa-magic" style="color: #ffd700;"></i> Ambient Glow</button>
-              <button class="btn-vote" id="btnTheater" onclick="toggleTheaterMode()"><i class="fa fa-lightbulb"></i> Lights Off</button>
-              <button class="btn-vote" onclick="toggleLike(this)"><i class="fa fa-thumbs-up"></i> <span id="likeCount">1,240</span></button>
-              <button class="btn-vote" onclick="toggleDislike(this)"><i class="fa fa-thumbs-down"></i></button>
-              <button class="btn-vote" onclick="openShareModal()"><i class="fa fa-share-alt"></i> Share & QR</button>
-            </div>
           </div>
 
-          <!-- Like/Dislike Ratio Bar (Pornhub Signature Style) -->
-          <div class="vote-ratio-bar-wrap">
-            <div class="vote-ratio-bar-fill" id="voteRatioFill" style="width: 97%;"></div>
+          <!-- Up Next Headline -->
+          <div class="section-header-row" style="margin-bottom: 0;">
+            <h3 class="heading-md">Up Next for You</h3>
           </div>
 
-          <!-- Verified Creator & Star Profile Card (Pornhub Inspired) -->
-          <div class="watch-channel-card">
-            <div class="watch-channel-avatar-wrap">
-              <img src="/images/logo.png" alt="Channel Avatar" id="watchChannelAvatar" class="watch-channel-avatar" onerror="this.src='/images/logo.png'">
-            </div>
-            <div class="watch-channel-info">
-              <div class="watch-channel-name-row">
-                <h3 id="watchChannelName">Verified Producer</h3>
-                <span class="badge-verified-model"><i class="fa fa-circle-check"></i> Verified</span>
-                <span class="badge-rank-star" id="watchChannelRank"><i class="fa fa-crown"></i> Star</span>
-              </div>
-              <div class="watch-channel-meta">
-                <span id="watchChannelSubs"><i class="fa fa-users"></i> 142K Followers</span>
-                <span>•</span>
-                <span id="watchChannelVideos"><i class="fa fa-film"></i> 150+ Videos</span>
-              </div>
-            </div>
-            <button class="btn-channel-subscribe" id="btnSubscribe" onclick="toggleChannelSubscribe(this)">
-              <i class="fa fa-plus"></i> <span>Follow Star</span>
-            </button>
-          </div>
+          <!-- Sidebar Related Video Cards -->
+          <div id="sidebarRelatedPins" style="display: flex; flex-direction: column; gap: 12px;"></div>
+        </aside>
 
-          <!-- Tags Cloud -->
-          <div style="margin-top: 15px;">
-            <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Categories & Tags:</h4>
-            <div id="watchTags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
-          </div>
-
-          <!-- Legal Intermediary Notice -->
-          <div class="intermediary-badge" style="margin-top: 20px;">
-            <i class="fa fa-shield-alt" style="color: var(--accent-pink);"></i>
-            <span>
-              <strong>Intermediary Embed Notice:</strong> This video stream is indexed and embedded directly from third-party hosting servers. niksex does not host, upload, or store video media files.
-            </span>
-          </div>
-        </div>
-
-        <!-- 300x250 Medium Rectangle Ad Banner -->
-        <div class="ad-wrapper">
-          <div class="ad-badge">SPONSORED</div>
-          <script>
-            atOptions = {
-              'key' : 'e7cfdb1614e6b4f63b284f67cfd89e2d',
-              'format' : 'iframe',
-              'height' : 250,
-              'width' : 300,
-              'params' : {}
-            };
-          </script>
-          <script src="https://www.highrevenueformat.com/e7cfdb1614e6b4f63b284f67cfd89e2d/invoke.js"></script>
-        </div>
-
-        <!-- Sponsored Native Ad Banner -->
-        <div class="ad-banner-container">
-          <div class="ad-badge">RECOMMENDED</div>
-          <script async="async" data-cfasync="false" src="https://pl31054763.profitableratecpmnetwork.com/6712c8762e9a78dc0f1d32bdd0e76e7d/invoke.js"></script>
-          <div id="container-6712c8762e9a78dc0f1d32bdd0e76e7d"></div>
-        </div>
-
-        <!-- Similar Videos Grid Directly Below Video Details -->
-        <section class="similar-videos-section" style="margin-top: 25px;">
-          <div class="section-header" style="margin-bottom: 16px;">
-            <h2 class="section-title" style="font-size: 18px;">
-              <i class="fa fa-layer-group" style="color: var(--accent-pink);"></i> Similar Videos
-            </h2>
-            <span class="text-muted" id="similarTagLabel" style="font-size: 13px;">Related to this video</span>
-          </div>
-
-          <div class="videos-grid" id="similarVideosGrid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;">
-            <!-- Populated dynamically via watch.js -->
-          </div>
-        </section>
       </div>
 
-      <!-- Right Column: Related Videos Sidebar -->
-      <aside class="watch-sidebar-col">
-
-        <!-- 160x300 Skyscraper Banner Ad -->
-        <div class="sidebar-ad-card">
-          <div class="ad-badge">ADVERTISEMENT</div>
-          <script>
-            atOptions = {
-              'key' : 'b3eefe2bdd92dc063e8469b162da9c5d',
-              'format' : 'iframe',
-              'height' : 300,
-              'width' : 160,
-              'params' : {}
-            };
-          </script>
-          <script src="https://www.highrevenueformat.com/b3eefe2bdd92dc063e8469b162da9c5d/invoke.js"></script>
+      <!-- Bottom Full Masonry Grid of Related Pins -->
+      <section class="masonry-container" style="margin-top: var(--spacing-xxl);">
+        <div class="section-header-row">
+          <div class="section-title-wrap">
+            <div class="section-icon-badge"><i class="fa fa-thumbtack"></i></div>
+            <h2 class="heading-lg">More Pins Like This</h2>
+          </div>
         </div>
 
-        <h3 class="sidebar-header">
-          <i class="fa fa-fire"></i> Recommended Videos
-        </h3>
-        <div class="related-list" id="relatedList">
-          <!-- Dynamically populated via watch.js -->
+        <div class="pin-masonry-grid" id="watchRelatedGrid"></div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+      <div class="footer-container">
+        <div class="footer-bottom-row" style="border: none; padding-top: 0;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="brand-p-badge" style="width: 24px; height: 24px; font-size: 12px;">W</div>
+            <span style="font-weight: 700; color: var(--color-ink);">Wi9ayah Pro © 2026.</span>
+          </div>
+          <div>
+            <a href="/health.html" class="link-inline" style="margin-right: 16px;">Health & Safety</a>
+            <a href="/dmca.html" class="link-inline" style="margin-right: 16px;">DMCA</a>
+            <a href="/2257.html" class="link-inline">2257 Compliance</a>
+          </div>
         </div>
+      </div>
+    </footer>
 
-        <!-- Secondary 300x250 Medium Rectangle Ad Banner in Sidebar -->
-        <div class="sidebar-ad-card" style="margin-top: 20px;">
-          <div class="ad-badge">SPONSORED</div>
-          <script>
-            atOptions = {
-              'key' : 'e7cfdb1614e6b4f63b284f67cfd89e2d',
-              'format' : 'iframe',
-              'height' : 250,
-              'width' : 300,
-              'params' : {}
-            };
-          </script>
-          <script src="https://www.highrevenueformat.com/e7cfdb1614e6b4f63b284f67cfd89e2d/invoke.js"></script>
-        </div>
-
-      </aside>
-
-    </div>
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-bar">
+      <a href="/" class="mobile-tab-btn">
+        <i class="fa fa-compass"></i>
+        <span>Explore</span>
+      </a>
+      <a href="/reels.html" class="mobile-tab-btn">
+        <i class="fa fa-clapperboard"></i>
+        <span>Reels</span>
+      </a>
+      <a href="/models.html" class="mobile-tab-btn">
+        <i class="fa fa-crown"></i>
+        <span>Stars</span>
+      </a>
+      <a href="/health.html" class="mobile-tab-btn">
+        <i class="fa fa-shield-heart"></i>
+        <span>Health</span>
+      </a>
+      <a href="/favorites.html" class="mobile-tab-btn">
+        <i class="fa fa-bookmark"></i>
+        <span>Saved</span>
+      </a>
+    </nav>
   </div>
 
-  <!-- Mobile Bottom Navigation Bar -->
-  <nav class="mobile-bottom-nav">
-    <a href="/models.html" class="bottom-nav-item" style="color: #ffd700;">
-      <i class="fa fa-crown"></i>
-      <span>Stars</span>
-    </a>
-    <a href="/arabic.html" class="bottom-nav-item" style="color: #ffd700;">
-      <i class="fa fa-star"></i>
-      <span>Arabic</span>
-    </a>
-    <a href="/reels.html" class="bottom-nav-item" style="color: #00f2fe;">
-      <i class="fa fa-clapperboard"></i>
-      <span>Reels</span>
-    </a>
-    <a href="/health.html" class="bottom-nav-item" style="color: var(--accent-pink);">
-      <i class="fa fa-shield-heart"></i>
-      <span>Health</span>
-    </a>
-    <a href="/" class="bottom-nav-item active">
-      <i class="fa fa-home"></i>
-      <span>Home</span>
-    </a>
-  </nav>
-
-  <!-- Footer with Legal Disclaimer & Static Links -->
-  <footer>
-    <img src="/images/logo.png" alt="wi9ayah.pro Logo" class="footer-logo">
-    
-    <div class="footer-links">
-      <a href="/health.html">Health & Safety</a>
-      <span>•</span>
-      <a href="/dmca.html">DMCA & Copyright</a>
-      <span>•</span>
-      <a href="/terms.html">Terms of Service</a>
-      <span>•</span>
-      <a href="/privacy.html">Privacy Policy</a>
-      <span>•</span>
-      <a href="/2257.html">18 U.S.C. 2257</a>
-      <span>•</span>
-      <a href="/contact.html">Contact Us</a>
-    </div>
-
-    <!-- Bottom Desktop Leaderboard 728x90 -->
-    <div class="ad-wrapper ad-desktop-only" style="margin-top: 30px;">
-      <div class="ad-badge">SPONSORED</div>
-      <script>
-        atOptions = {
-          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
-    </div>
-
-    <!-- Bottom Mobile Banner 320x50 -->
-    <div class="ad-wrapper ad-mobile-only" style="margin-top: 20px;">
-      <div class="ad-badge">SPONSORED</div>
-      <script>
-        atOptions = {
-          'key' : '0f2a63fbd6da2fd879750c7de7658080',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/0f2a63fbd6da2fd879750c7de7658080/invoke.js"></script>
-    </div>
-
-    <div class="disclaimer-container">
-      <p class="disclaimer-text">
-        <strong>Legal Disclaimer:</strong> <strong>وقاية برو (Weqaya Pro)</strong> is a digital search engine and intermediary interface for streaming video embeds. We do not host or store any media files on our own servers. 18+ adult content only.
-      </p>
-    </div>
-
-    <p style="margin-top: 15px; color: var(--text-muted);">&copy; 2026 وقاية برو (Weqaya Pro). All rights reserved.</p>
-  </footer>
-
-  <!-- Sticky Bottom Floating Ad Bar -->
-  <div class="sticky-bottom-ad" id="stickyBottomAd">
-    <button class="btn-close-sticky-ad" onclick="document.getElementById('stickyBottomAd').style.display='none'" aria-label="Close Ad">&times;</button>
-    
-    <!-- Desktop 728x90 -->
-    <div class="ad-desktop-only" style="min-width: 728px; min-height: 90px; text-align: center;">
-      <script>
-        atOptions = {
-          'key' : '380ce6ebb9a5fcc1427f1370373d0ebc',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      </script>
-      <script src="https://www.highrevenueformat.com/380ce6ebb9a5fcc1427f1370373d0ebc/invoke.js"></script>
-    </div>
-
-    <!-- Mobile 320x50 -->
-    <div class="ad-mobile-only" style="min-width: 320px; min-height: 50px; text-align: center;">
-      <script>
-        atOptions = {
-          'key' : '0f2a63fbd6da2fd879750c7de7658080',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-    </div>
-  <!-- Smart Share Modal with Live QR Code -->
-  <div id="shareModal" class="share-modal-overlay" onclick="closeShareModal(event)">
-    <div class="share-modal-dialog" onclick="event.stopPropagation()">
-      <div class="share-modal-title">
-        <i class="fa fa-share-alt" style="color: var(--accent-pink);"></i>
-        <span>Share Video Stream</span>
-        <button onclick="closeShareModal()" style="margin-left:auto; background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">&times;</button>
-      </div>
-      <div class="share-qr-section">
-        <img id="shareQrCodeImg" class="share-qr-img" src="" alt="QR Code">
-        <span style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">📲 Scan with phone camera to watch instantly on mobile!</span>
-      </div>
-      <div class="share-link-row">
-        <input type="text" id="shareUrlInput" readonly>
-        <button class="btn-pill" onclick="copyShareModalUrl()"><i class="fa fa-copy"></i> Copy</button>
-      </div>
-      <div style="font-size: 12px; color: #ccc; display: flex; align-items: center; gap: 8px; margin-top: 8px;">
-        <input type="checkbox" id="chkShareTimestamp" onchange="toggleShareTimestamp(this)">
-        <label for="chkShareTimestamp">Start from current playback timestamp (?t=...)</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- Resume Playback Toast -->
-  <div id="resumeToast" class="resume-playback-toast">
-    <i class="fa fa-history" style="color: var(--accent-pink); font-size: 20px;"></i>
-    <div style="font-size: 12px;">
-      <strong style="color: #fff; display: block;">Resume Playback?</strong>
-      <span id="resumeToastTime" style="color: var(--text-muted);">Continue where you left off</span>
-    </div>
-    <button class="btn-resume-action" onclick="applyResumePlayback()">Resume</button>
-    <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px; margin-left: 4px;" onclick="dismissResumeToast()">&times;</button>
-  </div>
-
-  <!-- Stealth Panic Key Overlay (Boss Disguise Mode) -->
-  <div id="stealthOverlay" class="stealth-overlay">
-    <div class="stealth-google-wrap">
-      <div class="stealth-google-logo">
-        <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
-      </div>
-      <input type="text" class="stealth-search-input" placeholder="Search Google or type a URL" readonly onclick="exitStealthMode()">
-      <div class="stealth-exit-hint">
-        <span>⚡ Stealth Mode Active • Press <strong>Esc</strong> or <strong>`</strong> or click anywhere to exit</span>
-      </div>
-    </div>
-  </div>
-
-  <script src="/js/watch.js?v=6.0"></script>
+  <!-- Scripts -->
+  <script src="/js/masonry.js?v=2.0"></script>
+  <script src="/js/watch.js?v=2.0"></script>
 </body>
 </html>
