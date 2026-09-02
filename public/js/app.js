@@ -1,6 +1,6 @@
 /**
  * Main Application Frontend Logic
- * Pinterest Discovery Architecture, Masonry Feeds, Live Autocomplete & State Management
+ * Pinterest Discovery Architecture, xHamster Primary Feeds & State Management
  */
 
 // State Management
@@ -34,16 +34,16 @@ const CATEGORIES = [
   { id: 'exclusive', name: 'Exclusive HD', icon: 'fa-gem' }
 ];
 
-// Curated Top Stars for Carousel
+// Curated Real Top Stars for Carousel
 const FEATURED_STARS = [
-  { name: 'Angela White', views: '48.2M', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80', slug: 'angela-white' },
-  { name: 'Eva Elfie', views: '39.8M', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&auto=format&fit=crop&q=80', slug: 'eva-elfie' },
-  { name: 'Abella Danger', views: '42.1M', avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=160&auto=format&fit=crop&q=80', slug: 'abella-danger' },
-  { name: 'Lana Rhoades', views: '54.6M', avatar: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=160&auto=format&fit=crop&q=80', slug: 'lana-rhoades' },
-  { name: 'Mia Malkova', views: '36.5M', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&auto=format&fit=crop&q=80', slug: 'mia-malkova' },
-  { name: 'Kendra Lust', views: '31.4M', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80', slug: 'kendra-lust' },
-  { name: 'Sweetie Fox', views: '28.9M', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=160&auto=format&fit=crop&q=80', slug: 'sweetie-fox' },
-  { name: 'Lena Paul', views: '33.2M', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&auto=format&fit=crop&q=80', slug: 'lena-paul' }
+  { name: 'Mia Khalifa', views: '245M', avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Fl/s7/irh2fr8s7Fl/129764-mia-khalifa-nude_190x152.jpg'), slug: 'mia-khalifa' },
+  { name: 'Lana Rhoades', views: '320M', avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/LT/T2/JYYrTpQT2LT/458843-lana-rhoades-enjoying-an-uncut-cock_190x152.jpg'), slug: 'lana-rhoades' },
+  { name: 'Riley Reid', views: '410M', avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/wg/Ey/Ul9CvSuEywg/498125-riley-reid-showing-her-asshole_880x660.jpg'), slug: 'riley-reid' },
+  { name: 'Eva Elfie', views: '290M', avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/e7/8a/v0M04rK8ae7/399818-eva-elfie-nude_880x660.jpg'), slug: 'eva-elfie' },
+  { name: 'Abella Danger', views: '350M', avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/5f/hS/g50mHQChS5f/484639-abella-danger-pussy_880x660.jpg'), slug: 'abella-danger' },
+  { name: 'Angela White', views: '275M', avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Vg/8Y/XQ0Pw508YVg/900205-bbc-queen-nude_880x660.jpg'), slug: 'angela-white' },
+  { name: 'Sweetie Fox', views: '195M', avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/i8/4u/eE7a4s34ui8/502120-sweetie-fox-nude_880x660.jpg'), slug: 'sweetie-fox' },
+  { name: 'Kendra Lust', views: '210M', avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Xk/o9/4b5tNmqo9Xk/486265-kendra-lust-nude_880x660.jpg'), slug: 'kendra-lust' }
 ];
 
 // Initialize on DOM Ready
@@ -135,7 +135,7 @@ function initTopStarsCarousel() {
   container.innerHTML = FEATURED_STARS.map(star => `
     <div class="star-card-compact" onclick="window.location.href='/model.html?slug=${star.slug}'">
       <div class="star-avatar-wrap">
-        <img src="${star.avatar}" alt="${star.name}" class="star-avatar-img" loading="lazy">
+        <img src="${star.avatar}" alt="${star.name}" class="star-avatar-img" loading="lazy" onerror="this.src='/images/logo.png'">
         <div class="star-verified-check"><i class="fa fa-check"></i></div>
       </div>
       <span class="star-name-label">${star.name}</span>
@@ -144,7 +144,7 @@ function initTopStarsCarousel() {
   `).join('');
 }
 
-// Load Videos Feed from API
+// Load Videos Feed from API (xHamster Primary)
 async function loadVideos(reset = false) {
   if (AppState.isLoading) return;
   if (!reset && !AppState.hasMore) return;
@@ -183,7 +183,7 @@ async function loadVideos(reset = false) {
           <div style="grid-column: 1/-1; text-align: center; padding: 64px 20px; background: #ffffff; border-radius: 16px; margin: 20px 0;">
             <i class="fa fa-search" style="font-size: 42px; color: #91918c; margin-bottom: 16px;"></i>
             <h3 style="font-size: 20px; font-weight: 700; color: #000000; margin-bottom: 8px;">No Pins Found</h3>
-            <p style="color: #62625b; font-size: 15px; margin-bottom: 20px;">Try searching for different keywords or explore our top categories.</p>
+            <p style="color: #62625b; font-size: 15px; margin-bottom: 20px;">Try exploring our top categories or trending performers.</p>
             <button class="btn-primary" onclick="selectCategory('trending', null)">Explore Trending</button>
           </div>
         `;
@@ -223,8 +223,8 @@ function renderPins(videos, container) {
     card.dataset.id = video.id;
     card.dataset.title = video.title || 'Exclusive Stream';
     card.dataset.thumb = video.thumbnail || '';
-    card.dataset.duration = video.duration || '10:00';
-    card.dataset.author = video.author || 'Featured Performer';
+    card.dataset.duration = video.duration || '12:00';
+    card.dataset.author = video.author || 'Verified Star';
 
     const isSaved = window.pinEngine ? window.pinEngine.isPinSaved(video.id) : false;
     const saveBtnText = isSaved ? 'Saved' : 'Save';
@@ -232,7 +232,7 @@ function renderPins(videos, container) {
 
     card.innerHTML = `
       <div class="pin-media-wrapper" onclick="openPin('${video.id}', '${video.source || ''}')">
-        <img src="${video.thumbnail}" alt="${escapeHtml(video.title)}" class="pin-image" loading="lazy">
+        <img src="${video.thumbnail}" alt="${escapeHtml(video.title)}" class="pin-image" loading="lazy" onerror="this.src='/images/logo.png'">
         <div class="pin-overlay-scrim"></div>
         <button class="pin-save-cta js-save-pin" data-id="${video.id}" style="background-color: ${saveBtnBg};" title="Save Pin">${saveBtnText}</button>
         <span class="pin-overlay-pill pin-pill-duration">${video.duration || '12:00'}</span>
@@ -249,8 +249,7 @@ function renderPins(videos, container) {
       <div class="pin-meta" onclick="openPin('${video.id}', '${video.source || ''}')">
         <h3 class="pin-title">${escapeHtml(video.title)}</h3>
         <div class="pin-author">
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=50&auto=format&fit=crop&q=60" class="pin-author-avatar" alt="Star">
-          <span class="pin-author-name">${video.author || 'Wi9ayah Star'} • ${video.views || '15.2K'} views</span>
+          <span class="pin-author-name">${video.views || '24.5K'} views • xHamster HD</span>
         </div>
       </div>
     `;
@@ -339,7 +338,7 @@ function renderAutocompleteSuggestions(query, dropdown) {
     { text: `${query} in Top Stars`, icon: 'fa-crown', type: 'stars', url: `/models.html?q=${encodeURIComponent(query)}` },
     { text: `${query} in 4K UHD`, icon: 'fa-tv', type: '4k', url: `/?q=${encodeURIComponent(query + ' 4k')}` },
     { text: `${query} in Reels`, icon: 'fa-clapperboard', type: 'reels', url: `/reels.html?q=${encodeURIComponent(query)}` },
-    { text: `Search for "${query}"`, icon: 'fa-search', type: 'search', url: `/?q=${encodeURIComponent(query)}` }
+    { text: `Search xHamster for "${query}"`, icon: 'fa-search', type: 'search', url: `/?q=${encodeURIComponent(query)}` }
   ];
 
   dropdown.innerHTML = `

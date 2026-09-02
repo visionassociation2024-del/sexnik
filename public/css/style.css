@@ -443,10 +443,15 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16/9;
-  background-color: var(--color-surface-dark);
+  background-color: #000000;
   border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+  user-select: none;
+}
+
+.video-player-theater.theater-expanded {
+  aspect-ratio: 21/9;
 }
 
 .video-player-theater iframe,
@@ -455,6 +460,201 @@
   height: 100%;
   border: none;
   display: block;
+}
+
+/* Custom Player Overlay Layer */
+.custom-player-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(0,0,0,0.65) 0%, transparent 25%, transparent 70%, rgba(0,0,0,0.88) 100%);
+  opacity: 1;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.custom-player-overlay.controls-hidden {
+  opacity: 0;
+}
+
+.custom-player-overlay.is-paused {
+  opacity: 1 !important;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.custom-player-overlay > * {
+  pointer-events: auto;
+}
+
+/* Center Play Button Splash */
+.player-center-splash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  height: 72px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  cursor: pointer;
+  box-shadow: 0 0 30px rgba(230, 0, 35, 0.6);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+  z-index: 25;
+}
+
+.player-center-splash:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background-color: var(--color-primary-pressed);
+}
+
+.player-center-splash:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* Top Control Bar */
+.player-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  color: #ffffff;
+}
+
+.player-brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.player-quality-tag {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+}
+
+/* Bottom Control Bar */
+.player-bottom-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 20px 16px;
+  color: #ffffff;
+}
+
+.player-progress-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  position: relative;
+  transition: height 0.15s ease;
+}
+
+.player-progress-container:hover {
+  height: 10px;
+}
+
+.player-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  width: 0%;
+  position: relative;
+  transition: width 0.1s linear;
+}
+
+.player-progress-handle {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.player-progress-container:hover .player-progress-handle {
+  opacity: 1;
+}
+
+.player-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.player-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.player-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(1.08);
+}
+
+.player-time-display {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.player-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-volume-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-volume-slider {
+  width: 60px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-full);
+  outline: none;
+  cursor: pointer;
+  accent-color: var(--color-primary);
 }
 
 .watch-details-card {

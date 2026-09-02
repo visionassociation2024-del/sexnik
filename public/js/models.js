@@ -1,23 +1,23 @@
 /**
- * Performers & Stars Directory Engine
+ * Performers & Stars Directory Engine (100% Real Model Photos)
  */
 
 let allPerformers = [];
 let currentLetter = 'ALL';
 
 const DEFAULT_STARS = [
-  { name: 'Angela White', rank: 1, views: '48.2M', videos: 280, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80', slug: 'angela-white' },
-  { name: 'Eva Elfie', rank: 2, views: '39.8M', videos: 190, avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=240&auto=format&fit=crop&q=80', slug: 'eva-elfie' },
-  { name: 'Abella Danger', rank: 3, views: '42.1M', videos: 310, avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=240&auto=format&fit=crop&q=80', slug: 'abella-danger' },
-  { name: 'Lana Rhoades', rank: 4, views: '54.6M', videos: 140, avatar: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=240&auto=format&fit=crop&q=80', slug: 'lana-rhoades' },
-  { name: 'Mia Malkova', rank: 5, views: '36.5M', videos: 220, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&auto=format&fit=crop&q=80', slug: 'mia-malkova' },
-  { name: 'Kendra Lust', rank: 6, views: '31.4M', videos: 260, avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&auto=format&fit=crop&q=80', slug: 'kendra-lust' },
-  { name: 'Sweetie Fox', rank: 7, views: '28.9M', videos: 110, avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=240&auto=format&fit=crop&q=80', slug: 'sweetie-fox' },
-  { name: 'Lena Paul', rank: 8, views: '33.2M', videos: 205, avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=240&auto=format&fit=crop&q=80', slug: 'lena-paul' },
-  { name: 'Gabbie Carter', rank: 9, views: '25.4M', videos: 95, avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=240&auto=format&fit=crop&q=80', slug: 'gabbie-carter' },
-  { name: 'Riley Reid', rank: 10, views: '61.8M', videos: 410, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80', slug: 'riley-reid' },
-  { name: 'Emily Willis', rank: 11, views: '37.1M', videos: 180, avatar: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=240&auto=format&fit=crop&q=80', slug: 'emily-willis' },
-  { name: 'Brandi Love', rank: 12, views: '34.9M', videos: 290, avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&auto=format&fit=crop&q=80', slug: 'brandi-love' }
+  { name: 'Mia Khalifa', rank: 1, views: '245M', videos: 180, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Fl/s7/irh2fr8s7Fl/129764-mia-khalifa-nude_190x152.jpg'), slug: 'mia-khalifa' },
+  { name: 'Lana Rhoades', rank: 2, views: '320M', videos: 240, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/LT/T2/JYYrTpQT2LT/458843-lana-rhoades-enjoying-an-uncut-cock_190x152.jpg'), slug: 'lana-rhoades' },
+  { name: 'Riley Reid', rank: 3, views: '410M', videos: 520, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/wg/Ey/Ul9CvSuEywg/498125-riley-reid-showing-her-asshole_880x660.jpg'), slug: 'riley-reid' },
+  { name: 'Eva Elfie', rank: 4, views: '290M', videos: 190, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/e7/8a/v0M04rK8ae7/399818-eva-elfie-nude_880x660.jpg'), slug: 'eva-elfie' },
+  { name: 'Abella Danger', rank: 5, views: '350M', videos: 480, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/5f/hS/g50mHQChS5f/484639-abella-danger-pussy_880x660.jpg'), slug: 'abella-danger' },
+  { name: 'Angela White', rank: 6, views: '275M', videos: 310, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Vg/8Y/XQ0Pw508YVg/900205-bbc-queen-nude_880x660.jpg'), slug: 'angela-white' },
+  { name: 'Sweetie Fox', rank: 7, views: '195M', videos: 140, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/i8/4u/eE7a4s34ui8/502120-sweetie-fox-nude_880x660.jpg'), slug: 'sweetie-fox' },
+  { name: 'Kendra Lust', rank: 8, views: '210M', videos: 390, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Xk/o9/4b5tNmqo9Xk/486265-kendra-lust-nude_880x660.jpg'), slug: 'kendra-lust' },
+  { name: 'Brandi Love', rank: 9, views: '260M', videos: 440, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/ii/7N/njlBOCp7Nii/474382-brandi-love-nude_880x660.jpg'), slug: 'brandi-love' },
+  { name: 'Autumn Falls', rank: 10, views: '280M', videos: 210, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/q3/Q7/nS3lD77Q7q3/462615-autumn-falls-nude_880x660.jpg'), slug: 'autumn-falls' },
+  { name: 'Violet Myers', rank: 11, views: '175M', videos: 160, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Cm/mY/2xbSWTsmYCm/32216333-violet-myers-pic594_880x660.jpg'), slug: 'violet-myers' },
+  { name: 'Emily Willis', rank: 12, views: '295M', videos: 320, avatar: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Vl/L3/vTfR46RL3Vl/482701-emily-willis-nude_880x660.jpg'), slug: 'emily-willis' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -71,9 +71,9 @@ async function loadPerformers() {
       allPerformers = data.models.map((m, idx) => ({
         name: m.name || m.title,
         rank: idx + 1,
-        views: m.views || `${(10 + Math.floor(Math.random() * 40))}.5M`,
-        videos: m.videos_count || m.videos || (50 + Math.floor(Math.random() * 150)),
-        avatar: m.thumbnail || m.avatar || DEFAULT_STARS[idx % DEFAULT_STARS.length].avatar,
+        views: m.views || `${(15 + Math.floor(Math.random() * 40))}.5M`,
+        videos: m.videoCount || m.videos || (50 + Math.floor(Math.random() * 150)),
+        avatar: m.avatar || DEFAULT_STARS[idx % DEFAULT_STARS.length].avatar,
         slug: m.slug || (m.name ? m.name.toLowerCase().replace(/\s+/g, '-') : 'star')
       }));
     } else {
@@ -103,7 +103,7 @@ function renderPerformersList(list) {
   grid.innerHTML = list.map(p => `
     <div class="pin-card" onclick="window.location.href='/model.html?slug=${p.slug}&name=${encodeURIComponent(p.name)}'">
       <div class="pin-media-wrapper" style="aspect-ratio: 1/1;">
-        <img src="${p.avatar}" alt="${p.name}" class="pin-image" style="height: 100%; object-fit: cover;" loading="lazy">
+        <img src="${p.avatar}" alt="${p.name}" class="pin-image" style="height: 100%; object-fit: cover;" loading="lazy" onerror="this.src='/images/logo.png'">
         <div class="pin-overlay-scrim"></div>
         <span class="pin-overlay-pill" style="top: 10px; left: 10px; background: #ffd700; color: #000; font-weight: 800;">
           #${p.rank}

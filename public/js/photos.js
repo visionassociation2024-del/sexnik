@@ -1,5 +1,5 @@
 /**
- * Photography & GIF Masonry Engine
+ * Photography & GIF Masonry Engine (100% Real Star Photos & Animated GIFs)
  */
 
 let allPhotos = [];
@@ -7,14 +7,14 @@ let currentPhotoFilter = 'all';
 let currentActiveLightbox = null;
 
 const CURATED_SAMPLE_PHOTOS = [
-  { id: 'p1', title: 'Sensual Portrait Photography', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80', aspect: '3/4', author: 'Eva Bloom', type: 'models' },
-  { id: 'p2', title: 'Golden Hour Aesthetic', url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80', aspect: '2/3', author: 'Studio X', type: 'art' },
-  { id: 'p3', title: 'Editorial Glamour Shot', url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&auto=format&fit=crop&q=80', aspect: '1/1', author: 'Max Vision', type: 'models' },
-  { id: 'p4', title: 'Cinematic Visual Set', url: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&auto=format&fit=crop&q=80', aspect: '4/5', author: 'Lana R', type: '4k' },
-  { id: 'p5', title: 'Monochrome Intimacy', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=80', aspect: '3/4', author: 'Noir Art', type: 'art' },
-  { id: 'p6', title: 'Animated GIF Motion Loop', url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80', aspect: '1/1', author: 'GIF Hub', type: 'gifs' },
-  { id: 'p7', title: 'Sensual Summer Glow', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80', aspect: '2/3', author: 'Kendra L', type: 'models' },
-  { id: 'p8', title: 'High-Res Studio Production', url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80', aspect: '4/5', author: 'Pro 4K', type: '4k' }
+  { id: 'p1', title: 'Mia Khalifa Glamour Portrait 4K', url: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Fl/s7/irh2fr8s7Fl/129764-mia-khalifa-nude_880x660.jpg'), aspect: '3/4', author: 'Mia Khalifa', type: 'models' },
+  { id: 'p2', title: 'Lana Rhoades Bedroom Shoot', url: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/LT/T2/JYYrTpQT2LT/458843-lana-rhoades-enjoying-an-uncut-cock_880x660.jpg'), aspect: '2/3', author: 'Lana Rhoades', type: 'models' },
+  { id: 'p3', title: 'Riley Reid Sensual Villa Shoot', url: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/wg/Ey/Ul9CvSuEywg/498125-riley-reid-showing-her-asshole_880x660.jpg'), aspect: '1/1', author: 'Riley Reid', type: '4k' },
+  { id: 'p4', title: 'Eva Elfie Blonde Tease Live GIF', url: 'https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif', aspect: '4/5', author: 'Eva Elfie', type: 'gifs' },
+  { id: 'p5', title: 'Abella Danger Poolside Tease GIF', url: 'https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif', aspect: '3/4', author: 'Abella Danger', type: 'gifs' },
+  { id: 'p6', title: 'Angela White Luxury Studio 4K', url: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Vg/8Y/XQ0Pw508YVg/900205-bbc-queen-nude_880x660.jpg'), aspect: '1/1', author: 'Angela White', type: '4k' },
+  { id: 'p7', title: 'Sweetie Fox Viral Cosplay Shoot', url: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/i8/4u/eE7a4s34ui8/502120-sweetie-fox-nude_880x660.jpg'), aspect: '2/3', author: 'Sweetie Fox', type: 'models' },
+  { id: 'p8', title: 'Kendra Lust Queen MILF Portrait', url: '/api/proxy/image?url=' + encodeURIComponent('https://static-eu-cdn.eporner.com/gallery/Xk/o9/4b5tNmqo9Xk/486265-kendra-lust-nude_880x660.jpg'), aspect: '4/5', author: 'Kendra Lust', type: 'models' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,8 +27,15 @@ async function loadPhotosFeed() {
   try {
     const res = await fetch('/api/photos');
     const data = await res.json();
-    if (data && data.photos && data.photos.length > 0) {
-      allPhotos = data.photos;
+    if (data && data.items && data.items.length > 0) {
+      allPhotos = data.items.map(item => ({
+        id: item.id,
+        title: item.title,
+        url: item.image_url || item.thumbnail || item.url,
+        aspect: '4/5',
+        author: item.tags ? item.tags[0] : 'Verified Star',
+        type: item.type || (item.url && item.url.includes('.gif') ? 'gifs' : 'models')
+      }));
     } else {
       allPhotos = CURATED_SAMPLE_PHOTOS;
     }
@@ -47,7 +54,7 @@ function renderPhotos(photosList) {
   grid.innerHTML = photosList.map(p => `
     <div class="pin-card" onclick="openPhotoLightbox('${p.url}', '${escapeHtml(p.title)}', '${p.id}')">
       <div class="pin-media-wrapper">
-        <img src="${p.url}" alt="${escapeHtml(p.title)}" class="pin-image" loading="lazy">
+        <img src="${p.url}" alt="${escapeHtml(p.title)}" class="pin-image" loading="lazy" onerror="this.src='/images/logo.png'">
         <div class="pin-overlay-scrim"></div>
         <button class="pin-save-cta js-save-pin" data-id="${p.id}" data-title="${escapeHtml(p.title)}" data-thumb="${p.url}" title="Save Pin">Save</button>
         <div class="pin-quick-actions">
@@ -68,60 +75,58 @@ function renderPhotos(photosList) {
   }
 }
 
-function filterPhotoTab(type, btn) {
+function filterPhotos(type, btn) {
   currentPhotoFilter = type;
-  document.querySelectorAll('.filter-chips-row .filter-chip').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
-  if (type === 'all') {
-    renderPhotos(allPhotos);
-  } else {
-    const filtered = allPhotos.filter(p => p.type === type || (p.title && p.title.toLowerCase().includes(type)));
-    renderPhotos(filtered.length > 0 ? filtered : allPhotos);
-  }
-}
+  const filtered = type === 'all' 
+    ? allPhotos 
+    : allPhotos.filter(p => p.type === type || (type === '4k' && (p.title.includes('4K') || p.title.includes('HD'))));
 
-function filterPhotosByQuery(query) {
-  const q = query.trim().toLowerCase();
-  if (!q) {
-    renderPhotos(allPhotos);
-    return;
-  }
-  const filtered = allPhotos.filter(p => p.title && p.title.toLowerCase().includes(q));
   renderPhotos(filtered);
 }
 
-function openPhotoLightbox(url, title, id) {
-  currentActiveLightbox = { url, title, id };
+function openPhotoLightbox(imgUrl, title, id) {
+  currentActiveLightbox = { imgUrl, title, id };
   const modal = document.getElementById('photoLightboxModal');
   const img = document.getElementById('lightboxImage');
   const titleEl = document.getElementById('lightboxTitle');
-  const dlBtn = document.getElementById('lightboxDownloadBtn');
 
-  if (img) img.src = url;
-  if (titleEl) titleEl.textContent = title;
-  if (dlBtn) dlBtn.href = url;
-  if (modal) modal.classList.add('active');
-}
-
-function closeLightbox(e) {
-  if (e.target.id === 'photoLightboxModal') {
-    closeLightboxDirect();
+  if (modal && img && titleEl) {
+    img.src = imgUrl;
+    titleEl.textContent = title;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
   }
 }
 
-function closeLightboxDirect() {
+function closePhotoLightbox() {
   const modal = document.getElementById('photoLightboxModal');
-  if (modal) modal.classList.remove('active');
+  if (modal) {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
 }
 
 function saveCurrentLightboxPin() {
-  if (!currentActiveLightbox || !window.pinEngine) return;
-  window.pinEngine.toggleSavePin({
-    id: currentActiveLightbox.id,
-    title: currentActiveLightbox.title,
-    thumbnail: currentActiveLightbox.url
-  });
+  if (currentActiveLightbox && window.pinEngine) {
+    window.pinEngine.toggleSavePin({
+      id: currentActiveLightbox.id,
+      title: currentActiveLightbox.title,
+      thumbnail: currentActiveLightbox.imgUrl,
+      duration: 'PHOTO',
+      author: 'Gallery'
+    });
+  }
+}
+
+function shareCurrentPhoto() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      if (window.pinEngine) window.pinEngine.showToast('Photo link copied to clipboard! 📋', 'success');
+    });
+  }
 }
 
 function escapeHtml(str) {

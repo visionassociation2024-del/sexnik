@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="referrer" content="no-referrer">
   <title>Watch Stream — Wi9ayah Pro Cinema</title>
-  <meta name="description" content="Stream high-definition videos with 0-lag player, multi-server mirrors, performer bio, and related pins on Wi9ayah Pro.">
+  <meta name="description" content="Stream high-definition videos with our custom player, multi-server mirrors, performer bio, and related pins on Wi9ayah Pro.">
   <link rel="icon" type="image/png" href="/images/logo.png">
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/design-system.css?v=2.0">
-  <link rel="stylesheet" href="/css/style.css?v=2.0">
+  <link rel="stylesheet" href="/css/design-system.css?v=2.1">
+  <link rel="stylesheet" href="/css/style.css?v=2.1">
 
   <!-- Monetization Scripts -->
   <script src="https://pl31054762.profitableratecpmnetwork.com/72/f4/9a/72f49a7889c2432c21f5fdf844a52e5d.js"></script>
@@ -56,20 +56,82 @@
         <!-- Left Main Stream Column -->
         <div class="watch-main-column">
           
-          <!-- Theater Player Frame -->
+          <!-- Custom Theater Player Frame with Custom Branded Overlay -->
           <div class="video-player-theater" id="theaterPlayerContainer">
+            
+            <!-- Raw Video Embed Iframe -->
             <iframe id="videoIframe" src="" allowfullscreen allow="autoplay; fullscreen; encrypted-media"></iframe>
+
+            <!-- Custom Branded Player Overlay Layer -->
+            <div class="custom-player-overlay is-paused" id="customPlayerOverlay">
+              
+              <!-- Top Overlay Bar -->
+              <div class="player-top-bar">
+                <div class="player-brand-badge">
+                  <div class="brand-p-badge" style="width: 26px; height: 26px; font-size: 13px;">W</div>
+                  <span id="playerTopTitle" style="max-width: 450px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Loading Stream...</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span class="player-quality-tag" id="playerQualityTag">4K UHD 60FPS</span>
+                  <button class="player-btn" onclick="toggleTheaterMode()" title="Theater Mode"><i class="fa fa-expand-alt"></i></button>
+                </div>
+              </div>
+
+              <!-- Center Play Button Splash -->
+              <div class="player-center-splash" id="playerCenterSplash" onclick="togglePlayerPlay()">
+                <i class="fa fa-play" id="centerPlayIcon"></i>
+              </div>
+
+              <!-- Bottom Overlay Controls -->
+              <div class="player-bottom-bar">
+                
+                <!-- Interactive Timeline Progress Bar -->
+                <div class="player-progress-container" id="playerProgressContainer" onclick="handleSeek(event)">
+                  <div class="player-progress-fill" id="playerProgressFill">
+                    <div class="player-progress-handle"></div>
+                  </div>
+                </div>
+
+                <!-- Controls Row -->
+                <div class="player-controls-row">
+                  <div class="player-controls-left">
+                    <button class="player-btn" id="playerPlayBtn" onclick="togglePlayerPlay()" title="Play / Pause">
+                      <i class="fa fa-play" id="bottomPlayIcon"></i>
+                    </button>
+                    <div class="player-volume-group">
+                      <button class="player-btn" id="playerMuteBtn" onclick="toggleMute()" title="Mute / Unmute">
+                        <i class="fa fa-volume-up" id="volumeIcon"></i>
+                      </button>
+                      <input type="range" min="0" max="100" value="100" class="player-volume-slider" id="playerVolumeSlider" oninput="handleVolume(this.value)">
+                    </div>
+                    <span class="player-time-display" id="playerTimeDisplay">00:00 / 12:00</span>
+                  </div>
+
+                  <div class="player-controls-right">
+                    <button class="player-btn" onclick="toggleMirror()" title="Switch Stream Mirror">
+                      <i class="fa fa-rotate"></i>
+                    </button>
+                    <button class="player-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                      <i class="fa fa-expand"></i>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
 
           <!-- Multi-Server Selector Pill Bar -->
           <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; background: var(--color-canvas); padding: 12px 18px; border-radius: var(--radius-md); box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
             <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--color-ink);">
-              <i class="fa fa-server" style="color: var(--color-primary);"></i> Server Mirror:
+              <i class="fa fa-server" style="color: var(--color-primary);"></i> Stream Server:
             </div>
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;" id="serverButtonsContainer">
-              <button class="filter-chip active" onclick="switchServer(1, this)"><i class="fa fa-bolt"></i> Ultra Fast CDN</button>
+              <button class="filter-chip active" onclick="switchServer(1, this)"><i class="fa fa-bolt"></i> xHamster Ultra Fast</button>
               <button class="filter-chip" onclick="switchServer(2, this)"><i class="fa fa-shield-alt"></i> Mirror 2 (1080p)</button>
-              <button class="filter-chip" onclick="switchServer(3, this)"><i class="fa fa-tv"></i> 4K UHD</button>
+              <button class="filter-chip" onclick="switchServer(3, this)"><i class="fa fa-tv"></i> 4K UHD VIP</button>
             </div>
           </div>
 
@@ -79,10 +141,10 @@
 
             <div class="watch-meta-strip">
               <div class="watch-author-group">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="watch-author-avatar" id="modelAvatar" alt="Performer">
+                <img src="/images/logo.png" class="watch-author-avatar" id="modelAvatar" alt="Performer">
                 <div class="watch-author-details">
                   <span class="watch-author-name" id="modelName">Verified Performer</span>
-                  <span class="watch-author-sub" id="videoMetaStats">15.4K views • 98% Rating</span>
+                  <span class="watch-author-sub" id="videoMetaStats">28.4K views • 98% Rating</span>
                 </div>
               </div>
 
@@ -192,7 +254,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="/js/masonry.js?v=2.0"></script>
-  <script src="/js/watch.js?v=2.0"></script>
+  <script src="/js/masonry.js?v=2.1"></script>
+  <script src="/js/watch.js?v=2.1"></script>
 </body>
 </html>

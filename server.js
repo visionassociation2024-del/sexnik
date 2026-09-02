@@ -276,12 +276,12 @@ app.get('/api/videos', async (req, res) => {
         }
     }
 
-    // B. Parallel Non-Blocking Fetchers with Strict 2500ms Timeouts
+    // B. Parallel Non-Blocking Fetchers with xHamster as Primary Engine
     const fetchPromises = [
-        // Fast CDN Video Feed
-        fetchOpenTubeVideos(queryTerm, pageNum),
-        // Pornhub Fast Search
-        axios.get(`https://www.pornhub.com/webmasters/search?search=${encodeURIComponent(queryTerm)}&page=${pageNum}&thumbsize=large`, { timeout: 2500 })
+        // Primary 1: xHamster Search & Feeds
+        searchXhamster(queryTerm, pageNum).then(r => r.videos || []).catch(() => []),
+        // Primary 2: Pornhub Fast Search
+        axios.get(`https://www.pornhub.com/webmasters/search?search=${encodeURIComponent(queryTerm)}&page=${pageNum}&thumbsize=large`, { timeout: 3000 })
             .then(phRes => {
                 if (phRes.data && phRes.data.videos) {
                     return phRes.data.videos.map(pv => ({
@@ -294,11 +294,13 @@ app.get('/api/videos', async (req, res) => {
                         rating: (pv.rating || '96') + '%',
                         embed_url: pv.embed_url || `https://www.pornhub.com/embed/${pv.video_id}`,
                         video_url: pv.embed_url || `https://www.pornhub.com/embed/${pv.video_id}`,
-                        tags: pv.tags ? pv.tags.map(t => t.tag_name) : ['pornhub', queryTerm, 'niksex']
+                        tags: pv.tags ? pv.tags.map(t => t.tag_name) : ['pornhub', queryTerm, 'xhamster']
                     }));
                 }
                 return [];
-            }).catch(() => [])
+            }).catch(() => []),
+        // High-Speed Tube Backup
+        fetchOpenTubeVideos(queryTerm, pageNum)
     ];
 
     const results = await Promise.allSettled(fetchPromises);
@@ -526,24 +528,36 @@ app.get('/api/video/:id', async (req, res) => {
         }
     } catch (e) {}
 
-    // E. General Platform Fallback Resolvers (xHamster, XVideos, SpankBang, RedTube)
-    let fallbackEmbed = `https://www.eporner.com/embed/${epClean}/`;
-    if (id.startsWith('xh_')) fallbackEmbed = `https://xhamster.com/xembed.php?video=${id.replace(/^xh_/, '')}`;
+    // D. xHamster Video Details
+    if (id.startsWith('xh_') || id.startsWith('xh')) {
+        const cleanXh = id.replace(/^xh_?/, '');
+        try {
+            const xhData = await getXhamsterDetails(cleanXh);
+            if (xhData && xhData.success) {
+                setCache(cacheKey, xhData);
+                return res.json(xhData);
+            }
+        } catch (e) {}
+    }
+
+    // E. General Platform Fallback Resolvers (xHamster, XVideos, SpankBang, RedTube, Eporner)
+    let fallbackEmbed = `https://xhamster.com/xembed.php?video=${id.replace(/^xh_/, '')}`;
+    if (id.startsWith('ph_')) fallbackEmbed = `https://www.pornhub.com/embed/${id.replace(/^ph_/, '')}`;
+    if (id.startsWith('ep_')) fallbackEmbed = `https://www.eporner.com/embed/${id.replace(/^ep_/, '')}/`;
     if (id.startsWith('xv_')) fallbackEmbed = `https://www.xvideos.com/embedframe/${id.replace(/^xv_/, '')}`;
     if (id.startsWith('sb_')) fallbackEmbed = `https://spankbang.com/${id.replace(/^sb_/, '')}/embed/`;
-    if (id.startsWith('tube_') || id.startsWith('red_')) fallbackEmbed = `https://embed.redtube.com/?id=${id.replace(/^(tube_|red_)/, '')}&autoplay=1`;
 
     const genericVideo = {
         id: id,
         source: 'universal',
         title: 'HD Video Stream ' + id,
-        thumbnail: '/images/logo.png',
+        thumbnail: '',
         embed_url: fallbackEmbed,
         video_url: fallbackEmbed,
         duration: '12:00',
-        views: '22,000',
+        views: '28,400',
         rating: '98%',
-        tags: ['HD', 'niksex', 'Trending'],
+        tags: ['xHamster', '4K UHD', 'Trending'],
         servers: [
             { name: 'Server 1 (Primary HD Stream)', url: fallbackEmbed, type: 'embed' },
             { name: 'Server 2 (Alternative Mirror)', url: fallbackEmbed, type: 'embed' },
@@ -551,6 +565,16 @@ app.get('/api/video/:id', async (req, res) => {
         ]
     };
     return res.json({ success: true, video: genericVideo });
+});
+
+// Alias for Video Details
+app.get('/api/video/details', async (req, res) => {
+    const { id = '' } = req.query;
+    if (!id) return res.status(400).json({ success: false, message: 'ID required' });
+    req.params = { id };
+    const cleanId = String(id).replace(/^xh_/, '');
+    const xhData = await getXhamsterDetails(cleanId);
+    return res.json(xhData);
 });
 
 // 1.5 API: Hot Adult GIFs & Photos Feed (NPNS.fr + Curated + Pornhub)
@@ -1101,8 +1125,10 @@ app.get('/api/search', async (req, res) => {
     }
 
     const fetchPromises = [
-        fetchOpenTubeVideos(q, pageNum),
-        axios.get(`https://www.pornhub.com/webmasters/search?search=${encodeURIComponent(q)}&page=${pageNum}&thumbsize=large`, { timeout: 2500 })
+        // Primary 1: xHamster Search
+        searchXhamster(q, pageNum).then(r => r.videos || []).catch(() => []),
+        // Primary 2: Pornhub Search
+        axios.get(`https://www.pornhub.com/webmasters/search?search=${encodeURIComponent(q)}&page=${pageNum}&thumbsize=large`, { timeout: 3000 })
             .then(phRes => {
                 if (phRes.data && phRes.data.videos) {
                     return phRes.data.videos.map(pv => ({
@@ -1115,11 +1141,13 @@ app.get('/api/search', async (req, res) => {
                         rating: (pv.rating || '96') + '%',
                         embed_url: pv.embed_url || `https://www.pornhub.com/embed/${pv.video_id}`,
                         video_url: pv.embed_url || `https://www.pornhub.com/embed/${pv.video_id}`,
-                        tags: pv.tags ? pv.tags.map(t => t.tag_name) : [q, 'niksex']
+                        tags: pv.tags ? pv.tags.map(t => t.tag_name) : [q, 'xhamster']
                     }));
                 }
                 return [];
-            }).catch(() => [])
+            }).catch(() => []),
+        // High-Speed Tube Backup
+        fetchOpenTubeVideos(q, pageNum)
     ];
 
     const allRes = await Promise.allSettled(fetchPromises);
